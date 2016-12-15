@@ -18,4 +18,4 @@ Install [Go](http://golang.org/) and [GopherJS](http://github.com/gopherjs/gophe
 
 License
 -------
-GJSON Playground is available under the [MIT License](http://github.com/tidwall/digitalrain/LICENSE).
+GJSON Playground is available under the [MIT License](https://github.com/tidwall/gjson-play/blob/master/LICENSE).
