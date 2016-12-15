@@ -1,7 +1,9 @@
 GJSON Playground
 =================
 
-A playground for the [GJSON](https://github.com/tidwall/gjson) project.
+A playground for [GJSON](https://github.com/tidwall/gjson). 
+Runs in the browser. 
+Written with the help of [GopherJS](http://github.com/gopherjs/gopherjs).
 
 [Live Demo](http://tidwall.com/gjson-play/)
 
