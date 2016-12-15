@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>GJSON Playground</title>
+	<style>
+		html, body{ 
+			height: 100%; fborder: 0; fmargin: 0;
+			font-size: 15px;
+			font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+		}
+		*{
+    		outline: none;
+    		-webkit-box-shadow: none;
+    		-moz-box-shadow: none;
+			box-shadow: none;
+			box-sizing: border-box;
+		}
+		.center{
+			text-align:center;
+		}
+		#path{
+			width: 100%;
+			font-family: Menlo,monospace;
+			font-size: 15px;
+		}
+		#json-input{
+			width: 100%;
+			height: 250px;
+			text-align: left;
+			font-family: Menlo,monospace;
+			font-size: 15px;
+			overflow: auto;
+			border: 1px solid #ccc;
+		}
+		#result-output{
+			text-align: left;
+			font-family: Menlo,monospace;
+			font-size: 15px;
+		}
+		pre{
+			background: #eee;
+			padding: 10px;
+			text-align: left;
+			font-family: Menlo,monospace;
+		}
+	</style>
+</head>
+<body>
+	<center>
+		<div style="width:50%">
+			<div><img src="https://raw.githubusercontent.com/tidwall/gjson/master/logo.png" height="75" alt="GJSON"></div>
+			<div style="font-size:24px;position:relative;top:-9px">Playground</div>
+			<p>
+			GJSON is a Go package that provides a very fast and simple way to get a value from a json document.
+		<div style="min-height:35px;">
+			<a class="github-button" href="https://github.com/tidwall/gjson"
+			style="color:rgba(0,0,0,0);"
+			data-icon-="octicon-star" data-style="mega" 
+			data-count-href="/tidwall/gjson/stargazers"
+			data-count-api="/repos/tidwall/gjson#stargazers_count" 
+			data-count-aria-label="# stargazers on GitHub" aria-label="Star tidwall/gjson on GitHub">View on GitHub</a>
+		</div>
+			</p>
+		</div>
+	</center>
+	<input type="text" id="path">
+	<p>
+		<textarea id="json-input" autocorrect="off" autocomplete="off" autocapitalize="off"></textarea>
+		<pre id="result-output">&nbsp;</pre>
+	</p>
+	<br><br>
+	<p>
+	<h2>Other examples</h2>
+	<pre>
+"name.last"          >> "Anderson"
+"age"                >> 37
+"children"           >> ["Sara","Alex","Jack"]
+"children.#"         >> 3
+"children.1"         >> "Alex"
+"child*.2"           >> "Jack"
+"c?ildren.0"         >> "Sara"
+"fav\.movie"         >> "Deer Hunter"
+"friends.#.first"    >> ["Dale","Roger","Jane"]
+"friends.1.last"     >> "Craig"</pre>
+	</p>
+	<p>
+		You can also query an array for the first match by using #[...], 
+		or find all matches with #[...]#. 
+		Queries support the ==, !=, <, <=, >, >= comparison operators and 
+		the simple pattern matching % operator.
+	<pre>
+friends.#[last=="Murphy"].first    >> "Dale"
+friends.#[last=="Murphy"]#.first   >> ["Dale","Jane"]
+friends.#[age>45]#.last            >> ["Craig","Murphy"]
+friends.#[first%"D*"].last         >> "Murphy"</pre>
+	</div>
+	</p>
+	<br><br>	
+</body>
+<script src="play.js"></script>
+<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+</html>
+
