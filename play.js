@@ -21636,7 +21636,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 				Result.copy(res, _r);
 				$s = 3; continue;
 			/* } else { */ case 2:
-				if (!(rp[0].query.path === "") && !(rp[0].query.path === "_")) {
+				if (!(rp[0].query.path === "")) {
 					$s = -1; return false;
 				}
 				Result.copy(res, qval);
