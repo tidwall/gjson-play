@@ -1,123 +1,232 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>GJSON Playground</title>
-	<style>
-		html, body{ 
-			height: 100%; fborder: 0; fmargin: 0;
-			font-size: 15px;
-			font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-		}
-		*{
-    		outline: none;
-    		-webkit-box-shadow: none;
-    		-moz-box-shadow: none;
-			box-shadow: none;
-			box-sizing: border-box;
-		}
-		.center{
-			text-align:center;
-		}
-		#path{
-			width: 100%;
-			font-family: Menlo,monospace;
-			font-size: 15px;
-		}
-		#json-input{
-			width: 100%;
-			height: 250px;
-			text-align: left;
-			font-family: Menlo,monospace;
-			font-size: 15px;
-			overflow: auto;
-			border: 1px solid #ccc;
-		}
-		#result-output{
-			text-align: left;
-			font-family: Menlo,monospace;
-			font-size: 15px;
-		}
-		pre{
-			background: #eee;
-			padding: 10px;
-			text-align: left;
-			font-family: Menlo,monospace;
-		}
-	</style>
-</head>
-<body>
-	<center>
-		<div style="width:50%">
-			<div><img src="https://raw.githubusercontent.com/tidwall/gjson/master/logo.png" height="75" alt="GJSON"></div>
-			<div style="font-size:24px;position:relative;top:-9px">Playground</div>
-			<p>
-			GJSON is a Go package that provides a very fast and simple way to get a value from a json document.
-		<div style="min-height:35px;">
-			<a class="github-button" href="https://github.com/tidwall/gjson"
-			style="color:rgba(0,0,0,0);"
-			data-icon-="octicon-star" data-style="mega" 
-			data-count-href="/tidwall/gjson/stargazers"
-			data-count-api="/repos/tidwall/gjson#stargazers_count" 
-			data-count-aria-label="# stargazers on GitHub" aria-label="Star tidwall/gjson on GitHub">View on GitHub</a>
-		</div>
-			</p>
-		</div>
-	</center>
-	<input type="text" id="path">
-	<p>
-		<textarea id="json-input" autocorrect="off" autocomplete="off" autocapitalize="off"></textarea>
-		<pre id="result-output">&nbsp;</pre>
-	</p>
-	<br><br>
-	<p>
-	<h2>Other example paths</h2>
-	<pre>
-"name.last"          >> "Anderson"
-"age"                >> 37
-"children"           >> ["Sara","Alex","Jack"]
-"children.#"         >> 3
-"children.1"         >> "Alex"
-"child*.2"           >> "Jack"
-"c?ildren.0"         >> "Sara"
-"fav\.movie"         >> "Deer Hunter"
-"friends.#.first"    >> ["Dale","Roger","Jane"]
-"friends.1.last"     >> "Craig"</pre>
-	</p>
-	<p>
-		You can also query an array for the first match by using #[...], 
-		or find all matches with #[...]#. 
-		Queries support the ==, !=, <, <=, >, >= comparison operators and 
-		the simple pattern matching % operator.
-	<pre>
-friends.#[last=="Murphy"].first    >> "Dale"
-friends.#[last=="Murphy"]#.first   >> ["Dale","Jane"]
-friends.#[age>45]#.last            >> ["Craig","Murphy"]
-friends.#[first%"D*"].last         >> "Murphy"</pre>
-	</div>
-	<br>
-	</p>
-	<p align=center>
-	<i>
-		This page was built with the help of <a href="https://github.com/gopherjs/gopherjs">GopherJS</a> and is open source at <a href="https://github.com/tidwall/gjson-play">tidwall/gjson-play</a>.
-	</i>
-	</p>
-	<br>
-</body>
-<script src="play.js"></script>
-<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+    <head>
+        <link rel="stylesheet" 
+            href="//cdn.jsdelivr.net/npm/hack-font@3/build/web/hack.css">
+        <style>
+            body{
+                background:#a7b2bb;
+                margin: 0px;
+                padding: 0 20px;
+                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                color: rgba(39,40,34,0.75);
+                font-size: 17px;
+            }
+            a {
+                color: rgba(39,40,34,1);
+            }
+            .component {
+                display: block;
+                background: #272822;
+                max-width: 1000px;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+                margin-left: auto;
+                margin-right: auto;
+                color: rgba(255,255,255,0.85);
+                font-family: Hack, monospace;
+                font-size: 15px;
+                border: 0;
+                border-radius: 6px;
+                outline: none;
+                box-sizing: border-box;
+                resize: none;
+                min-height: 58px;
+                box-shadow: 0px 15px 15px rgba(0,0,0,0.3);
+                white-space: pre;
+                overflow-x: auto;
+            }
+            .component::selection { 
+                background: rgba(255,255,255,0.10);
+            }
+            #json-input{
+                position: absolute;
+                z-index: 2;
+                background: transparent;
+                color: transparent;
+                margin: 0;
+                caret-color: white;
+            }
+            #json-display{
+                position: relative; 
+                z-index: 1;
+            }
+
+            .json-style.string {color: #e5da82;}
+            .json-style.key    {color: #b3df53;}
+            .json-style.number {color: #e686f7;}
+            .json-style.false  {color: #8f75d0;}
+            .json-style.true   {color: #8f75d0;}
+            .json-style.null   {color: #8f75d0;}
+            
+            .top {
+                display: block;
+                margin: 40px auto 40px auto;
+                text-align: center;
+            }
+            .top .logo {
+                position: relative;
+                left: -2px;
+                display: block;
+                margin: 0 auto 5px auto;
+            }
+            .top .sub {
+                color: #272822;
+                font-size: 32px;
+                font-weight: 900;
+                margin: 0 auto 0 auto;
+            }
+            .bottom {
+                display: block;
+                max-width: 800px;
+                margin: 80px auto 40px auto;
+            }
+
+            .bottom pre{
+                background: rgba(0,0,0,0.10);
+                /* color: rgba(255,255,255,0.75); */
+                padding: 20px;
+                border-radius: 6px;
+                font-family: Hack, monospace;
+                font-size: 15px;
+            }
+            .bottom p{
+                text-align: center;
+            }
+            .bottom h2, .bottom h3{
+                text-align: center;
+                color: #272822;
+            }
+            .octocat {
+                margin-top: 20px;
+                opacity: 0.82;
+            }
+
+        </style>
+        <script>
+            function fit(el){
+                el.style.height = "1px";
+                el.style.height = el.scrollHeight + "px";
+            }
+            function update(){
+                var path = document.getElementById('path');
+                var json = document.getElementById('json-input');
+                var output = document.getElementById('result-output');
+            }
+            function syncDisplay(){
+                var json = document.getElementById('json-input');
+                var display = document.getElementById('json-display');
+                var value = jsonColor(json.value);
+                if (value.endsWith("\n")){
+                    value += " "
+                }
+                display.innerHTML = value
+                display.scrollLeft = json.scrollLeft
+                json.style.top = display.offsetTop + "px"
+                json.style.left = display.offsetLeft + "px"
+                json.style.width = display.offsetWidth + "px"
+                json.style.height = display.offsetHeight + "px"   
+            }
+            window.addEventListener("resize", function(){
+                syncDisplay()
+            })
+            window.addEventListener("load", function(){
+                syncDisplay()
+            })
+        </script>
+    </head>
+    <body>
+        <div class="top">
+            <img src="logo.png" height="60" class="logo">
+            <div class="sub">PLAYGROUND</div>
+            <p>GJSON provides a fast and simple way to search a JSON document.</p>
+        </div>
+
+        <input type="text" class="component" id="path" oninput="fit(this);update()" 
+            data-gramm_editor="false" spellcheck="false">
+
+        <textarea class="component" id="json-input" 
+            oninput="fit(this);syncDisplay()" 
+            onscroll="syncDisplay()"
+            data-gramm_editor="false" 
+            spellcheck="false"
+            contenteditable="true"
+        ></textarea>
+        <pre class="component" id="json-display"></pre>
+        <pre class="component" id="result-output"></pre>
+
+<div class="bottom">
+
+    
+    <h3>EXAMPLES</h3>
+    <pre>
+name.last              "Anderson"
+age                    37
+children               ["Sara","Alex","Jack"]
+children#"             3
+children.1             "Alex"
+child*.2               "Jack"
+c?ildren.0             "Sara"
+fav\.movie             "Deer Hunter"
+friends.#.first        ["Dale","Roger","Jane"]
+friends.1.last         "Craig"</pre>
+    
+
+    <p>
+        Query an array for the first match by using #[...], 
+        or find all matches with #[...]#. 
+        Queries support the ==, !=, <, <=, >, >= comparison operators and 
+        the simple pattern matching % operator.
+    </p>
+
+    <pre>
+friends.#[last=="Murphy"].first       "Dale"
+friends.#[last=="Murphy"]#.first      ["Dale","Jane"]
+friends.#[age>45]#.last               ["Craig","Murphy"]
+friends.#[first%"D*"].last            "Murphy"</pre>
+
+    <p>
+        Use the selectors syntax to join multiple paths into a new JSON document.
+    </p>
+
+    <pre>
+{name.first,age,"murphys":friends.#[last="Murphy"]#.first}
+[name.first,age,children.0]</pre>
+
+    <p><br></p>
+    <p>
+        Check out the <a href="https://github.com/tidwall/gjson">GJSON project</a>
+        for detailed information and more tutorials.
+        <br>
+        <a href="https://github.com/tidwall/gjson"><img class="octocat"
+            src="octocat.png" height="40" border="0"></a>
+    </p>
+
+
+
+</div>
+
+
+        <script>
+            fit(document.getElementById('path'))
+            fit(document.getElementById('json-input'))
+            update();
+            syncDisplay();
+        </script>
+        <script src="play.js"></script>
+    </body>
 <script>
 (function (i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-	(i[r].q = i[r].q || []).push(arguments)
+    (i[r].q = i[r].q || []).push(arguments)
     }, i[r].l = 1 * new Date(); a = s.createElement(o),
-	m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
 })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
 ga('create', 'UA-58889193-1', 'auto');
 ga('send', 'pageview');
 </script>
 </html>
-
-

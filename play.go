@@ -3,6 +3,8 @@ package main
 import (
 	"strings"
 
+	"github.com/tidwall/pretty"
+
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/tidwall/gjson"
 )
@@ -25,22 +27,38 @@ const exampleJSON = `
 
 var path, input, output *js.Object
 
+var style = pretty.Style{
+	False:  [2]string{`<span class="json-style false">`, `</span>`},
+	True:   [2]string{`<span class="json-style true">`, `</span>`},
+	String: [2]string{`<span class="json-style string">`, `</span>`},
+	Number: [2]string{`<span class="json-style number">`, `</span>`},
+	Null:   [2]string{`<span class="json-style null">`, `</span>`},
+	Key:    [2]string{`<span class="json-style key">`, `</span>`},
+}
+
 func main() {
+	js.Global.Set("jsonColor", func(json string) string {
+		return string(pretty.Color([]byte(json), &style))
+	})
 	killTabs()
 	path = js.Global.Get("document").Call("getElementById", "path")
 	input = js.Global.Get("document").Call("getElementById", "json-input")
 	output = js.Global.Get("document").Call("getElementById", "result-output")
+
 	path.Set("value", strings.TrimSpace(examplePath))
 	input.Set("value", strings.TrimSpace(exampleJSON))
 	doGet()
 	path.Set("onkeyup", func() {
 		doGet()
 	})
+	input.Set("onkeyup", func() {
+		doGet()
+	})
 }
 
 func doGet() {
 	res := gjson.Get(input.Get("value").String(), path.Get("value").String())
-	output.Set("innerHTML", res.String())
+	output.Set("innerHTML", string(pretty.Color([]byte(res.Raw), &style)))
 }
 
 func killTabs() {
