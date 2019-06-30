@@ -105,7 +105,9 @@
                 margin-top: 20px;
                 opacity: 0.82;
             }
-
+            .example {
+                overflow: auto;                
+            }
         </style>
         <script>
             function fit(el){
@@ -163,17 +165,17 @@
 
     
     <h3>EXAMPLES</h3>
-    <pre>
-name.last              "Anderson"
-age                    37
-children               ["Sara","Alex","Jack"]
-children#"             3
-children.1             "Alex"
-child*.2               "Jack"
-c?ildren.0             "Sara"
-fav\.movie             "Deer Hunter"
-friends.#.first        ["Dale","Roger","Jane"]
-friends.1.last         "Craig"</pre>
+    <pre class="example">
+name.last        >> "Anderson"
+age              >> 37
+children         >> ["Sara","Alex","Jack"]
+children#"       >> 3
+children.1       >> "Alex"
+child*.2         >> "Jack"
+c?ildren.0       >> "Sara"
+fav\.movie       >> "Deer Hunter"
+friends.#.first  >> ["Dale","Roger","Jane"]
+friends.1.last   >> "Craig"</pre>
     
 
     <p>
@@ -183,17 +185,17 @@ friends.1.last         "Craig"</pre>
         the simple pattern matching % operator.
     </p>
 
-    <pre>
-friends.#(last=="Murphy").first       "Dale"
-friends.#(last=="Murphy")#.first      ["Dale","Jane"]
-friends.#(age>45)#.last               ["Craig","Murphy"]
-friends.#(first%"D*").last            "Murphy"</pre>
+    <pre class="example">
+friends.#(last=="Murphy").first   >> "Dale"
+friends.#(last=="Murphy")#.first  >> ["Dale","Jane"]
+friends.#(age>45)#.last           >> ["Craig","Murphy"]
+friends.#(first%"D*").last        >> "Murphy"</pre>
 
     <p>
         Use the selectors syntax to join multiple paths into a new JSON document.
     </p>
 
-    <pre>
+    <pre class="example">
 {name.first,age,"murphys":friends.#(last="Murphy")#.first}
 [name.first,age,children.0]</pre>
 
