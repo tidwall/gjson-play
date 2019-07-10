@@ -191,6 +191,8 @@ friends.#(last=="Murphy")#.first  >> ["Dale","Jane"]
 friends.#(age>45)#.last           >> ["Craig","Murphy"]
 friends.#(first%"D*").last        >> "Murphy"</pre>
 
+    
+    
     <p>
         Use the selectors syntax to join multiple paths into a new JSON document.
     </p>
@@ -200,8 +202,22 @@ friends.#(first%"D*").last        >> "Murphy"</pre>
 [name.first,age,children.0]</pre>
 
     <p>
-        Check out the <a href="https://github.com/tidwall/gjson">GJSON project</a>
-        for detailed information and more tutorials.
+        Use modifiers to modify the output. There are three built in modifiers:
+        <ul>
+            <li>@reverse: Reverse an array or the members of an object.</li>
+            <li>@ugly: Remove all whitespace from JSON.</li>
+            <li>@pretty: Make the JSON more human readable.</li>
+        </ul>
+    </p>
+    
+    <pre class="example">
+children.@reverse                          >> ["Jack","Alex","Sara"]
+children.@reverse.0                        >> "Jack"
+{name.first,"murphys":friends.0}.@pretty</pre>
+    
+    <p>
+        For more information, please see the <a href="https://github.com/tidwall/gjson">GJSON project</a>
+        and the <a href="https://github.com/tidwall/gjson/blob/master/SYNTAX.md">GJSON syntax doc</a>.
     </p>
     <p>
         <br>
