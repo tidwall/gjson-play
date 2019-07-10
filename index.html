@@ -202,22 +202,22 @@ friends.#(first%"D*").last        >> "Murphy"</pre>
 [name.first,age,children.0]</pre>
 
     <p>
-        Use modifiers to modify the output. There are three built in modifiers:
-        <ul>
-            <li>@reverse: Reverse an array or the members of an object.</li>
-            <li>@ugly: Remove all whitespace from JSON.</li>
-            <li>@pretty: Make the JSON more human readable.</li>
-        </ul>
+        Use modifiers to modify the output.<br>
+        There are three built in modifiers:  <b>@reverse</b>, <b>@ugly</b>, and <b>@pretty</b>. 
+        Which reverse an array or the members of an object,
+        removes all whitespace from JSON, or make the JSON more human readable,
+        respectively.
     </p>
     
     <pre class="example">
 children.@reverse                          >> ["Jack","Alex","Sara"]
 children.@reverse.0                        >> "Jack"
-{name.first,"murphys":friends.0}.@pretty</pre>
+{name.first,"murphys":friends.0}.@pretty   >> <i>beautiful JSON</i>
+{name.first,"murphys":friends.0}.@ugly     >> <i>compact JSON</i></pre>
     
     <p>
         For more information, please see the <a href="https://github.com/tidwall/gjson">GJSON project</a>
-        and the <a href="https://github.com/tidwall/gjson/blob/master/SYNTAX.md">GJSON syntax doc</a>.
+        and the <a href="https://github.com/tidwall/gjson/blob/master/SYNTAX.md">GJSON syntax</a>.
     </p>
     <p>
         <br>
