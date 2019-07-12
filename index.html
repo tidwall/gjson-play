@@ -138,6 +138,9 @@
             })
             window.addEventListener("load", function(){
                 syncDisplay()
+                setInterval(function(){
+                    syncDisplay()
+                },250)
             })
         </script>
     </head>
@@ -153,7 +156,6 @@
 
         <textarea class="component" id="json-input" 
             oninput="fit(this);syncDisplay()" 
-            onscroll="syncDisplay()"
             data-gramm_editor="false" 
             spellcheck="false"
             contenteditable="true"
@@ -189,10 +191,13 @@ friends.1.last   >> "Craig"</pre>
 friends.#(last=="Murphy").first   >> "Dale"
 friends.#(last=="Murphy")#.first  >> ["Dale","Jane"]
 friends.#(age>45)#.last           >> ["Craig","Murphy"]
-friends.#(first%"D*").last        >> "Murphy"</pre>
+friends.#(first%"D*").last        >> "Murphy"
+friends.#(nets.#(=="fb"))#.first  >> ["Dale","Roger"]</pre>
 
-    
-    
+    <p>
+        
+    </p>
+
     <p>
         Use the selectors syntax to join multiple paths into a new JSON document.
     </p>

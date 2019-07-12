@@ -26505,7 +26505,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/tidwall/gjson"] = (function() {
-	var $pkg = {}, $init, base64, json, errors, match, pretty, reflect, strconv, strings, sync, atomic, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, funcType, mapType$1, fields, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, floatToUint, floatToInt, execModifier, modPretty, modUgly, modReverse, fillIndex, stringBytes, bytesString;
+	var $pkg = {}, $init, base64, json, errors, match, pretty, reflect, strconv, strings, sync, atomic, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, funcType, mapType$1, fields, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, floatToUint, floatToInt, execModifier, modPretty, modUgly, modReverse, fillIndex, stringBytes, bytesString;
 	base64 = $packages["encoding/base64"];
 	json = $packages["encoding/json"];
 	errors = $packages["errors"];
@@ -27386,7 +27386,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		return [i, $substring(json$1, s)];
 	};
 	parseArrayPath = function(path) {
-		var _r, end, i, j, n, path, r, s, s2, v;
+		var _r, _tuple, end, fi, i, j, n, ok, op, path, qpath, r, s, s2, v, value;
 		r = new arrayPathResult.ptr("", "", "", false, false, false, false, "", new structType.ptr(false, "", "", "", false));
 		i = 0;
 		while (true) {
@@ -27411,55 +27411,32 @@ $packages["github.com/tidwall/gjson"] = (function() {
 						r.alogkey = $substring(path, 2);
 						r.path = $substring(path, 0, 1);
 					} else if ((path.charCodeAt(1) === 91) || (path.charCodeAt(1) === 40)) {
-						end = 0;
-						if (path.charCodeAt(1) === 91) {
-							end = 93;
-						} else {
-							end = 41;
-						}
 						r.query.on = true;
-						i = i + (2) >> 0;
-						while (true) {
-							if (!(i < path.length)) { break; }
-							if (path.charCodeAt(i) > 32) {
+						if (true) {
+							_tuple = parseQuery($substring(path, i));
+							qpath = _tuple[0];
+							op = _tuple[1];
+							value = _tuple[2];
+							fi = _tuple[4];
+							ok = _tuple[5];
+							if (!ok) {
 								break;
 							}
-							i = i + (1) >> 0;
-						}
-						s = i;
-						while (true) {
-							if (!(i < path.length)) { break; }
-							if (path.charCodeAt(i) <= 32 || (path.charCodeAt(i) === 33) || (path.charCodeAt(i) === 61) || (path.charCodeAt(i) === 60) || (path.charCodeAt(i) === 62) || (path.charCodeAt(i) === 37) || (path.charCodeAt(i) === end)) {
-								break;
+							r.query.path = qpath;
+							r.query.op = op;
+							r.query.value = value;
+							i = fi - 1 >> 0;
+							if ((i + 1 >> 0) < path.length && (path.charCodeAt((i + 1 >> 0)) === 35)) {
+								r.query.all = true;
 							}
-							i = i + (1) >> 0;
-						}
-						r.query.path = $substring(path, s, i);
-						while (true) {
-							if (!(i < path.length)) { break; }
-							if (path.charCodeAt(i) > 32) {
-								break;
+						} else {
+							end = 0;
+							if (path.charCodeAt(1) === 91) {
+								end = 93;
+							} else {
+								end = 41;
 							}
-							i = i + (1) >> 0;
-						}
-						if (i < path.length) {
-							s = i;
-							if (path.charCodeAt(i) === 33) {
-								if (i < (path.length - 1 >> 0) && ((path.charCodeAt((i + 1 >> 0)) === 61) || (path.charCodeAt((i + 1 >> 0)) === 37))) {
-									i = i + (1) >> 0;
-								}
-							} else if ((path.charCodeAt(i) === 60) || (path.charCodeAt(i) === 62)) {
-								if (i < (path.length - 1 >> 0) && (path.charCodeAt((i + 1 >> 0)) === 61)) {
-									i = i + (1) >> 0;
-								}
-							} else if (path.charCodeAt(i) === 61) {
-								if (i < (path.length - 1 >> 0) && (path.charCodeAt((i + 1 >> 0)) === 61)) {
-									s = s + (1) >> 0;
-									i = i + (1) >> 0;
-								}
-							}
-							i = i + (1) >> 0;
-							r.query.op = $substring(path, s, i);
+							i = i + (2) >> 0;
 							while (true) {
 								if (!(i < path.length)) { break; }
 								if (path.charCodeAt(i) > 32) {
@@ -27470,53 +27447,95 @@ $packages["github.com/tidwall/gjson"] = (function() {
 							s = i;
 							while (true) {
 								if (!(i < path.length)) { break; }
-								if (path.charCodeAt(i) === 34) {
-									i = i + (1) >> 0;
-									s2 = i;
-									while (true) {
-										if (!(i < path.length)) { break; }
-										if (path.charCodeAt(i) > 92) {
-											i = i + (1) >> 0;
-											continue;
-										}
-										if (path.charCodeAt(i) === 34) {
-											if (path.charCodeAt((i - 1 >> 0)) === 92) {
-												n = 0;
-												j = i - 2 >> 0;
-												while (true) {
-													if (!(j > (s2 - 1 >> 0))) { break; }
-													if (!((path.charCodeAt(j) === 92))) {
-														break;
-													}
-													n = n + (1) >> 0;
-													j = j - (1) >> 0;
-												}
-												if ((_r = n % 2, _r === _r ? _r : $throwRuntimeError("integer divide by zero")) === 0) {
-													i = i + (1) >> 0;
-													continue;
-												}
-											}
-											break;
-										}
-										i = i + (1) >> 0;
-									}
-								} else if (path.charCodeAt(i) === end) {
-									if ((i + 1 >> 0) < path.length && (path.charCodeAt((i + 1 >> 0)) === 35)) {
-										r.query.all = true;
-									}
+								if (path.charCodeAt(i) <= 32 || (path.charCodeAt(i) === 33) || (path.charCodeAt(i) === 61) || (path.charCodeAt(i) === 60) || (path.charCodeAt(i) === 62) || (path.charCodeAt(i) === 37) || (path.charCodeAt(i) === end)) {
 									break;
 								}
 								i = i + (1) >> 0;
 							}
-							if (i > path.length) {
-								i = path.length;
-							}
-							v = $substring(path, s, i);
+							r.query.path = $substring(path, s, i);
 							while (true) {
-								if (!(v.length > 0 && v.charCodeAt((v.length - 1 >> 0)) <= 32)) { break; }
-								v = $substring(v, 0, (v.length - 1 >> 0));
+								if (!(i < path.length)) { break; }
+								if (path.charCodeAt(i) > 32) {
+									break;
+								}
+								i = i + (1) >> 0;
 							}
-							r.query.value = v;
+							if (i < path.length) {
+								s = i;
+								if (path.charCodeAt(i) === 33) {
+									if (i < (path.length - 1 >> 0) && ((path.charCodeAt((i + 1 >> 0)) === 61) || (path.charCodeAt((i + 1 >> 0)) === 37))) {
+										i = i + (1) >> 0;
+									}
+								} else if ((path.charCodeAt(i) === 60) || (path.charCodeAt(i) === 62)) {
+									if (i < (path.length - 1 >> 0) && (path.charCodeAt((i + 1 >> 0)) === 61)) {
+										i = i + (1) >> 0;
+									}
+								} else if (path.charCodeAt(i) === 61) {
+									if (i < (path.length - 1 >> 0) && (path.charCodeAt((i + 1 >> 0)) === 61)) {
+										s = s + (1) >> 0;
+										i = i + (1) >> 0;
+									}
+								}
+								i = i + (1) >> 0;
+								r.query.op = $substring(path, s, i);
+								while (true) {
+									if (!(i < path.length)) { break; }
+									if (path.charCodeAt(i) > 32) {
+										break;
+									}
+									i = i + (1) >> 0;
+								}
+								s = i;
+								while (true) {
+									if (!(i < path.length)) { break; }
+									if (path.charCodeAt(i) === 34) {
+										i = i + (1) >> 0;
+										s2 = i;
+										while (true) {
+											if (!(i < path.length)) { break; }
+											if (path.charCodeAt(i) > 92) {
+												i = i + (1) >> 0;
+												continue;
+											}
+											if (path.charCodeAt(i) === 34) {
+												if (path.charCodeAt((i - 1 >> 0)) === 92) {
+													n = 0;
+													j = i - 2 >> 0;
+													while (true) {
+														if (!(j > (s2 - 1 >> 0))) { break; }
+														if (!((path.charCodeAt(j) === 92))) {
+															break;
+														}
+														n = n + (1) >> 0;
+														j = j - (1) >> 0;
+													}
+													if ((_r = n % 2, _r === _r ? _r : $throwRuntimeError("integer divide by zero")) === 0) {
+														i = i + (1) >> 0;
+														continue;
+													}
+												}
+												break;
+											}
+											i = i + (1) >> 0;
+										}
+									} else if (path.charCodeAt(i) === end) {
+										if ((i + 1 >> 0) < path.length && (path.charCodeAt((i + 1 >> 0)) === 35)) {
+											r.query.all = true;
+										}
+										break;
+									}
+									i = i + (1) >> 0;
+								}
+								if (i > path.length) {
+									i = path.length;
+								}
+								v = $substring(path, s, i);
+								while (true) {
+									if (!(v.length > 0 && v.charCodeAt((v.length - 1 >> 0)) <= 32)) { break; }
+									v = $substring(v, 0, (v.length - 1 >> 0));
+								}
+								r.query.value = v;
+							}
 						}
 					}
 				}
@@ -27528,6 +27547,147 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		r.part = path;
 		r.path = "";
 		return r;
+	};
+	parseQuery = function(query) {
+		var _1, _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$12, _tmp$13, _tmp$14, _tmp$15, _tmp$16, _tmp$17, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, depth, i, j, ok, op, opsz, path, query, remain, value;
+		path = "";
+		op = "";
+		value = "";
+		remain = "";
+		i = 0;
+		ok = false;
+		if (query.length < 2 || !((query.charCodeAt(0) === 35)) || (!((query.charCodeAt(1) === 40)) && !((query.charCodeAt(1) === 91)))) {
+			_tmp = "";
+			_tmp$1 = "";
+			_tmp$2 = "";
+			_tmp$3 = "";
+			_tmp$4 = i;
+			_tmp$5 = false;
+			path = _tmp;
+			op = _tmp$1;
+			value = _tmp$2;
+			remain = _tmp$3;
+			i = _tmp$4;
+			ok = _tmp$5;
+			return [path, op, value, remain, i, ok];
+		}
+		i = 2;
+		j = 0;
+		depth = 1;
+		while (true) {
+			if (!(i < query.length)) { break; }
+			if ((depth === 1) && (j === 0)) {
+				_1 = query.charCodeAt(i);
+				if ((_1 === (33)) || (_1 === (61)) || (_1 === (60)) || (_1 === (62)) || (_1 === (37))) {
+					j = i;
+					i = i + (1) >> 0;
+					continue;
+				}
+			}
+			if (query.charCodeAt(i) === 92) {
+				i = i + (1) >> 0;
+			} else if ((query.charCodeAt(i) === 91) || (query.charCodeAt(i) === 40)) {
+				depth = depth + (1) >> 0;
+			} else if ((query.charCodeAt(i) === 93) || (query.charCodeAt(i) === 41)) {
+				depth = depth - (1) >> 0;
+				if (depth === 0) {
+					break;
+				}
+			} else if (query.charCodeAt(i) === 34) {
+				i = i + (1) >> 0;
+				while (true) {
+					if (!(i < query.length)) { break; }
+					if (query.charCodeAt(i) === 92) {
+						i = i + (1) >> 0;
+					} else if (query.charCodeAt(i) === 34) {
+						break;
+					}
+					i = i + (1) >> 0;
+				}
+			}
+			i = i + (1) >> 0;
+		}
+		if (depth > 0) {
+			_tmp$6 = "";
+			_tmp$7 = "";
+			_tmp$8 = "";
+			_tmp$9 = "";
+			_tmp$10 = i;
+			_tmp$11 = false;
+			path = _tmp$6;
+			op = _tmp$7;
+			value = _tmp$8;
+			remain = _tmp$9;
+			i = _tmp$10;
+			ok = _tmp$11;
+			return [path, op, value, remain, i, ok];
+		}
+		if (j > 0) {
+			path = trim($substring(query, 2, j));
+			value = trim($substring(query, j, i));
+			remain = $substring(query, (i + 1 >> 0));
+			opsz = 0;
+			if ((value.length === 1)) {
+				opsz = 1;
+			} else if ((value.charCodeAt(0) === 33) && (value.charCodeAt(1) === 61)) {
+				opsz = 2;
+			} else if ((value.charCodeAt(0) === 33) && (value.charCodeAt(1) === 37)) {
+				opsz = 2;
+			} else if ((value.charCodeAt(0) === 60) && (value.charCodeAt(1) === 61)) {
+				opsz = 2;
+			} else if ((value.charCodeAt(0) === 62) && (value.charCodeAt(1) === 61)) {
+				opsz = 2;
+			} else if ((value.charCodeAt(0) === 61) && (value.charCodeAt(1) === 61)) {
+				value = $substring(value, 1);
+				opsz = 1;
+			} else if ((value.charCodeAt(0) === 60)) {
+				opsz = 1;
+			} else if ((value.charCodeAt(0) === 62)) {
+				opsz = 1;
+			} else if ((value.charCodeAt(0) === 61)) {
+				opsz = 1;
+			} else if ((value.charCodeAt(0) === 37)) {
+				opsz = 1;
+			}
+			op = $substring(value, 0, opsz);
+			value = trim($substring(value, opsz));
+		} else {
+			path = trim($substring(query, 2, i));
+			remain = $substring(query, (i + 1 >> 0));
+		}
+		_tmp$12 = path;
+		_tmp$13 = op;
+		_tmp$14 = value;
+		_tmp$15 = remain;
+		_tmp$16 = i + 1 >> 0;
+		_tmp$17 = true;
+		path = _tmp$12;
+		op = _tmp$13;
+		value = _tmp$14;
+		remain = _tmp$15;
+		i = _tmp$16;
+		ok = _tmp$17;
+		return [path, op, value, remain, i, ok];
+	};
+	trim = function(s) {
+		var s, $s;
+		/* */ $s = 0; s: while (true) { switch ($s) { case 0:
+		/* left: */ case 1:
+		/* */ if (s.length > 0 && s.charCodeAt(0) <= 32) { $s = 2; continue; }
+		/* */ $s = 3; continue;
+		/* if (s.length > 0 && s.charCodeAt(0) <= 32) { */ case 2:
+			s = $substring(s, 1);
+			/* goto left */ $s = 1; continue;
+		/* } */ case 3:
+		/* right: */ case 4:
+		/* */ if (s.length > 0 && s.charCodeAt((s.length - 1 >> 0)) <= 32) { $s = 5; continue; }
+		/* */ $s = 6; continue;
+		/* if (s.length > 0 && s.charCodeAt((s.length - 1 >> 0)) <= 32) { */ case 5:
+			s = $substring(s, 0, (s.length - 1 >> 0));
+			/* goto right */ $s = 4; continue;
+		/* } */ case 6:
+		$s = -1; return s;
+		/* */ } return; }
 	};
 	parseObjectPath = function(path) {
 		var epart, i, path, r;
@@ -27908,6 +28068,12 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		rpv = rp.query.value;
 		if (rpv.length > 2 && (rpv.charCodeAt(0) === 34) && (rpv.charCodeAt((rpv.length - 1 >> 0)) === 34)) {
 			rpv = $substring(rpv, 1, (rpv.length - 1 >> 0));
+		}
+		if (!$clone(value, Result).Exists()) {
+			return false;
+		}
+		if (rp.query.op === "") {
+			return true;
 		}
 		_1 = value.Type;
 		if (_1 === (3)) {
@@ -29910,7 +30076,7 @@ $packages["main"] = (function() {
 		output = $global.document.getElementById($externalize("result-output", $String));
 		_r = strings.TrimSpace("name.last"); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		path.value = $externalize(_r, $String);
-		_r$1 = strings.TrimSpace("\n{\n  \"name\": {\"first\": \"Tom\", \"last\": \"Anderson\"},\n  \"age\":37,\n  \"children\": [\"Sara\",\"Alex\",\"Jack\"],\n  \"fav.movie\": \"Deer Hunter\",\n  \"friends\": [\n    {\"first\": \"Dale\", \"last\": \"Murphy\", \"age\": 44},\n    {\"first\": \"Roger\", \"last\": \"Craig\", \"age\": 68},\n    {\"first\": \"Jane\", \"last\": \"Murphy\", \"age\": 47}\n  ]\n}\n"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+		_r$1 = strings.TrimSpace("\n{\n  \"name\": {\"first\": \"Tom\", \"last\": \"Anderson\"},\n  \"age\":37,\n  \"children\": [\"Sara\",\"Alex\",\"Jack\"],\n  \"fav.movie\": \"Deer Hunter\",\n  \"friends\": [\n    {\"first\": \"Dale\", \"last\": \"Murphy\", \"age\": 44, \"nets\": [\"ig\", \"fb\", \"tw\"]},\n    {\"first\": \"Roger\", \"last\": \"Craig\", \"age\": 68, \"nets\": [\"fb\", \"tw\"]},\n    {\"first\": \"Jane\", \"last\": \"Murphy\", \"age\": 47, \"nets\": [\"ig\", \"tw\"]}\n  ]\n}\n"); /* */ $s = 2; case 2: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
 		input.value = $externalize(_r$1, $String);
 		$r = doGet(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		path.onkeyup = $externalize((function $b() {
