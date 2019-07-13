@@ -140,7 +140,7 @@
                 syncDisplay()
                 setInterval(function(){
                     syncDisplay()
-                },250)
+                }, 500)
             })
         </script>
     </head>
@@ -156,6 +156,7 @@
 
         <textarea class="component" id="json-input" 
             oninput="fit(this);syncDisplay()" 
+            onscroll="syncDisplay()"
             data-gramm_editor="false" 
             spellcheck="false"
             contenteditable="true"
