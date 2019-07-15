@@ -28765,8 +28765,8 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		/* */ } return; } if ($f === undefined) { $f = { $blk: appendJSONString }; } $f._r = _r; $f._tuple = _tuple; $f.d = d; $f.dst = dst; $f.i = i; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Get = function(json$1, path) {
-		var _i, _r, _r$1, _r$10, _r$11, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, _tuple$1, b, c, i, i$1, json$1, kind, last, ok, ok$1, path, raw, res, res$1, res$2, res$3, rjson, sub, subs, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; b = $f.b; c = $f.c; i = $f.i; i$1 = $f.i$1; json$1 = $f.json$1; kind = $f.kind; last = $f.last; ok = $f.ok; ok$1 = $f.ok$1; path = $f.path; raw = $f.raw; res = $f.res; res$1 = $f.res$1; res$2 = $f.res$2; res$3 = $f.res$3; rjson = $f.rjson; sub = $f.sub; subs = $f.subs; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _i, _r, _r$1, _r$10, _r$11, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, _ref, _tuple, _tuple$1, b, c, i, i$1, json$1, kind, last, npath, ok, ok$1, path, raw, res, res$1, res$2, res$3, rjson, sub, subs, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _r = $f._r; _r$1 = $f._r$1; _r$10 = $f._r$10; _r$11 = $f._r$11; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; _ref = $f._ref; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; b = $f.b; c = $f.c; i = $f.i; i$1 = $f.i$1; json$1 = $f.json$1; kind = $f.kind; last = $f.last; npath = $f.npath; ok = $f.ok; ok$1 = $f.ok$1; path = $f.path; raw = $f.raw; res = $f.res; res$1 = $f.res$1; res$2 = $f.res$2; res$3 = $f.res$3; rjson = $f.rjson; sub = $f.sub; subs = $f.subs; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ if (path.length > 1) { $s = 1; continue; }
 		/* */ $s = 2; continue;
 		/* if (path.length > 1) { */ case 1:
@@ -28777,15 +28777,17 @@ $packages["github.com/tidwall/gjson"] = (function() {
 				/* */ $s = 6; continue;
 				/* if (path.charCodeAt(0) === 64) { */ case 5:
 					ok = false;
+					npath = "";
 					rjson = "";
 					_r = execModifier(json$1, path); /* */ $s = 7; case 7: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 					_tuple = _r;
-					path = _tuple[0];
+					npath = _tuple[0];
 					rjson = _tuple[1];
 					ok = _tuple[2];
 					/* */ if (ok) { $s = 8; continue; }
 					/* */ $s = 9; continue;
 					/* if (ok) { */ case 8:
+						path = npath;
 						/* */ if (path.length > 0 && ((path.charCodeAt(0) === 124) || (path.charCodeAt(0) === 46))) { $s = 10; continue; }
 						/* */ $s = 11; continue;
 						/* if (path.length > 0 && ((path.charCodeAt(0) === 124) || (path.charCodeAt(0) === 46))) { */ case 10:
@@ -28933,7 +28935,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		/* } */ case 55:
 		fillIndex(json$1, c);
 		$s = -1; return c.value;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: Get }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.b = b; $f.c = c; $f.i = i; $f.i$1 = i$1; $f.json$1 = json$1; $f.kind = kind; $f.last = last; $f.ok = ok; $f.ok$1 = ok$1; $f.path = path; $f.raw = raw; $f.res = res; $f.res$1 = res$1; $f.res$2 = res$2; $f.res$3 = res$3; $f.rjson = rjson; $f.sub = sub; $f.subs = subs; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Get }; } $f._i = _i; $f._r = _r; $f._r$1 = _r$1; $f._r$10 = _r$10; $f._r$11 = _r$11; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f._ref = _ref; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.b = b; $f.c = c; $f.i = i; $f.i$1 = i$1; $f.json$1 = json$1; $f.kind = kind; $f.last = last; $f.npath = npath; $f.ok = ok; $f.ok$1 = ok$1; $f.path = path; $f.raw = raw; $f.res = res; $f.res$1 = res$1; $f.res$2 = res$2; $f.res$3 = res$3; $f.rjson = rjson; $f.sub = sub; $f.subs = subs; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Get = Get;
 	runeit = function(json$1) {
