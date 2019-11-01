@@ -11,8 +11,11 @@ Build
 -----
 
 Install [Go](http://golang.org/) and [GopherJS](http://github.com/gopherjs/gopherjs)
+*As of this moment, you need go1.12 to run GopherJS*
 
-    go get -u github.com/gopherjs/gopherjs/js
+    go get golang.org/dl/go1.12.13
+    go1.12.13 install
+    go1.12.13 get -u github.com/gopherjs/gopherjs
     gopherjs build play.go
 
 
