@@ -28469,8 +28469,8 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		return false;
 	};
 	parseArray = function(c, i, path) {
-		var _1, _2, _3, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, _tuple$1, _tuple$10, _tuple$11, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, _tuple$8, _tuple$9, alog, c, ch, h, hit, i, j, jsons, k, left, multires, n, ok, ok$1, ok$2, ok$3, partidx, path, pmatch, procQuery, qval, qval$1, qval$2, raw, res, res$1, right, rp, val, vc, vesc, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _2 = $f._2; _3 = $f._3; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$10 = $f._tuple$10; _tuple$11 = $f._tuple$11; _tuple$2 = $f._tuple$2; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; _tuple$5 = $f._tuple$5; _tuple$6 = $f._tuple$6; _tuple$7 = $f._tuple$7; _tuple$8 = $f._tuple$8; _tuple$9 = $f._tuple$9; alog = $f.alog; c = $f.c; ch = $f.ch; h = $f.h; hit = $f.hit; i = $f.i; j = $f.j; jsons = $f.jsons; k = $f.k; left = $f.left; multires = $f.multires; n = $f.n; ok = $f.ok; ok$1 = $f.ok$1; ok$2 = $f.ok$2; ok$3 = $f.ok$3; partidx = $f.partidx; path = $f.path; pmatch = $f.pmatch; procQuery = $f.procQuery; qval = $f.qval; qval$1 = $f.qval$1; qval$2 = $f.qval$2; raw = $f.raw; res = $f.res; res$1 = $f.res$1; right = $f.right; rp = $f.rp; val = $f.val; vc = $f.vc; vesc = $f.vesc; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _1, _2, _3, _4, _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, _tuple$1, _tuple$10, _tuple$11, _tuple$2, _tuple$3, _tuple$4, _tuple$5, _tuple$6, _tuple$7, _tuple$8, _tuple$9, alog, c, ch, h, hit, i, idx, j, jsons, k, left, multires, n, ok, ok$1, ok$2, ok$3, partidx, path, pmatch, procQuery, qval, qval$1, qval$2, raw, res, res$1, right, rp, val, vc, vesc, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _2 = $f._2; _3 = $f._3; _4 = $f._4; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$10 = $f._tuple$10; _tuple$11 = $f._tuple$11; _tuple$2 = $f._tuple$2; _tuple$3 = $f._tuple$3; _tuple$4 = $f._tuple$4; _tuple$5 = $f._tuple$5; _tuple$6 = $f._tuple$6; _tuple$7 = $f._tuple$7; _tuple$8 = $f._tuple$8; _tuple$9 = $f._tuple$9; alog = $f.alog; c = $f.c; ch = $f.ch; h = $f.h; hit = $f.hit; i = $f.i; idx = $f.idx; j = $f.j; jsons = $f.jsons; k = $f.k; left = $f.left; multires = $f.multires; n = $f.n; ok = $f.ok; ok$1 = $f.ok$1; ok$2 = $f.ok$2; ok$3 = $f.ok$3; partidx = $f.partidx; path = $f.path; pmatch = $f.pmatch; procQuery = $f.procQuery; qval = $f.qval; qval$1 = $f.qval$1; qval$2 = $f.qval$2; raw = $f.raw; res = $f.res; res$1 = $f.res$1; right = $f.right; rp = $f.rp; val = $f.val; vc = $f.vc; vesc = $f.vesc; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		c = [c];
 		multires = [multires];
 		rp = [rp];
@@ -28806,26 +28806,40 @@ $packages["github.com/tidwall/gjson"] = (function() {
 								k = _tmp$5;
 								/* while (true) { */ case 56:
 									/* if (!(j < alog.$length)) { break; } */ if(!(j < alog.$length)) { $s = 57; continue; }
-									_tuple$11 = parseAny(c[0].json, ((j < 0 || j >= alog.$length) ? ($throwRuntimeError("index out of range"), undefined) : alog.$array[alog.$offset + j]), true);
-									res = $clone(_tuple$11[1], Result);
-									ok$3 = _tuple$11[2];
-									/* */ if (ok$3) { $s = 58; continue; }
-									/* */ $s = 59; continue;
-									/* if (ok$3) { */ case 58:
-										_r$7 = $clone(res, Result).Get(rp[0].alogkey); /* */ $s = 60; case 60: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-										res$1 = $clone(_r$7, Result);
-										if ($clone(res$1, Result).Exists()) {
-											if (k > 0) {
-												jsons = $append(jsons, 44);
-											}
-											raw = res$1.Raw;
-											if (raw.length === 0) {
-												raw = $clone(res$1, Result).String();
-											}
-											jsons = $appendSlice(jsons, (new sliceType$2($stringToBytes(raw))));
-											k = k + (1) >> 0;
+									idx = ((j < 0 || j >= alog.$length) ? ($throwRuntimeError("index out of range"), undefined) : alog.$array[alog.$offset + j]);
+									/* while (true) { */ case 58:
+										/* if (!(idx < c[0].json.length)) { break; } */ if(!(idx < c[0].json.length)) { $s = 59; continue; }
+										_4 = c[0].json.charCodeAt(idx);
+										if ((_4 === (32)) || (_4 === (9)) || (_4 === (13)) || (_4 === (10))) {
+											idx = idx + (1) >> 0;
+											/* continue; */ $s = 58; continue;
 										}
-									/* } */ case 59:
+										/* break; */ $s = 59; continue;
+									/* } */ $s = 58; continue; case 59:
+									/* */ if (idx < c[0].json.length && !((c[0].json.charCodeAt(idx) === 93))) { $s = 60; continue; }
+									/* */ $s = 61; continue;
+									/* if (idx < c[0].json.length && !((c[0].json.charCodeAt(idx) === 93))) { */ case 60:
+										_tuple$11 = parseAny(c[0].json, idx, true);
+										res = $clone(_tuple$11[1], Result);
+										ok$3 = _tuple$11[2];
+										/* */ if (ok$3) { $s = 62; continue; }
+										/* */ $s = 63; continue;
+										/* if (ok$3) { */ case 62:
+											_r$7 = $clone(res, Result).Get(rp[0].alogkey); /* */ $s = 64; case 64: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+											res$1 = $clone(_r$7, Result);
+											if ($clone(res$1, Result).Exists()) {
+												if (k > 0) {
+													jsons = $append(jsons, 44);
+												}
+												raw = res$1.Raw;
+												if (raw.length === 0) {
+													raw = $clone(res$1, Result).String();
+												}
+												jsons = $appendSlice(jsons, (new sliceType$2($stringToBytes(raw))));
+												k = k + (1) >> 0;
+											}
+										/* } */ case 63:
+									/* } */ case 61:
 									j = j + (1) >> 0;
 								/* } */ $s = 56; continue; case 57:
 								jsons = $append(jsons, 93);
@@ -28855,7 +28869,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 			/* } */ $s = 3; continue; case 4:
 		/* } */ $s = 1; continue; case 2:
 		$s = -1; return [i, false];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: parseArray }; } $f._1 = _1; $f._2 = _2; $f._3 = _3; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$10 = _tuple$10; $f._tuple$11 = _tuple$11; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f._tuple$8 = _tuple$8; $f._tuple$9 = _tuple$9; $f.alog = alog; $f.c = c; $f.ch = ch; $f.h = h; $f.hit = hit; $f.i = i; $f.j = j; $f.jsons = jsons; $f.k = k; $f.left = left; $f.multires = multires; $f.n = n; $f.ok = ok; $f.ok$1 = ok$1; $f.ok$2 = ok$2; $f.ok$3 = ok$3; $f.partidx = partidx; $f.path = path; $f.pmatch = pmatch; $f.procQuery = procQuery; $f.qval = qval; $f.qval$1 = qval$1; $f.qval$2 = qval$2; $f.raw = raw; $f.res = res; $f.res$1 = res$1; $f.right = right; $f.rp = rp; $f.val = val; $f.vc = vc; $f.vesc = vesc; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: parseArray }; } $f._1 = _1; $f._2 = _2; $f._3 = _3; $f._4 = _4; $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$10 = _tuple$10; $f._tuple$11 = _tuple$11; $f._tuple$2 = _tuple$2; $f._tuple$3 = _tuple$3; $f._tuple$4 = _tuple$4; $f._tuple$5 = _tuple$5; $f._tuple$6 = _tuple$6; $f._tuple$7 = _tuple$7; $f._tuple$8 = _tuple$8; $f._tuple$9 = _tuple$9; $f.alog = alog; $f.c = c; $f.ch = ch; $f.h = h; $f.hit = hit; $f.i = i; $f.idx = idx; $f.j = j; $f.jsons = jsons; $f.k = k; $f.left = left; $f.multires = multires; $f.n = n; $f.ok = ok; $f.ok$1 = ok$1; $f.ok$2 = ok$2; $f.ok$3 = ok$3; $f.partidx = partidx; $f.path = path; $f.pmatch = pmatch; $f.procQuery = procQuery; $f.qval = qval; $f.qval$1 = qval$1; $f.qval$2 = qval$2; $f.raw = raw; $f.res = res; $f.res$1 = res$1; $f.right = right; $f.rp = rp; $f.val = val; $f.vc = vc; $f.vesc = vesc; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	splitPossiblePipe = function(path) {
 		var _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, depth, end, i, i$1, left, ok, path, possible, remain, right, squashed, start;
