@@ -3,10 +3,9 @@ package main
 import (
 	"strings"
 
-	"github.com/tidwall/pretty"
-
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/tidwall/gjson"
+	"github.com/tidwall/pretty"
 )
 
 const examplePath = "name.last"

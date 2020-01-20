@@ -26836,7 +26836,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/tidwall/gjson"] = (function() {
-	var $pkg = {}, $init, base64, json, errors, match, pretty, reflect, strconv, strings, sync, atomic, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, funcType, mapType$1, fields, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, floatToUint, floatToInt, execModifier, modPretty, modUgly, modReverse, fillIndex, stringBytes, bytesString;
+	var $pkg = {}, $init, base64, json, errors, match, pretty, reflect, strconv, strings, sync, atomic, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, funcType, mapType$1, fields, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, floatToUint, floatToInt, execModifier, modPretty, modThis, modUgly, modReverse, fillIndex, stringBytes, bytesString;
 	base64 = $packages["encoding/base64"];
 	json = $packages["encoding/json"];
 	errors = $packages["errors"];
@@ -27444,9 +27444,17 @@ $packages["github.com/tidwall/gjson"] = (function() {
 	};
 	$pkg.Parse = Parse;
 	squash = function(json$1) {
-		var _1, _r, depth, i, j, json$1, n, s2;
-		depth = 1;
-		i = 1;
+		var _1, _r, _tmp, _tmp$1, _tmp$2, _tmp$3, depth, i, j, json$1, n, s2;
+		_tmp = 0;
+		_tmp$1 = 0;
+		i = _tmp;
+		depth = _tmp$1;
+		if (!((json$1.charCodeAt(0) === 34))) {
+			_tmp$2 = 1;
+			_tmp$3 = 1;
+			i = _tmp$2;
+			depth = _tmp$3;
+		}
 		while (true) {
 			if (!(i < json$1.length)) { break; }
 			if (json$1.charCodeAt(i) >= 34 && json$1.charCodeAt(i) <= 125) {
@@ -27480,6 +27488,9 @@ $packages["github.com/tidwall/gjson"] = (function() {
 							break;
 						}
 						i = i + (1) >> 0;
+					}
+					if (depth === 0) {
+						return $substring(json$1, 0, (i + 1 >> 0));
 					}
 				} else if ((_1 === (123)) || (_1 === (91)) || (_1 === (40))) {
 					depth = depth + (1) >> 0;
@@ -30196,8 +30207,8 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		return [n, ok];
 	};
 	execModifier = function(json$1, path) {
-		var _1, _entry, _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, _tuple$1, args, fn, hasArgs, i, idx, json$1, name, ok, ok$1, parsedArgs, path, pathOut, res, res$1, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _entry = $f._entry; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; args = $f.args; fn = $f.fn; hasArgs = $f.hasArgs; i = $f.i; idx = $f.idx; json$1 = $f.json$1; name = $f.name; ok = $f.ok; ok$1 = $f.ok$1; parsedArgs = $f.parsedArgs; path = $f.path; pathOut = $f.pathOut; res = $f.res; res$1 = $f.res$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _1, _entry, _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, args, fn, hasArgs, i, idx, json$1, name, ok, ok$1, parsedArgs, path, pathOut, res, res$1, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _entry = $f._entry; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; args = $f.args; fn = $f.fn; hasArgs = $f.hasArgs; i = $f.i; idx = $f.idx; json$1 = $f.json$1; name = $f.name; ok = $f.ok; ok$1 = $f.ok$1; parsedArgs = $f.parsedArgs; path = $f.path; pathOut = $f.pathOut; res = $f.res; res$1 = $f.res$1; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		pathOut = "";
 		res = "";
 		ok = false;
@@ -30237,8 +30248,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 				if ((_1 === (123)) || (_1 === (91)) || (_1 === (34))) {
 					res$1 = $clone(Parse(pathOut), Result);
 					if ($clone(res$1, Result).Exists()) {
-						_tuple$1 = parseSquash(pathOut, 0);
-						args = _tuple$1[1];
+						args = squash(pathOut);
 						pathOut = $substring(pathOut, args.length);
 						parsedArgs = true;
 					}
@@ -30270,7 +30280,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		res = _tmp$4;
 		ok = _tmp$5;
 		$s = -1; return [pathOut, res, ok];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: execModifier }; } $f._1 = _1; $f._entry = _entry; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f.args = args; $f.fn = fn; $f.hasArgs = hasArgs; $f.i = i; $f.idx = idx; $f.json$1 = json$1; $f.name = name; $f.ok = ok; $f.ok$1 = ok$1; $f.parsedArgs = parsedArgs; $f.path = path; $f.pathOut = pathOut; $f.res = res; $f.res$1 = res$1; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: execModifier }; } $f._1 = _1; $f._entry = _entry; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f.args = args; $f.fn = fn; $f.hasArgs = hasArgs; $f.i = i; $f.idx = idx; $f.json$1 = json$1; $f.name = name; $f.ok = ok; $f.ok$1 = ok$1; $f.parsedArgs = parsedArgs; $f.path = path; $f.pathOut = pathOut; $f.res = res; $f.res$1 = res$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	modPretty = function(json$1, arg) {
 		var _r, _r$1, _r$2, _r$3, arg, json$1, opts, $s, $r;
@@ -30302,6 +30312,10 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		_r$3 = bytesString(_r$2); /* */ $s = 7; case 7: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
 		$s = -1; return _r$3;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: modPretty }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f.arg = arg; $f.json$1 = json$1; $f.opts = opts; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	modThis = function(json$1, arg) {
+		var arg, json$1;
+		return json$1;
 	};
 	modUgly = function(json$1, arg) {
 		var arg, json$1;
@@ -30413,7 +30427,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		$r = utf8.$init(); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		fields = {};
 		$pkg.DisableModifiers = false;
-		modifiers = $makeMap($String.keyFor, [{ k: "pretty", v: modPretty }, { k: "ugly", v: modUgly }, { k: "reverse", v: modReverse }]);
+		modifiers = $makeMap($String.keyFor, [{ k: "pretty", v: modPretty }, { k: "ugly", v: modUgly }, { k: "reverse", v: modReverse }, { k: "this", v: modThis }]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
