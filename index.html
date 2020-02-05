@@ -209,8 +209,8 @@ friends.#(nets.#(=="fb"))#.first  >> ["Dale","Roger"]</pre>
 
     <p>
         Use modifiers to modify the output.<br>
-        There are three built in modifiers:  <b>@reverse</b>, <b>@ugly</b>, and <b>@pretty</b>. 
-        Which reverse an array or the members of an object,
+        There are three built in modifiers: <b>@this</b>, <b>@reverse</b>, <b>@ugly</b>, and <b>@pretty</b>. 
+        Which returns the current element, reverses an array or the members of an object,
         removes all whitespace from JSON, or make the JSON more human readable,
         respectively.
     </p>
@@ -220,6 +220,7 @@ children.@reverse                          >> ["Jack","Alex","Sara"]
 children.@reverse.0                        >> "Jack"
 {name.first,"murphys":friends.0}.@pretty   >> <i>beautiful JSON</i>
 {name.first,"murphys":friends.0}.@ugly     >> <i>compact JSON</i></pre>
+[@this].#(age>35).name.last                >> "Anderson"
     
     <p>
         For more information, please see the <a href="https://github.com/tidwall/gjson">GJSON project</a>
