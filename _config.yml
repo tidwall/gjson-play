@@ -1,4 +1,3 @@
 gems:
   - jekyll-redirect-from
-
-theme: jekyll-theme-tactile
+  - jekyll-netlify-redirects
