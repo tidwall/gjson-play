@@ -1,9 +1,2 @@
 gems:
   - jekyll-redirect-from
-  - jekyll-netlify-redirects
-
-netlify:
-  redirects:
-    - /commands/get      https://tile38.com/commands/get
-    - /commands/set      https://tile38.com/commands/set
-    - /documentation     https://melbania.github.io/test-site/docs/
