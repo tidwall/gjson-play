@@ -208,12 +208,19 @@ friends.#(nets.#(=="fb"))#.first  >> ["Dale","Roger"]</pre>
 [name.first,age,children.0]</pre>
 
     <p>
-        Use modifiers to modify the output.<br>
-        There are three built in modifiers: <b>@this</b>, <b>@reverse</b>, <b>@ugly</b>, and <b>@pretty</b>. 
-        Which returns the current element, reverses an array or the members of an object,
-        removes all whitespace from JSON, or make the JSON more human readable,
-        respectively.
+        Use modifiers to modify the json. There are currently the following built-in modifiers:
+        <ul>
+        <li><b>@reverse</b>: Reverse an array or the members of an object.</li>
+        <li><b>@ugly</b>: Remove all whitespace from JSON.</li>
+        <li><b>@pretty</b>: Make the JSON more human readable.</li>
+        <li><b>@this</b>: Returns the current element. It can be used to retrieve the root element.</li>
+        <li><b>@valid</b>: Ensure the json document is valid.</li>
+        <li><b>@flatten</b>: Flattens an array.</li>
+        <li><b>@join</b>: Joins multiple objects into a single object.</li>
+        </ul>
     </p>
+
+
     
     <pre class="example">
 children.@reverse                          >> ["Jack","Alex","Sara"]

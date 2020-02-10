@@ -2343,14 +2343,19 @@ $packages["runtime"] = (function() {
 		$unused(e);
 	};
 	GOROOT = function() {
-		var goroot, process;
+		var process, v, v$1;
 		process = $global.process;
 		if (process === undefined) {
 			return "/";
 		}
-		goroot = process.env.GOROOT;
-		if (!(goroot === undefined)) {
-			return $internalize(goroot, $String);
+		v = process.env.GOPHERJS_GOROOT;
+		if (!(v === undefined)) {
+			return $internalize(v, $String);
+		} else {
+			v$1 = process.env.GOROOT;
+			if (!(v$1 === undefined)) {
+				return $internalize(v$1, $String);
+			}
 		}
 		return "/usr/local/go";
 	};
@@ -3141,155 +3146,307 @@ $packages["io"] = (function() {
 	$pkg.$init = $init;
 	return $pkg;
 })();
-$packages["math/bits"] = (function() {
-	var $pkg = {}, $init, deBruijn32tab, deBruijn64tab, len8tab, LeadingZeros64, TrailingZeros, TrailingZeros32, TrailingZeros64, Len64;
-	LeadingZeros64 = function(x) {
-		var x;
-		return 64 - Len64(x) >> 0;
+$packages["unicode"] = (function() {
+	var $pkg = {}, $init, RangeTable, Range16, Range32, CaseRange, d, foldPair, arrayType, sliceType, sliceType$1, sliceType$3, sliceType$4, _L, _Nd, _White_Space, _CaseRanges, properties, asciiFold, caseOrbit, to, IsDigit, IsLetter, IsSpace, is16, is32, isExcludingLatin, To, ToUpper, ToLower, SimpleFold;
+	RangeTable = $pkg.RangeTable = $newType(0, $kindStruct, "unicode.RangeTable", true, "unicode", true, function(R16_, R32_, LatinOffset_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.R16 = sliceType.nil;
+			this.R32 = sliceType$1.nil;
+			this.LatinOffset = 0;
+			return;
+		}
+		this.R16 = R16_;
+		this.R32 = R32_;
+		this.LatinOffset = LatinOffset_;
+	});
+	Range16 = $pkg.Range16 = $newType(0, $kindStruct, "unicode.Range16", true, "unicode", true, function(Lo_, Hi_, Stride_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Lo = 0;
+			this.Hi = 0;
+			this.Stride = 0;
+			return;
+		}
+		this.Lo = Lo_;
+		this.Hi = Hi_;
+		this.Stride = Stride_;
+	});
+	Range32 = $pkg.Range32 = $newType(0, $kindStruct, "unicode.Range32", true, "unicode", true, function(Lo_, Hi_, Stride_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Lo = 0;
+			this.Hi = 0;
+			this.Stride = 0;
+			return;
+		}
+		this.Lo = Lo_;
+		this.Hi = Hi_;
+		this.Stride = Stride_;
+	});
+	CaseRange = $pkg.CaseRange = $newType(0, $kindStruct, "unicode.CaseRange", true, "unicode", true, function(Lo_, Hi_, Delta_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.Lo = 0;
+			this.Hi = 0;
+			this.Delta = arrayType.zero();
+			return;
+		}
+		this.Lo = Lo_;
+		this.Hi = Hi_;
+		this.Delta = Delta_;
+	});
+	d = $pkg.d = $newType(12, $kindArray, "unicode.d", true, "unicode", false, null);
+	foldPair = $pkg.foldPair = $newType(0, $kindStruct, "unicode.foldPair", true, "unicode", false, function(From_, To_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.From = 0;
+			this.To = 0;
+			return;
+		}
+		this.From = From_;
+		this.To = To_;
+	});
+	arrayType = $arrayType($Int32, 3);
+	sliceType = $sliceType(Range16);
+	sliceType$1 = $sliceType(Range32);
+	sliceType$3 = $sliceType(CaseRange);
+	sliceType$4 = $sliceType(foldPair);
+	to = function(_case, r, caseRange) {
+		var _case, _q, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, caseRange, cr, delta, foundMapping, hi, lo, m, mappedRune, r, x;
+		mappedRune = 0;
+		foundMapping = false;
+		if (_case < 0 || 3 <= _case) {
+			_tmp = 65533;
+			_tmp$1 = false;
+			mappedRune = _tmp;
+			foundMapping = _tmp$1;
+			return [mappedRune, foundMapping];
+		}
+		lo = 0;
+		hi = caseRange.$length;
+		while (true) {
+			if (!(lo < hi)) { break; }
+			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+			cr = ((m < 0 || m >= caseRange.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseRange.$array[caseRange.$offset + m]);
+			if (((cr.Lo >> 0)) <= r && r <= ((cr.Hi >> 0))) {
+				delta = ((x = cr.Delta, ((_case < 0 || _case >= x.length) ? ($throwRuntimeError("index out of range"), undefined) : x[_case])));
+				if (delta > 1114111) {
+					_tmp$2 = ((cr.Lo >> 0)) + ((((((r - ((cr.Lo >> 0)) >> 0)) & ~1) >> 0) | (((_case & 1) >> 0)))) >> 0;
+					_tmp$3 = true;
+					mappedRune = _tmp$2;
+					foundMapping = _tmp$3;
+					return [mappedRune, foundMapping];
+				}
+				_tmp$4 = r + delta >> 0;
+				_tmp$5 = true;
+				mappedRune = _tmp$4;
+				foundMapping = _tmp$5;
+				return [mappedRune, foundMapping];
+			}
+			if (r < ((cr.Lo >> 0))) {
+				hi = m;
+			} else {
+				lo = m + 1 >> 0;
+			}
+		}
+		_tmp$6 = r;
+		_tmp$7 = false;
+		mappedRune = _tmp$6;
+		foundMapping = _tmp$7;
+		return [mappedRune, foundMapping];
 	};
-	$pkg.LeadingZeros64 = LeadingZeros64;
-	TrailingZeros = function(x) {
-		var x;
-		if (true) {
-			return TrailingZeros32(((x >>> 0)));
+	IsDigit = function(r) {
+		var r;
+		if (r <= 255) {
+			return 48 <= r && r <= 57;
 		}
-		return TrailingZeros64((new $Uint64(0, x)));
+		return isExcludingLatin($pkg.Digit, r);
 	};
-	$pkg.TrailingZeros = TrailingZeros;
-	TrailingZeros32 = function(x) {
-		var x, x$1;
-		if (x === 0) {
-			return 32;
+	$pkg.IsDigit = IsDigit;
+	IsLetter = function(r) {
+		var r, x;
+		if (((r >>> 0)) <= 255) {
+			return !(((((x = ((r << 24 >>> 24)), ((x < 0 || x >= properties.length) ? ($throwRuntimeError("index out of range"), undefined) : properties[x])) & 96) >>> 0) === 0));
 		}
-		return (((x$1 = ($imul((((x & (-x >>> 0)) >>> 0)), 125613361) >>> 0) >>> 27 >>> 0, ((x$1 < 0 || x$1 >= deBruijn32tab.length) ? ($throwRuntimeError("index out of range"), undefined) : deBruijn32tab[x$1])) >> 0));
+		return isExcludingLatin($pkg.Letter, r);
 	};
-	$pkg.TrailingZeros32 = TrailingZeros32;
-	TrailingZeros64 = function(x) {
-		var x, x$1, x$2;
-		if ((x.$high === 0 && x.$low === 0)) {
-			return 64;
+	$pkg.IsLetter = IsLetter;
+	IsSpace = function(r) {
+		var _1, r;
+		if (((r >>> 0)) <= 255) {
+			_1 = r;
+			if ((_1 === (9)) || (_1 === (10)) || (_1 === (11)) || (_1 === (12)) || (_1 === (13)) || (_1 === (32)) || (_1 === (133)) || (_1 === (160))) {
+				return true;
+			}
+			return false;
 		}
-		return (((x$1 = $shiftRightUint64($mul64(((x$2 = new $Uint64(-x.$high, -x.$low), new $Uint64(x.$high & x$2.$high, (x.$low & x$2.$low) >>> 0))), new $Uint64(66559345, 3033172745)), 58), (($flatten64(x$1) < 0 || $flatten64(x$1) >= deBruijn64tab.length) ? ($throwRuntimeError("index out of range"), undefined) : deBruijn64tab[$flatten64(x$1)])) >> 0));
+		return isExcludingLatin($pkg.White_Space, r);
 	};
-	$pkg.TrailingZeros64 = TrailingZeros64;
-	Len64 = function(x) {
-		var n, x;
-		n = 0;
-		if ((x.$high > 1 || (x.$high === 1 && x.$low >= 0))) {
-			x = $shiftRightUint64(x, (32));
-			n = 32;
+	$pkg.IsSpace = IsSpace;
+	is16 = function(ranges, r) {
+		var _i, _q, _r, _r$1, _ref, hi, i, lo, m, r, range_, range_$1, ranges;
+		if (ranges.$length <= 18 || r <= 255) {
+			_ref = ranges;
+			_i = 0;
+			while (true) {
+				if (!(_i < _ref.$length)) { break; }
+				i = _i;
+				range_ = ((i < 0 || i >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + i]);
+				if (r < range_.Lo) {
+					return false;
+				}
+				if (r <= range_.Hi) {
+					return (range_.Stride === 1) || ((_r = ((r - range_.Lo << 16 >>> 16)) % range_.Stride, _r === _r ? _r : $throwRuntimeError("integer divide by zero")) === 0);
+				}
+				_i++;
+			}
+			return false;
 		}
-		if ((x.$high > 0 || (x.$high === 0 && x.$low >= 65536))) {
-			x = $shiftRightUint64(x, (16));
-			n = n + (16) >> 0;
-		}
-		if ((x.$high > 0 || (x.$high === 0 && x.$low >= 256))) {
-			x = $shiftRightUint64(x, (8));
-			n = n + (8) >> 0;
-		}
-		n = n + (((($flatten64(x) < 0 || $flatten64(x) >= len8tab.length) ? ($throwRuntimeError("index out of range"), undefined) : len8tab[$flatten64(x)]) >> 0)) >> 0;
-		return n;
-	};
-	$pkg.Len64 = Len64;
-	$init = function() {
-		$pkg.$init = function() {};
-		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		deBruijn32tab = $toNativeArray($kindUint8, [0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9]);
-		deBruijn64tab = $toNativeArray($kindUint8, [0, 1, 56, 2, 57, 49, 28, 3, 61, 58, 42, 50, 38, 29, 17, 4, 62, 47, 59, 36, 45, 43, 51, 22, 53, 39, 33, 30, 24, 18, 12, 5, 63, 55, 48, 27, 60, 41, 37, 16, 46, 35, 44, 21, 52, 32, 23, 11, 54, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9, 13, 8, 7, 6]);
-		len8tab = $toNativeArray($kindUint8, [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]);
-		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.$init = $init;
-	return $pkg;
-})();
-$packages["math"] = (function() {
-	var $pkg = {}, $init, js, bits, arrayType, arrayType$1, arrayType$2, structType, math, zero, posInf, negInf, nan, buf, Inf, IsInf, IsNaN, NaN, init, Float32bits, Float32frombits, Float64bits, Float64frombits, Abs;
-	js = $packages["github.com/gopherjs/gopherjs/js"];
-	bits = $packages["math/bits"];
-	arrayType = $arrayType($Uint32, 2);
-	arrayType$1 = $arrayType($Float32, 2);
-	arrayType$2 = $arrayType($Float64, 1);
-	structType = $structType("math", [{prop: "uint32array", name: "uint32array", embedded: false, exported: false, typ: arrayType, tag: ""}, {prop: "float32array", name: "float32array", embedded: false, exported: false, typ: arrayType$1, tag: ""}, {prop: "float64array", name: "float64array", embedded: false, exported: false, typ: arrayType$2, tag: ""}]);
-	Inf = function(sign) {
-		var sign;
-		if (sign >= 0) {
-			return posInf;
-		} else {
-			return negInf;
-		}
-	};
-	$pkg.Inf = Inf;
-	IsInf = function(f, sign) {
-		var f, sign;
-		if (f === posInf) {
-			return sign >= 0;
-		}
-		if (f === negInf) {
-			return sign <= 0;
+		lo = 0;
+		hi = ranges.$length;
+		while (true) {
+			if (!(lo < hi)) { break; }
+			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+			range_$1 = ((m < 0 || m >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + m]);
+			if (range_$1.Lo <= r && r <= range_$1.Hi) {
+				return (range_$1.Stride === 1) || ((_r$1 = ((r - range_$1.Lo << 16 >>> 16)) % range_$1.Stride, _r$1 === _r$1 ? _r$1 : $throwRuntimeError("integer divide by zero")) === 0);
+			}
+			if (r < range_$1.Lo) {
+				hi = m;
+			} else {
+				lo = m + 1 >> 0;
+			}
 		}
 		return false;
 	};
-	$pkg.IsInf = IsInf;
-	IsNaN = function(f) {
-		var f, is;
-		is = false;
-		is = !((f === f));
-		return is;
+	is32 = function(ranges, r) {
+		var _i, _q, _r, _r$1, _ref, hi, i, lo, m, r, range_, range_$1, ranges;
+		if (ranges.$length <= 18) {
+			_ref = ranges;
+			_i = 0;
+			while (true) {
+				if (!(_i < _ref.$length)) { break; }
+				i = _i;
+				range_ = ((i < 0 || i >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + i]);
+				if (r < range_.Lo) {
+					return false;
+				}
+				if (r <= range_.Hi) {
+					return (range_.Stride === 1) || ((_r = ((r - range_.Lo >>> 0)) % range_.Stride, _r === _r ? _r : $throwRuntimeError("integer divide by zero")) === 0);
+				}
+				_i++;
+			}
+			return false;
+		}
+		lo = 0;
+		hi = ranges.$length;
+		while (true) {
+			if (!(lo < hi)) { break; }
+			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+			range_$1 = $clone(((m < 0 || m >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + m]), Range32);
+			if (range_$1.Lo <= r && r <= range_$1.Hi) {
+				return (range_$1.Stride === 1) || ((_r$1 = ((r - range_$1.Lo >>> 0)) % range_$1.Stride, _r$1 === _r$1 ? _r$1 : $throwRuntimeError("integer divide by zero")) === 0);
+			}
+			if (r < range_$1.Lo) {
+				hi = m;
+			} else {
+				lo = m + 1 >> 0;
+			}
+		}
+		return false;
 	};
-	$pkg.IsNaN = IsNaN;
-	NaN = function() {
-		return nan;
+	isExcludingLatin = function(rangeTab, r) {
+		var off, r, r16, r32, rangeTab, x;
+		r16 = rangeTab.R16;
+		off = rangeTab.LatinOffset;
+		if (r16.$length > off && r <= (((x = r16.$length - 1 >> 0, ((x < 0 || x >= r16.$length) ? ($throwRuntimeError("index out of range"), undefined) : r16.$array[r16.$offset + x])).Hi >> 0))) {
+			return is16($subslice(r16, off), ((r << 16 >>> 16)));
+		}
+		r32 = rangeTab.R32;
+		if (r32.$length > 0 && r >= (((0 >= r32.$length ? ($throwRuntimeError("index out of range"), undefined) : r32.$array[r32.$offset + 0]).Lo >> 0))) {
+			return is32(r32, ((r >>> 0)));
+		}
+		return false;
 	};
-	$pkg.NaN = NaN;
-	init = function() {
-		var ab;
-		ab = new ($global.ArrayBuffer)(8);
-		buf.uint32array = new ($global.Uint32Array)(ab);
-		buf.float32array = new ($global.Float32Array)(ab);
-		buf.float64array = new ($global.Float64Array)(ab);
+	To = function(_case, r) {
+		var _case, _tuple, r;
+		_tuple = to(_case, r, $pkg.CaseRanges);
+		r = _tuple[0];
+		return r;
 	};
-	Float32bits = function(f) {
-		var f;
-		buf.float32array[0] = f;
-		return buf.uint32array[0];
+	$pkg.To = To;
+	ToUpper = function(r) {
+		var r;
+		if (r <= 127) {
+			if (97 <= r && r <= 122) {
+				r = r - (32) >> 0;
+			}
+			return r;
+		}
+		return To(0, r);
 	};
-	$pkg.Float32bits = Float32bits;
-	Float32frombits = function(b) {
-		var b;
-		buf.uint32array[0] = b;
-		return buf.float32array[0];
+	$pkg.ToUpper = ToUpper;
+	ToLower = function(r) {
+		var r;
+		if (r <= 127) {
+			if (65 <= r && r <= 90) {
+				r = r + (32) >> 0;
+			}
+			return r;
+		}
+		return To(1, r);
 	};
-	$pkg.Float32frombits = Float32frombits;
-	Float64bits = function(f) {
-		var f, x, x$1;
-		buf.float64array[0] = f;
-		return (x = $shiftLeft64((new $Uint64(0, buf.uint32array[1])), 32), x$1 = (new $Uint64(0, buf.uint32array[0])), new $Uint64(x.$high + x$1.$high, x.$low + x$1.$low));
+	$pkg.ToLower = ToLower;
+	SimpleFold = function(r) {
+		var _q, hi, l, lo, m, r;
+		if (r < 0 || r > 1114111) {
+			return r;
+		}
+		if (((r >> 0)) < 128) {
+			return ((((r < 0 || r >= asciiFold.length) ? ($throwRuntimeError("index out of range"), undefined) : asciiFold[r]) >> 0));
+		}
+		lo = 0;
+		hi = caseOrbit.$length;
+		while (true) {
+			if (!(lo < hi)) { break; }
+			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
+			if (((((m < 0 || m >= caseOrbit.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseOrbit.$array[caseOrbit.$offset + m]).From >> 0)) < r) {
+				lo = m + 1 >> 0;
+			} else {
+				hi = m;
+			}
+		}
+		if (lo < caseOrbit.$length && (((((lo < 0 || lo >= caseOrbit.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseOrbit.$array[caseOrbit.$offset + lo]).From >> 0)) === r)) {
+			return ((((lo < 0 || lo >= caseOrbit.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseOrbit.$array[caseOrbit.$offset + lo]).To >> 0));
+		}
+		l = ToLower(r);
+		if (!((l === r))) {
+			return l;
+		}
+		return ToUpper(r);
 	};
-	$pkg.Float64bits = Float64bits;
-	Float64frombits = function(b) {
-		var b;
-		buf.uint32array[0] = ((b.$low >>> 0));
-		buf.uint32array[1] = (($shiftRightUint64(b, 32).$low >>> 0));
-		return buf.float64array[0];
-	};
-	$pkg.Float64frombits = Float64frombits;
-	Abs = function(x) {
-		var x, x$1;
-		return Float64frombits((x$1 = Float64bits(x), new $Uint64(x$1.$high & ~2147483648, (x$1.$low & ~0) >>> 0)));
-	};
-	$pkg.Abs = Abs;
+	$pkg.SimpleFold = SimpleFold;
+	RangeTable.init("", [{prop: "R16", name: "R16", embedded: false, exported: true, typ: sliceType, tag: ""}, {prop: "R32", name: "R32", embedded: false, exported: true, typ: sliceType$1, tag: ""}, {prop: "LatinOffset", name: "LatinOffset", embedded: false, exported: true, typ: $Int, tag: ""}]);
+	Range16.init("", [{prop: "Lo", name: "Lo", embedded: false, exported: true, typ: $Uint16, tag: ""}, {prop: "Hi", name: "Hi", embedded: false, exported: true, typ: $Uint16, tag: ""}, {prop: "Stride", name: "Stride", embedded: false, exported: true, typ: $Uint16, tag: ""}]);
+	Range32.init("", [{prop: "Lo", name: "Lo", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Hi", name: "Hi", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Stride", name: "Stride", embedded: false, exported: true, typ: $Uint32, tag: ""}]);
+	CaseRange.init("", [{prop: "Lo", name: "Lo", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Hi", name: "Hi", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Delta", name: "Delta", embedded: false, exported: true, typ: d, tag: ""}]);
+	d.init($Int32, 3);
+	foldPair.init("", [{prop: "From", name: "From", embedded: false, exported: true, typ: $Uint16, tag: ""}, {prop: "To", name: "To", embedded: false, exported: true, typ: $Uint16, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = bits.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		buf = new structType.ptr(arrayType.zero(), arrayType$1.zero(), arrayType$2.zero());
-		math = $global.Math;
-		zero = 0;
-		posInf = 1 / zero;
-		negInf = -1 / zero;
-		nan = 0 / zero;
-		init();
+		_L = new RangeTable.ptr(new sliceType([new Range16.ptr(65, 90, 1), new Range16.ptr(97, 122, 1), new Range16.ptr(170, 181, 11), new Range16.ptr(186, 192, 6), new Range16.ptr(193, 214, 1), new Range16.ptr(216, 246, 1), new Range16.ptr(248, 705, 1), new Range16.ptr(710, 721, 1), new Range16.ptr(736, 740, 1), new Range16.ptr(748, 750, 2), new Range16.ptr(880, 884, 1), new Range16.ptr(886, 887, 1), new Range16.ptr(890, 893, 1), new Range16.ptr(895, 902, 7), new Range16.ptr(904, 906, 1), new Range16.ptr(908, 910, 2), new Range16.ptr(911, 929, 1), new Range16.ptr(931, 1013, 1), new Range16.ptr(1015, 1153, 1), new Range16.ptr(1162, 1327, 1), new Range16.ptr(1329, 1366, 1), new Range16.ptr(1369, 1377, 8), new Range16.ptr(1378, 1415, 1), new Range16.ptr(1488, 1514, 1), new Range16.ptr(1520, 1522, 1), new Range16.ptr(1568, 1610, 1), new Range16.ptr(1646, 1647, 1), new Range16.ptr(1649, 1747, 1), new Range16.ptr(1749, 1765, 16), new Range16.ptr(1766, 1774, 8), new Range16.ptr(1775, 1786, 11), new Range16.ptr(1787, 1788, 1), new Range16.ptr(1791, 1808, 17), new Range16.ptr(1810, 1839, 1), new Range16.ptr(1869, 1957, 1), new Range16.ptr(1969, 1994, 25), new Range16.ptr(1995, 2026, 1), new Range16.ptr(2036, 2037, 1), new Range16.ptr(2042, 2048, 6), new Range16.ptr(2049, 2069, 1), new Range16.ptr(2074, 2084, 10), new Range16.ptr(2088, 2112, 24), new Range16.ptr(2113, 2136, 1), new Range16.ptr(2144, 2154, 1), new Range16.ptr(2208, 2228, 1), new Range16.ptr(2230, 2237, 1), new Range16.ptr(2308, 2361, 1), new Range16.ptr(2365, 2384, 19), new Range16.ptr(2392, 2401, 1), new Range16.ptr(2417, 2432, 1), new Range16.ptr(2437, 2444, 1), new Range16.ptr(2447, 2448, 1), new Range16.ptr(2451, 2472, 1), new Range16.ptr(2474, 2480, 1), new Range16.ptr(2482, 2486, 4), new Range16.ptr(2487, 2489, 1), new Range16.ptr(2493, 2510, 17), new Range16.ptr(2524, 2525, 1), new Range16.ptr(2527, 2529, 1), new Range16.ptr(2544, 2545, 1), new Range16.ptr(2556, 2565, 9), new Range16.ptr(2566, 2570, 1), new Range16.ptr(2575, 2576, 1), new Range16.ptr(2579, 2600, 1), new Range16.ptr(2602, 2608, 1), new Range16.ptr(2610, 2611, 1), new Range16.ptr(2613, 2614, 1), new Range16.ptr(2616, 2617, 1), new Range16.ptr(2649, 2652, 1), new Range16.ptr(2654, 2674, 20), new Range16.ptr(2675, 2676, 1), new Range16.ptr(2693, 2701, 1), new Range16.ptr(2703, 2705, 1), new Range16.ptr(2707, 2728, 1), new Range16.ptr(2730, 2736, 1), new Range16.ptr(2738, 2739, 1), new Range16.ptr(2741, 2745, 1), new Range16.ptr(2749, 2768, 19), new Range16.ptr(2784, 2785, 1), new Range16.ptr(2809, 2821, 12), new Range16.ptr(2822, 2828, 1), new Range16.ptr(2831, 2832, 1), new Range16.ptr(2835, 2856, 1), new Range16.ptr(2858, 2864, 1), new Range16.ptr(2866, 2867, 1), new Range16.ptr(2869, 2873, 1), new Range16.ptr(2877, 2908, 31), new Range16.ptr(2909, 2911, 2), new Range16.ptr(2912, 2913, 1), new Range16.ptr(2929, 2947, 18), new Range16.ptr(2949, 2954, 1), new Range16.ptr(2958, 2960, 1), new Range16.ptr(2962, 2965, 1), new Range16.ptr(2969, 2970, 1), new Range16.ptr(2972, 2974, 2), new Range16.ptr(2975, 2979, 4), new Range16.ptr(2980, 2984, 4), new Range16.ptr(2985, 2986, 1), new Range16.ptr(2990, 3001, 1), new Range16.ptr(3024, 3077, 53), new Range16.ptr(3078, 3084, 1), new Range16.ptr(3086, 3088, 1), new Range16.ptr(3090, 3112, 1), new Range16.ptr(3114, 3129, 1), new Range16.ptr(3133, 3160, 27), new Range16.ptr(3161, 3162, 1), new Range16.ptr(3168, 3169, 1), new Range16.ptr(3200, 3205, 5), new Range16.ptr(3206, 3212, 1), new Range16.ptr(3214, 3216, 1), new Range16.ptr(3218, 3240, 1), new Range16.ptr(3242, 3251, 1), new Range16.ptr(3253, 3257, 1), new Range16.ptr(3261, 3294, 33), new Range16.ptr(3296, 3297, 1), new Range16.ptr(3313, 3314, 1), new Range16.ptr(3333, 3340, 1), new Range16.ptr(3342, 3344, 1), new Range16.ptr(3346, 3386, 1), new Range16.ptr(3389, 3406, 17), new Range16.ptr(3412, 3414, 1), new Range16.ptr(3423, 3425, 1), new Range16.ptr(3450, 3455, 1), new Range16.ptr(3461, 3478, 1), new Range16.ptr(3482, 3505, 1), new Range16.ptr(3507, 3515, 1), new Range16.ptr(3517, 3520, 3), new Range16.ptr(3521, 3526, 1), new Range16.ptr(3585, 3632, 1), new Range16.ptr(3634, 3635, 1), new Range16.ptr(3648, 3654, 1), new Range16.ptr(3713, 3714, 1), new Range16.ptr(3716, 3719, 3), new Range16.ptr(3720, 3722, 2), new Range16.ptr(3725, 3732, 7), new Range16.ptr(3733, 3735, 1), new Range16.ptr(3737, 3743, 1), new Range16.ptr(3745, 3747, 1), new Range16.ptr(3749, 3751, 2), new Range16.ptr(3754, 3755, 1), new Range16.ptr(3757, 3760, 1), new Range16.ptr(3762, 3763, 1), new Range16.ptr(3773, 3776, 3), new Range16.ptr(3777, 3780, 1), new Range16.ptr(3782, 3804, 22), new Range16.ptr(3805, 3807, 1), new Range16.ptr(3840, 3904, 64), new Range16.ptr(3905, 3911, 1), new Range16.ptr(3913, 3948, 1), new Range16.ptr(3976, 3980, 1), new Range16.ptr(4096, 4138, 1), new Range16.ptr(4159, 4176, 17), new Range16.ptr(4177, 4181, 1), new Range16.ptr(4186, 4189, 1), new Range16.ptr(4193, 4197, 4), new Range16.ptr(4198, 4206, 8), new Range16.ptr(4207, 4208, 1), new Range16.ptr(4213, 4225, 1), new Range16.ptr(4238, 4256, 18), new Range16.ptr(4257, 4293, 1), new Range16.ptr(4295, 4301, 6), new Range16.ptr(4304, 4346, 1), new Range16.ptr(4348, 4680, 1), new Range16.ptr(4682, 4685, 1), new Range16.ptr(4688, 4694, 1), new Range16.ptr(4696, 4698, 2), new Range16.ptr(4699, 4701, 1), new Range16.ptr(4704, 4744, 1), new Range16.ptr(4746, 4749, 1), new Range16.ptr(4752, 4784, 1), new Range16.ptr(4786, 4789, 1), new Range16.ptr(4792, 4798, 1), new Range16.ptr(4800, 4802, 2), new Range16.ptr(4803, 4805, 1), new Range16.ptr(4808, 4822, 1), new Range16.ptr(4824, 4880, 1), new Range16.ptr(4882, 4885, 1), new Range16.ptr(4888, 4954, 1), new Range16.ptr(4992, 5007, 1), new Range16.ptr(5024, 5109, 1), new Range16.ptr(5112, 5117, 1), new Range16.ptr(5121, 5740, 1), new Range16.ptr(5743, 5759, 1), new Range16.ptr(5761, 5786, 1), new Range16.ptr(5792, 5866, 1), new Range16.ptr(5873, 5880, 1), new Range16.ptr(5888, 5900, 1), new Range16.ptr(5902, 5905, 1), new Range16.ptr(5920, 5937, 1), new Range16.ptr(5952, 5969, 1), new Range16.ptr(5984, 5996, 1), new Range16.ptr(5998, 6000, 1), new Range16.ptr(6016, 6067, 1), new Range16.ptr(6103, 6108, 5), new Range16.ptr(6176, 6263, 1), new Range16.ptr(6272, 6276, 1), new Range16.ptr(6279, 6312, 1), new Range16.ptr(6314, 6320, 6), new Range16.ptr(6321, 6389, 1), new Range16.ptr(6400, 6430, 1), new Range16.ptr(6480, 6509, 1), new Range16.ptr(6512, 6516, 1), new Range16.ptr(6528, 6571, 1), new Range16.ptr(6576, 6601, 1), new Range16.ptr(6656, 6678, 1), new Range16.ptr(6688, 6740, 1), new Range16.ptr(6823, 6917, 94), new Range16.ptr(6918, 6963, 1), new Range16.ptr(6981, 6987, 1), new Range16.ptr(7043, 7072, 1), new Range16.ptr(7086, 7087, 1), new Range16.ptr(7098, 7141, 1), new Range16.ptr(7168, 7203, 1), new Range16.ptr(7245, 7247, 1), new Range16.ptr(7258, 7293, 1), new Range16.ptr(7296, 7304, 1), new Range16.ptr(7401, 7404, 1), new Range16.ptr(7406, 7409, 1), new Range16.ptr(7413, 7414, 1), new Range16.ptr(7424, 7615, 1), new Range16.ptr(7680, 7957, 1), new Range16.ptr(7960, 7965, 1), new Range16.ptr(7968, 8005, 1), new Range16.ptr(8008, 8013, 1), new Range16.ptr(8016, 8023, 1), new Range16.ptr(8025, 8031, 2), new Range16.ptr(8032, 8061, 1), new Range16.ptr(8064, 8116, 1), new Range16.ptr(8118, 8124, 1), new Range16.ptr(8126, 8130, 4), new Range16.ptr(8131, 8132, 1), new Range16.ptr(8134, 8140, 1), new Range16.ptr(8144, 8147, 1), new Range16.ptr(8150, 8155, 1), new Range16.ptr(8160, 8172, 1), new Range16.ptr(8178, 8180, 1), new Range16.ptr(8182, 8188, 1), new Range16.ptr(8305, 8319, 14), new Range16.ptr(8336, 8348, 1), new Range16.ptr(8450, 8455, 5), new Range16.ptr(8458, 8467, 1), new Range16.ptr(8469, 8473, 4), new Range16.ptr(8474, 8477, 1), new Range16.ptr(8484, 8490, 2), new Range16.ptr(8491, 8493, 1), new Range16.ptr(8495, 8505, 1), new Range16.ptr(8508, 8511, 1), new Range16.ptr(8517, 8521, 1), new Range16.ptr(8526, 8579, 53), new Range16.ptr(8580, 11264, 2684), new Range16.ptr(11265, 11310, 1), new Range16.ptr(11312, 11358, 1), new Range16.ptr(11360, 11492, 1), new Range16.ptr(11499, 11502, 1), new Range16.ptr(11506, 11507, 1), new Range16.ptr(11520, 11557, 1), new Range16.ptr(11559, 11565, 6), new Range16.ptr(11568, 11623, 1), new Range16.ptr(11631, 11648, 17), new Range16.ptr(11649, 11670, 1), new Range16.ptr(11680, 11686, 1), new Range16.ptr(11688, 11694, 1), new Range16.ptr(11696, 11702, 1), new Range16.ptr(11704, 11710, 1), new Range16.ptr(11712, 11718, 1), new Range16.ptr(11720, 11726, 1), new Range16.ptr(11728, 11734, 1), new Range16.ptr(11736, 11742, 1), new Range16.ptr(11823, 12293, 470), new Range16.ptr(12294, 12337, 43), new Range16.ptr(12338, 12341, 1), new Range16.ptr(12347, 12348, 1), new Range16.ptr(12353, 12438, 1), new Range16.ptr(12445, 12447, 1), new Range16.ptr(12449, 12538, 1), new Range16.ptr(12540, 12543, 1), new Range16.ptr(12549, 12590, 1), new Range16.ptr(12593, 12686, 1), new Range16.ptr(12704, 12730, 1), new Range16.ptr(12784, 12799, 1), new Range16.ptr(13312, 19893, 1), new Range16.ptr(19968, 40938, 1), new Range16.ptr(40960, 42124, 1), new Range16.ptr(42192, 42237, 1), new Range16.ptr(42240, 42508, 1), new Range16.ptr(42512, 42527, 1), new Range16.ptr(42538, 42539, 1), new Range16.ptr(42560, 42606, 1), new Range16.ptr(42623, 42653, 1), new Range16.ptr(42656, 42725, 1), new Range16.ptr(42775, 42783, 1), new Range16.ptr(42786, 42888, 1), new Range16.ptr(42891, 42926, 1), new Range16.ptr(42928, 42935, 1), new Range16.ptr(42999, 43009, 1), new Range16.ptr(43011, 43013, 1), new Range16.ptr(43015, 43018, 1), new Range16.ptr(43020, 43042, 1), new Range16.ptr(43072, 43123, 1), new Range16.ptr(43138, 43187, 1), new Range16.ptr(43250, 43255, 1), new Range16.ptr(43259, 43261, 2), new Range16.ptr(43274, 43301, 1), new Range16.ptr(43312, 43334, 1), new Range16.ptr(43360, 43388, 1), new Range16.ptr(43396, 43442, 1), new Range16.ptr(43471, 43488, 17), new Range16.ptr(43489, 43492, 1), new Range16.ptr(43494, 43503, 1), new Range16.ptr(43514, 43518, 1), new Range16.ptr(43520, 43560, 1), new Range16.ptr(43584, 43586, 1), new Range16.ptr(43588, 43595, 1), new Range16.ptr(43616, 43638, 1), new Range16.ptr(43642, 43646, 4), new Range16.ptr(43647, 43695, 1), new Range16.ptr(43697, 43701, 4), new Range16.ptr(43702, 43705, 3), new Range16.ptr(43706, 43709, 1), new Range16.ptr(43712, 43714, 2), new Range16.ptr(43739, 43741, 1), new Range16.ptr(43744, 43754, 1), new Range16.ptr(43762, 43764, 1), new Range16.ptr(43777, 43782, 1), new Range16.ptr(43785, 43790, 1), new Range16.ptr(43793, 43798, 1), new Range16.ptr(43808, 43814, 1), new Range16.ptr(43816, 43822, 1), new Range16.ptr(43824, 43866, 1), new Range16.ptr(43868, 43877, 1), new Range16.ptr(43888, 44002, 1), new Range16.ptr(44032, 55203, 1), new Range16.ptr(55216, 55238, 1), new Range16.ptr(55243, 55291, 1), new Range16.ptr(63744, 64109, 1), new Range16.ptr(64112, 64217, 1), new Range16.ptr(64256, 64262, 1), new Range16.ptr(64275, 64279, 1), new Range16.ptr(64285, 64287, 2), new Range16.ptr(64288, 64296, 1), new Range16.ptr(64298, 64310, 1), new Range16.ptr(64312, 64316, 1), new Range16.ptr(64318, 64320, 2), new Range16.ptr(64321, 64323, 2), new Range16.ptr(64324, 64326, 2), new Range16.ptr(64327, 64433, 1), new Range16.ptr(64467, 64829, 1), new Range16.ptr(64848, 64911, 1), new Range16.ptr(64914, 64967, 1), new Range16.ptr(65008, 65019, 1), new Range16.ptr(65136, 65140, 1), new Range16.ptr(65142, 65276, 1), new Range16.ptr(65313, 65338, 1), new Range16.ptr(65345, 65370, 1), new Range16.ptr(65382, 65470, 1), new Range16.ptr(65474, 65479, 1), new Range16.ptr(65482, 65487, 1), new Range16.ptr(65490, 65495, 1), new Range16.ptr(65498, 65500, 1)]), new sliceType$1([new Range32.ptr(65536, 65547, 1), new Range32.ptr(65549, 65574, 1), new Range32.ptr(65576, 65594, 1), new Range32.ptr(65596, 65597, 1), new Range32.ptr(65599, 65613, 1), new Range32.ptr(65616, 65629, 1), new Range32.ptr(65664, 65786, 1), new Range32.ptr(66176, 66204, 1), new Range32.ptr(66208, 66256, 1), new Range32.ptr(66304, 66335, 1), new Range32.ptr(66349, 66368, 1), new Range32.ptr(66370, 66377, 1), new Range32.ptr(66384, 66421, 1), new Range32.ptr(66432, 66461, 1), new Range32.ptr(66464, 66499, 1), new Range32.ptr(66504, 66511, 1), new Range32.ptr(66560, 66717, 1), new Range32.ptr(66736, 66771, 1), new Range32.ptr(66776, 66811, 1), new Range32.ptr(66816, 66855, 1), new Range32.ptr(66864, 66915, 1), new Range32.ptr(67072, 67382, 1), new Range32.ptr(67392, 67413, 1), new Range32.ptr(67424, 67431, 1), new Range32.ptr(67584, 67589, 1), new Range32.ptr(67592, 67594, 2), new Range32.ptr(67595, 67637, 1), new Range32.ptr(67639, 67640, 1), new Range32.ptr(67644, 67647, 3), new Range32.ptr(67648, 67669, 1), new Range32.ptr(67680, 67702, 1), new Range32.ptr(67712, 67742, 1), new Range32.ptr(67808, 67826, 1), new Range32.ptr(67828, 67829, 1), new Range32.ptr(67840, 67861, 1), new Range32.ptr(67872, 67897, 1), new Range32.ptr(67968, 68023, 1), new Range32.ptr(68030, 68031, 1), new Range32.ptr(68096, 68112, 16), new Range32.ptr(68113, 68115, 1), new Range32.ptr(68117, 68119, 1), new Range32.ptr(68121, 68147, 1), new Range32.ptr(68192, 68220, 1), new Range32.ptr(68224, 68252, 1), new Range32.ptr(68288, 68295, 1), new Range32.ptr(68297, 68324, 1), new Range32.ptr(68352, 68405, 1), new Range32.ptr(68416, 68437, 1), new Range32.ptr(68448, 68466, 1), new Range32.ptr(68480, 68497, 1), new Range32.ptr(68608, 68680, 1), new Range32.ptr(68736, 68786, 1), new Range32.ptr(68800, 68850, 1), new Range32.ptr(69635, 69687, 1), new Range32.ptr(69763, 69807, 1), new Range32.ptr(69840, 69864, 1), new Range32.ptr(69891, 69926, 1), new Range32.ptr(69968, 70002, 1), new Range32.ptr(70006, 70019, 13), new Range32.ptr(70020, 70066, 1), new Range32.ptr(70081, 70084, 1), new Range32.ptr(70106, 70108, 2), new Range32.ptr(70144, 70161, 1), new Range32.ptr(70163, 70187, 1), new Range32.ptr(70272, 70278, 1), new Range32.ptr(70280, 70282, 2), new Range32.ptr(70283, 70285, 1), new Range32.ptr(70287, 70301, 1), new Range32.ptr(70303, 70312, 1), new Range32.ptr(70320, 70366, 1), new Range32.ptr(70405, 70412, 1), new Range32.ptr(70415, 70416, 1), new Range32.ptr(70419, 70440, 1), new Range32.ptr(70442, 70448, 1), new Range32.ptr(70450, 70451, 1), new Range32.ptr(70453, 70457, 1), new Range32.ptr(70461, 70480, 19), new Range32.ptr(70493, 70497, 1), new Range32.ptr(70656, 70708, 1), new Range32.ptr(70727, 70730, 1), new Range32.ptr(70784, 70831, 1), new Range32.ptr(70852, 70853, 1), new Range32.ptr(70855, 71040, 185), new Range32.ptr(71041, 71086, 1), new Range32.ptr(71128, 71131, 1), new Range32.ptr(71168, 71215, 1), new Range32.ptr(71236, 71296, 60), new Range32.ptr(71297, 71338, 1), new Range32.ptr(71424, 71449, 1), new Range32.ptr(71840, 71903, 1), new Range32.ptr(71935, 72192, 257), new Range32.ptr(72203, 72242, 1), new Range32.ptr(72250, 72272, 22), new Range32.ptr(72284, 72323, 1), new Range32.ptr(72326, 72329, 1), new Range32.ptr(72384, 72440, 1), new Range32.ptr(72704, 72712, 1), new Range32.ptr(72714, 72750, 1), new Range32.ptr(72768, 72818, 50), new Range32.ptr(72819, 72847, 1), new Range32.ptr(72960, 72966, 1), new Range32.ptr(72968, 72969, 1), new Range32.ptr(72971, 73008, 1), new Range32.ptr(73030, 73728, 698), new Range32.ptr(73729, 74649, 1), new Range32.ptr(74880, 75075, 1), new Range32.ptr(77824, 78894, 1), new Range32.ptr(82944, 83526, 1), new Range32.ptr(92160, 92728, 1), new Range32.ptr(92736, 92766, 1), new Range32.ptr(92880, 92909, 1), new Range32.ptr(92928, 92975, 1), new Range32.ptr(92992, 92995, 1), new Range32.ptr(93027, 93047, 1), new Range32.ptr(93053, 93071, 1), new Range32.ptr(93952, 94020, 1), new Range32.ptr(94032, 94099, 67), new Range32.ptr(94100, 94111, 1), new Range32.ptr(94176, 94177, 1), new Range32.ptr(94208, 100332, 1), new Range32.ptr(100352, 101106, 1), new Range32.ptr(110592, 110878, 1), new Range32.ptr(110960, 111355, 1), new Range32.ptr(113664, 113770, 1), new Range32.ptr(113776, 113788, 1), new Range32.ptr(113792, 113800, 1), new Range32.ptr(113808, 113817, 1), new Range32.ptr(119808, 119892, 1), new Range32.ptr(119894, 119964, 1), new Range32.ptr(119966, 119967, 1), new Range32.ptr(119970, 119973, 3), new Range32.ptr(119974, 119977, 3), new Range32.ptr(119978, 119980, 1), new Range32.ptr(119982, 119993, 1), new Range32.ptr(119995, 119997, 2), new Range32.ptr(119998, 120003, 1), new Range32.ptr(120005, 120069, 1), new Range32.ptr(120071, 120074, 1), new Range32.ptr(120077, 120084, 1), new Range32.ptr(120086, 120092, 1), new Range32.ptr(120094, 120121, 1), new Range32.ptr(120123, 120126, 1), new Range32.ptr(120128, 120132, 1), new Range32.ptr(120134, 120138, 4), new Range32.ptr(120139, 120144, 1), new Range32.ptr(120146, 120485, 1), new Range32.ptr(120488, 120512, 1), new Range32.ptr(120514, 120538, 1), new Range32.ptr(120540, 120570, 1), new Range32.ptr(120572, 120596, 1), new Range32.ptr(120598, 120628, 1), new Range32.ptr(120630, 120654, 1), new Range32.ptr(120656, 120686, 1), new Range32.ptr(120688, 120712, 1), new Range32.ptr(120714, 120744, 1), new Range32.ptr(120746, 120770, 1), new Range32.ptr(120772, 120779, 1), new Range32.ptr(124928, 125124, 1), new Range32.ptr(125184, 125251, 1), new Range32.ptr(126464, 126467, 1), new Range32.ptr(126469, 126495, 1), new Range32.ptr(126497, 126498, 1), new Range32.ptr(126500, 126503, 3), new Range32.ptr(126505, 126514, 1), new Range32.ptr(126516, 126519, 1), new Range32.ptr(126521, 126523, 2), new Range32.ptr(126530, 126535, 5), new Range32.ptr(126537, 126541, 2), new Range32.ptr(126542, 126543, 1), new Range32.ptr(126545, 126546, 1), new Range32.ptr(126548, 126551, 3), new Range32.ptr(126553, 126561, 2), new Range32.ptr(126562, 126564, 2), new Range32.ptr(126567, 126570, 1), new Range32.ptr(126572, 126578, 1), new Range32.ptr(126580, 126583, 1), new Range32.ptr(126585, 126588, 1), new Range32.ptr(126590, 126592, 2), new Range32.ptr(126593, 126601, 1), new Range32.ptr(126603, 126619, 1), new Range32.ptr(126625, 126627, 1), new Range32.ptr(126629, 126633, 1), new Range32.ptr(126635, 126651, 1), new Range32.ptr(131072, 173782, 1), new Range32.ptr(173824, 177972, 1), new Range32.ptr(177984, 178205, 1), new Range32.ptr(178208, 183969, 1), new Range32.ptr(183984, 191456, 1), new Range32.ptr(194560, 195101, 1)]), 6);
+		_Nd = new RangeTable.ptr(new sliceType([new Range16.ptr(48, 57, 1), new Range16.ptr(1632, 1641, 1), new Range16.ptr(1776, 1785, 1), new Range16.ptr(1984, 1993, 1), new Range16.ptr(2406, 2415, 1), new Range16.ptr(2534, 2543, 1), new Range16.ptr(2662, 2671, 1), new Range16.ptr(2790, 2799, 1), new Range16.ptr(2918, 2927, 1), new Range16.ptr(3046, 3055, 1), new Range16.ptr(3174, 3183, 1), new Range16.ptr(3302, 3311, 1), new Range16.ptr(3430, 3439, 1), new Range16.ptr(3558, 3567, 1), new Range16.ptr(3664, 3673, 1), new Range16.ptr(3792, 3801, 1), new Range16.ptr(3872, 3881, 1), new Range16.ptr(4160, 4169, 1), new Range16.ptr(4240, 4249, 1), new Range16.ptr(6112, 6121, 1), new Range16.ptr(6160, 6169, 1), new Range16.ptr(6470, 6479, 1), new Range16.ptr(6608, 6617, 1), new Range16.ptr(6784, 6793, 1), new Range16.ptr(6800, 6809, 1), new Range16.ptr(6992, 7001, 1), new Range16.ptr(7088, 7097, 1), new Range16.ptr(7232, 7241, 1), new Range16.ptr(7248, 7257, 1), new Range16.ptr(42528, 42537, 1), new Range16.ptr(43216, 43225, 1), new Range16.ptr(43264, 43273, 1), new Range16.ptr(43472, 43481, 1), new Range16.ptr(43504, 43513, 1), new Range16.ptr(43600, 43609, 1), new Range16.ptr(44016, 44025, 1), new Range16.ptr(65296, 65305, 1)]), new sliceType$1([new Range32.ptr(66720, 66729, 1), new Range32.ptr(69734, 69743, 1), new Range32.ptr(69872, 69881, 1), new Range32.ptr(69942, 69951, 1), new Range32.ptr(70096, 70105, 1), new Range32.ptr(70384, 70393, 1), new Range32.ptr(70736, 70745, 1), new Range32.ptr(70864, 70873, 1), new Range32.ptr(71248, 71257, 1), new Range32.ptr(71360, 71369, 1), new Range32.ptr(71472, 71481, 1), new Range32.ptr(71904, 71913, 1), new Range32.ptr(72784, 72793, 1), new Range32.ptr(73040, 73049, 1), new Range32.ptr(92768, 92777, 1), new Range32.ptr(93008, 93017, 1), new Range32.ptr(120782, 120831, 1), new Range32.ptr(125264, 125273, 1)]), 1);
+		$pkg.Digit = _Nd;
+		$pkg.Letter = _L;
+		_White_Space = new RangeTable.ptr(new sliceType([new Range16.ptr(9, 13, 1), new Range16.ptr(32, 32, 1), new Range16.ptr(133, 133, 1), new Range16.ptr(160, 160, 1), new Range16.ptr(5760, 5760, 1), new Range16.ptr(8192, 8202, 1), new Range16.ptr(8232, 8233, 1), new Range16.ptr(8239, 8239, 1), new Range16.ptr(8287, 8287, 1), new Range16.ptr(12288, 12288, 1)]), sliceType$1.nil, 4);
+		$pkg.White_Space = _White_Space;
+		_CaseRanges = new sliceType$3([new CaseRange.ptr(65, 90, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(97, 122, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(181, 181, $toNativeArray($kindInt32, [743, 0, 743])), new CaseRange.ptr(192, 214, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(216, 222, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(224, 246, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(248, 254, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(255, 255, $toNativeArray($kindInt32, [121, 0, 121])), new CaseRange.ptr(256, 303, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(304, 304, $toNativeArray($kindInt32, [0, -199, 0])), new CaseRange.ptr(305, 305, $toNativeArray($kindInt32, [-232, 0, -232])), new CaseRange.ptr(306, 311, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(313, 328, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(330, 375, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(376, 376, $toNativeArray($kindInt32, [0, -121, 0])), new CaseRange.ptr(377, 382, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(383, 383, $toNativeArray($kindInt32, [-300, 0, -300])), new CaseRange.ptr(384, 384, $toNativeArray($kindInt32, [195, 0, 195])), new CaseRange.ptr(385, 385, $toNativeArray($kindInt32, [0, 210, 0])), new CaseRange.ptr(386, 389, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(390, 390, $toNativeArray($kindInt32, [0, 206, 0])), new CaseRange.ptr(391, 392, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(393, 394, $toNativeArray($kindInt32, [0, 205, 0])), new CaseRange.ptr(395, 396, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(398, 398, $toNativeArray($kindInt32, [0, 79, 0])), new CaseRange.ptr(399, 399, $toNativeArray($kindInt32, [0, 202, 0])), new CaseRange.ptr(400, 400, $toNativeArray($kindInt32, [0, 203, 0])), new CaseRange.ptr(401, 402, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(403, 403, $toNativeArray($kindInt32, [0, 205, 0])), new CaseRange.ptr(404, 404, $toNativeArray($kindInt32, [0, 207, 0])), new CaseRange.ptr(405, 405, $toNativeArray($kindInt32, [97, 0, 97])), new CaseRange.ptr(406, 406, $toNativeArray($kindInt32, [0, 211, 0])), new CaseRange.ptr(407, 407, $toNativeArray($kindInt32, [0, 209, 0])), new CaseRange.ptr(408, 409, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(410, 410, $toNativeArray($kindInt32, [163, 0, 163])), new CaseRange.ptr(412, 412, $toNativeArray($kindInt32, [0, 211, 0])), new CaseRange.ptr(413, 413, $toNativeArray($kindInt32, [0, 213, 0])), new CaseRange.ptr(414, 414, $toNativeArray($kindInt32, [130, 0, 130])), new CaseRange.ptr(415, 415, $toNativeArray($kindInt32, [0, 214, 0])), new CaseRange.ptr(416, 421, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(422, 422, $toNativeArray($kindInt32, [0, 218, 0])), new CaseRange.ptr(423, 424, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(425, 425, $toNativeArray($kindInt32, [0, 218, 0])), new CaseRange.ptr(428, 429, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(430, 430, $toNativeArray($kindInt32, [0, 218, 0])), new CaseRange.ptr(431, 432, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(433, 434, $toNativeArray($kindInt32, [0, 217, 0])), new CaseRange.ptr(435, 438, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(439, 439, $toNativeArray($kindInt32, [0, 219, 0])), new CaseRange.ptr(440, 441, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(444, 445, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(447, 447, $toNativeArray($kindInt32, [56, 0, 56])), new CaseRange.ptr(452, 452, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(453, 453, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(454, 454, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(455, 455, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(456, 456, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(457, 457, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(458, 458, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(459, 459, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(460, 460, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(461, 476, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(477, 477, $toNativeArray($kindInt32, [-79, 0, -79])), new CaseRange.ptr(478, 495, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(497, 497, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(498, 498, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(499, 499, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(500, 501, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(502, 502, $toNativeArray($kindInt32, [0, -97, 0])), new CaseRange.ptr(503, 503, $toNativeArray($kindInt32, [0, -56, 0])), new CaseRange.ptr(504, 543, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(544, 544, $toNativeArray($kindInt32, [0, -130, 0])), new CaseRange.ptr(546, 563, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(570, 570, $toNativeArray($kindInt32, [0, 10795, 0])), new CaseRange.ptr(571, 572, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(573, 573, $toNativeArray($kindInt32, [0, -163, 0])), new CaseRange.ptr(574, 574, $toNativeArray($kindInt32, [0, 10792, 0])), new CaseRange.ptr(575, 576, $toNativeArray($kindInt32, [10815, 0, 10815])), new CaseRange.ptr(577, 578, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(579, 579, $toNativeArray($kindInt32, [0, -195, 0])), new CaseRange.ptr(580, 580, $toNativeArray($kindInt32, [0, 69, 0])), new CaseRange.ptr(581, 581, $toNativeArray($kindInt32, [0, 71, 0])), new CaseRange.ptr(582, 591, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(592, 592, $toNativeArray($kindInt32, [10783, 0, 10783])), new CaseRange.ptr(593, 593, $toNativeArray($kindInt32, [10780, 0, 10780])), new CaseRange.ptr(594, 594, $toNativeArray($kindInt32, [10782, 0, 10782])), new CaseRange.ptr(595, 595, $toNativeArray($kindInt32, [-210, 0, -210])), new CaseRange.ptr(596, 596, $toNativeArray($kindInt32, [-206, 0, -206])), new CaseRange.ptr(598, 599, $toNativeArray($kindInt32, [-205, 0, -205])), new CaseRange.ptr(601, 601, $toNativeArray($kindInt32, [-202, 0, -202])), new CaseRange.ptr(603, 603, $toNativeArray($kindInt32, [-203, 0, -203])), new CaseRange.ptr(604, 604, $toNativeArray($kindInt32, [42319, 0, 42319])), new CaseRange.ptr(608, 608, $toNativeArray($kindInt32, [-205, 0, -205])), new CaseRange.ptr(609, 609, $toNativeArray($kindInt32, [42315, 0, 42315])), new CaseRange.ptr(611, 611, $toNativeArray($kindInt32, [-207, 0, -207])), new CaseRange.ptr(613, 613, $toNativeArray($kindInt32, [42280, 0, 42280])), new CaseRange.ptr(614, 614, $toNativeArray($kindInt32, [42308, 0, 42308])), new CaseRange.ptr(616, 616, $toNativeArray($kindInt32, [-209, 0, -209])), new CaseRange.ptr(617, 617, $toNativeArray($kindInt32, [-211, 0, -211])), new CaseRange.ptr(618, 618, $toNativeArray($kindInt32, [42308, 0, 42308])), new CaseRange.ptr(619, 619, $toNativeArray($kindInt32, [10743, 0, 10743])), new CaseRange.ptr(620, 620, $toNativeArray($kindInt32, [42305, 0, 42305])), new CaseRange.ptr(623, 623, $toNativeArray($kindInt32, [-211, 0, -211])), new CaseRange.ptr(625, 625, $toNativeArray($kindInt32, [10749, 0, 10749])), new CaseRange.ptr(626, 626, $toNativeArray($kindInt32, [-213, 0, -213])), new CaseRange.ptr(629, 629, $toNativeArray($kindInt32, [-214, 0, -214])), new CaseRange.ptr(637, 637, $toNativeArray($kindInt32, [10727, 0, 10727])), new CaseRange.ptr(640, 640, $toNativeArray($kindInt32, [-218, 0, -218])), new CaseRange.ptr(643, 643, $toNativeArray($kindInt32, [-218, 0, -218])), new CaseRange.ptr(647, 647, $toNativeArray($kindInt32, [42282, 0, 42282])), new CaseRange.ptr(648, 648, $toNativeArray($kindInt32, [-218, 0, -218])), new CaseRange.ptr(649, 649, $toNativeArray($kindInt32, [-69, 0, -69])), new CaseRange.ptr(650, 651, $toNativeArray($kindInt32, [-217, 0, -217])), new CaseRange.ptr(652, 652, $toNativeArray($kindInt32, [-71, 0, -71])), new CaseRange.ptr(658, 658, $toNativeArray($kindInt32, [-219, 0, -219])), new CaseRange.ptr(669, 669, $toNativeArray($kindInt32, [42261, 0, 42261])), new CaseRange.ptr(670, 670, $toNativeArray($kindInt32, [42258, 0, 42258])), new CaseRange.ptr(837, 837, $toNativeArray($kindInt32, [84, 0, 84])), new CaseRange.ptr(880, 883, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(886, 887, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(891, 893, $toNativeArray($kindInt32, [130, 0, 130])), new CaseRange.ptr(895, 895, $toNativeArray($kindInt32, [0, 116, 0])), new CaseRange.ptr(902, 902, $toNativeArray($kindInt32, [0, 38, 0])), new CaseRange.ptr(904, 906, $toNativeArray($kindInt32, [0, 37, 0])), new CaseRange.ptr(908, 908, $toNativeArray($kindInt32, [0, 64, 0])), new CaseRange.ptr(910, 911, $toNativeArray($kindInt32, [0, 63, 0])), new CaseRange.ptr(913, 929, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(931, 939, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(940, 940, $toNativeArray($kindInt32, [-38, 0, -38])), new CaseRange.ptr(941, 943, $toNativeArray($kindInt32, [-37, 0, -37])), new CaseRange.ptr(945, 961, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(962, 962, $toNativeArray($kindInt32, [-31, 0, -31])), new CaseRange.ptr(963, 971, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(972, 972, $toNativeArray($kindInt32, [-64, 0, -64])), new CaseRange.ptr(973, 974, $toNativeArray($kindInt32, [-63, 0, -63])), new CaseRange.ptr(975, 975, $toNativeArray($kindInt32, [0, 8, 0])), new CaseRange.ptr(976, 976, $toNativeArray($kindInt32, [-62, 0, -62])), new CaseRange.ptr(977, 977, $toNativeArray($kindInt32, [-57, 0, -57])), new CaseRange.ptr(981, 981, $toNativeArray($kindInt32, [-47, 0, -47])), new CaseRange.ptr(982, 982, $toNativeArray($kindInt32, [-54, 0, -54])), new CaseRange.ptr(983, 983, $toNativeArray($kindInt32, [-8, 0, -8])), new CaseRange.ptr(984, 1007, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1008, 1008, $toNativeArray($kindInt32, [-86, 0, -86])), new CaseRange.ptr(1009, 1009, $toNativeArray($kindInt32, [-80, 0, -80])), new CaseRange.ptr(1010, 1010, $toNativeArray($kindInt32, [7, 0, 7])), new CaseRange.ptr(1011, 1011, $toNativeArray($kindInt32, [-116, 0, -116])), new CaseRange.ptr(1012, 1012, $toNativeArray($kindInt32, [0, -60, 0])), new CaseRange.ptr(1013, 1013, $toNativeArray($kindInt32, [-96, 0, -96])), new CaseRange.ptr(1015, 1016, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1017, 1017, $toNativeArray($kindInt32, [0, -7, 0])), new CaseRange.ptr(1018, 1019, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1021, 1023, $toNativeArray($kindInt32, [0, -130, 0])), new CaseRange.ptr(1024, 1039, $toNativeArray($kindInt32, [0, 80, 0])), new CaseRange.ptr(1040, 1071, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(1072, 1103, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(1104, 1119, $toNativeArray($kindInt32, [-80, 0, -80])), new CaseRange.ptr(1120, 1153, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1162, 1215, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1216, 1216, $toNativeArray($kindInt32, [0, 15, 0])), new CaseRange.ptr(1217, 1230, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1231, 1231, $toNativeArray($kindInt32, [-15, 0, -15])), new CaseRange.ptr(1232, 1327, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1329, 1366, $toNativeArray($kindInt32, [0, 48, 0])), new CaseRange.ptr(1377, 1414, $toNativeArray($kindInt32, [-48, 0, -48])), new CaseRange.ptr(4256, 4293, $toNativeArray($kindInt32, [0, 7264, 0])), new CaseRange.ptr(4295, 4295, $toNativeArray($kindInt32, [0, 7264, 0])), new CaseRange.ptr(4301, 4301, $toNativeArray($kindInt32, [0, 7264, 0])), new CaseRange.ptr(5024, 5103, $toNativeArray($kindInt32, [0, 38864, 0])), new CaseRange.ptr(5104, 5109, $toNativeArray($kindInt32, [0, 8, 0])), new CaseRange.ptr(5112, 5117, $toNativeArray($kindInt32, [-8, 0, -8])), new CaseRange.ptr(7296, 7296, $toNativeArray($kindInt32, [-6254, 0, -6254])), new CaseRange.ptr(7297, 7297, $toNativeArray($kindInt32, [-6253, 0, -6253])), new CaseRange.ptr(7298, 7298, $toNativeArray($kindInt32, [-6244, 0, -6244])), new CaseRange.ptr(7299, 7300, $toNativeArray($kindInt32, [-6242, 0, -6242])), new CaseRange.ptr(7301, 7301, $toNativeArray($kindInt32, [-6243, 0, -6243])), new CaseRange.ptr(7302, 7302, $toNativeArray($kindInt32, [-6236, 0, -6236])), new CaseRange.ptr(7303, 7303, $toNativeArray($kindInt32, [-6181, 0, -6181])), new CaseRange.ptr(7304, 7304, $toNativeArray($kindInt32, [35266, 0, 35266])), new CaseRange.ptr(7545, 7545, $toNativeArray($kindInt32, [35332, 0, 35332])), new CaseRange.ptr(7549, 7549, $toNativeArray($kindInt32, [3814, 0, 3814])), new CaseRange.ptr(7680, 7829, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(7835, 7835, $toNativeArray($kindInt32, [-59, 0, -59])), new CaseRange.ptr(7838, 7838, $toNativeArray($kindInt32, [0, -7615, 0])), new CaseRange.ptr(7840, 7935, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(7936, 7943, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7944, 7951, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(7952, 7957, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7960, 7965, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(7968, 7975, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7976, 7983, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(7984, 7991, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7992, 7999, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8000, 8005, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8008, 8013, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8017, 8017, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8019, 8019, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8021, 8021, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8023, 8023, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8025, 8025, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8027, 8027, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8029, 8029, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8031, 8031, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8032, 8039, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8040, 8047, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8048, 8049, $toNativeArray($kindInt32, [74, 0, 74])), new CaseRange.ptr(8050, 8053, $toNativeArray($kindInt32, [86, 0, 86])), new CaseRange.ptr(8054, 8055, $toNativeArray($kindInt32, [100, 0, 100])), new CaseRange.ptr(8056, 8057, $toNativeArray($kindInt32, [128, 0, 128])), new CaseRange.ptr(8058, 8059, $toNativeArray($kindInt32, [112, 0, 112])), new CaseRange.ptr(8060, 8061, $toNativeArray($kindInt32, [126, 0, 126])), new CaseRange.ptr(8064, 8071, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8072, 8079, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8080, 8087, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8088, 8095, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8096, 8103, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8104, 8111, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8112, 8113, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8115, 8115, $toNativeArray($kindInt32, [9, 0, 9])), new CaseRange.ptr(8120, 8121, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8122, 8123, $toNativeArray($kindInt32, [0, -74, 0])), new CaseRange.ptr(8124, 8124, $toNativeArray($kindInt32, [0, -9, 0])), new CaseRange.ptr(8126, 8126, $toNativeArray($kindInt32, [-7205, 0, -7205])), new CaseRange.ptr(8131, 8131, $toNativeArray($kindInt32, [9, 0, 9])), new CaseRange.ptr(8136, 8139, $toNativeArray($kindInt32, [0, -86, 0])), new CaseRange.ptr(8140, 8140, $toNativeArray($kindInt32, [0, -9, 0])), new CaseRange.ptr(8144, 8145, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8152, 8153, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8154, 8155, $toNativeArray($kindInt32, [0, -100, 0])), new CaseRange.ptr(8160, 8161, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8165, 8165, $toNativeArray($kindInt32, [7, 0, 7])), new CaseRange.ptr(8168, 8169, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8170, 8171, $toNativeArray($kindInt32, [0, -112, 0])), new CaseRange.ptr(8172, 8172, $toNativeArray($kindInt32, [0, -7, 0])), new CaseRange.ptr(8179, 8179, $toNativeArray($kindInt32, [9, 0, 9])), new CaseRange.ptr(8184, 8185, $toNativeArray($kindInt32, [0, -128, 0])), new CaseRange.ptr(8186, 8187, $toNativeArray($kindInt32, [0, -126, 0])), new CaseRange.ptr(8188, 8188, $toNativeArray($kindInt32, [0, -9, 0])), new CaseRange.ptr(8486, 8486, $toNativeArray($kindInt32, [0, -7517, 0])), new CaseRange.ptr(8490, 8490, $toNativeArray($kindInt32, [0, -8383, 0])), new CaseRange.ptr(8491, 8491, $toNativeArray($kindInt32, [0, -8262, 0])), new CaseRange.ptr(8498, 8498, $toNativeArray($kindInt32, [0, 28, 0])), new CaseRange.ptr(8526, 8526, $toNativeArray($kindInt32, [-28, 0, -28])), new CaseRange.ptr(8544, 8559, $toNativeArray($kindInt32, [0, 16, 0])), new CaseRange.ptr(8560, 8575, $toNativeArray($kindInt32, [-16, 0, -16])), new CaseRange.ptr(8579, 8580, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(9398, 9423, $toNativeArray($kindInt32, [0, 26, 0])), new CaseRange.ptr(9424, 9449, $toNativeArray($kindInt32, [-26, 0, -26])), new CaseRange.ptr(11264, 11310, $toNativeArray($kindInt32, [0, 48, 0])), new CaseRange.ptr(11312, 11358, $toNativeArray($kindInt32, [-48, 0, -48])), new CaseRange.ptr(11360, 11361, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11362, 11362, $toNativeArray($kindInt32, [0, -10743, 0])), new CaseRange.ptr(11363, 11363, $toNativeArray($kindInt32, [0, -3814, 0])), new CaseRange.ptr(11364, 11364, $toNativeArray($kindInt32, [0, -10727, 0])), new CaseRange.ptr(11365, 11365, $toNativeArray($kindInt32, [-10795, 0, -10795])), new CaseRange.ptr(11366, 11366, $toNativeArray($kindInt32, [-10792, 0, -10792])), new CaseRange.ptr(11367, 11372, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11373, 11373, $toNativeArray($kindInt32, [0, -10780, 0])), new CaseRange.ptr(11374, 11374, $toNativeArray($kindInt32, [0, -10749, 0])), new CaseRange.ptr(11375, 11375, $toNativeArray($kindInt32, [0, -10783, 0])), new CaseRange.ptr(11376, 11376, $toNativeArray($kindInt32, [0, -10782, 0])), new CaseRange.ptr(11378, 11379, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11381, 11382, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11390, 11391, $toNativeArray($kindInt32, [0, -10815, 0])), new CaseRange.ptr(11392, 11491, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11499, 11502, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11506, 11507, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11520, 11557, $toNativeArray($kindInt32, [-7264, 0, -7264])), new CaseRange.ptr(11559, 11559, $toNativeArray($kindInt32, [-7264, 0, -7264])), new CaseRange.ptr(11565, 11565, $toNativeArray($kindInt32, [-7264, 0, -7264])), new CaseRange.ptr(42560, 42605, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42624, 42651, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42786, 42799, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42802, 42863, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42873, 42876, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42877, 42877, $toNativeArray($kindInt32, [0, -35332, 0])), new CaseRange.ptr(42878, 42887, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42891, 42892, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42893, 42893, $toNativeArray($kindInt32, [0, -42280, 0])), new CaseRange.ptr(42896, 42899, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42902, 42921, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42922, 42922, $toNativeArray($kindInt32, [0, -42308, 0])), new CaseRange.ptr(42923, 42923, $toNativeArray($kindInt32, [0, -42319, 0])), new CaseRange.ptr(42924, 42924, $toNativeArray($kindInt32, [0, -42315, 0])), new CaseRange.ptr(42925, 42925, $toNativeArray($kindInt32, [0, -42305, 0])), new CaseRange.ptr(42926, 42926, $toNativeArray($kindInt32, [0, -42308, 0])), new CaseRange.ptr(42928, 42928, $toNativeArray($kindInt32, [0, -42258, 0])), new CaseRange.ptr(42929, 42929, $toNativeArray($kindInt32, [0, -42282, 0])), new CaseRange.ptr(42930, 42930, $toNativeArray($kindInt32, [0, -42261, 0])), new CaseRange.ptr(42931, 42931, $toNativeArray($kindInt32, [0, 928, 0])), new CaseRange.ptr(42932, 42935, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(43859, 43859, $toNativeArray($kindInt32, [-928, 0, -928])), new CaseRange.ptr(43888, 43967, $toNativeArray($kindInt32, [-38864, 0, -38864])), new CaseRange.ptr(65313, 65338, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(65345, 65370, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(66560, 66599, $toNativeArray($kindInt32, [0, 40, 0])), new CaseRange.ptr(66600, 66639, $toNativeArray($kindInt32, [-40, 0, -40])), new CaseRange.ptr(66736, 66771, $toNativeArray($kindInt32, [0, 40, 0])), new CaseRange.ptr(66776, 66811, $toNativeArray($kindInt32, [-40, 0, -40])), new CaseRange.ptr(68736, 68786, $toNativeArray($kindInt32, [0, 64, 0])), new CaseRange.ptr(68800, 68850, $toNativeArray($kindInt32, [-64, 0, -64])), new CaseRange.ptr(71840, 71871, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(71872, 71903, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(125184, 125217, $toNativeArray($kindInt32, [0, 34, 0])), new CaseRange.ptr(125218, 125251, $toNativeArray($kindInt32, [-34, 0, -34]))]);
+		$pkg.CaseRanges = _CaseRanges;
+		properties = $toNativeArray($kindUint8, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 144, 130, 130, 130, 136, 130, 130, 130, 130, 130, 130, 136, 130, 130, 130, 130, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 130, 130, 136, 136, 136, 130, 130, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 130, 130, 130, 136, 130, 136, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 130, 136, 130, 136, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 16, 130, 136, 136, 136, 136, 136, 130, 136, 136, 224, 130, 136, 0, 136, 136, 136, 136, 132, 132, 136, 192, 130, 130, 136, 132, 224, 130, 132, 132, 132, 130, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 136, 160, 160, 160, 160, 160, 160, 160, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 136, 192, 192, 192, 192, 192, 192, 192, 192]);
+		asciiFold = $toNativeArray($kindUint16, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 91, 92, 93, 94, 95, 96, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 8490, 76, 77, 78, 79, 80, 81, 82, 383, 84, 85, 86, 87, 88, 89, 90, 123, 124, 125, 126, 127]);
+		caseOrbit = new sliceType$4([new foldPair.ptr(75, 107), new foldPair.ptr(83, 115), new foldPair.ptr(107, 8490), new foldPair.ptr(115, 383), new foldPair.ptr(181, 924), new foldPair.ptr(197, 229), new foldPair.ptr(223, 7838), new foldPair.ptr(229, 8491), new foldPair.ptr(304, 304), new foldPair.ptr(305, 305), new foldPair.ptr(383, 83), new foldPair.ptr(452, 453), new foldPair.ptr(453, 454), new foldPair.ptr(454, 452), new foldPair.ptr(455, 456), new foldPair.ptr(456, 457), new foldPair.ptr(457, 455), new foldPair.ptr(458, 459), new foldPair.ptr(459, 460), new foldPair.ptr(460, 458), new foldPair.ptr(497, 498), new foldPair.ptr(498, 499), new foldPair.ptr(499, 497), new foldPair.ptr(837, 921), new foldPair.ptr(914, 946), new foldPair.ptr(917, 949), new foldPair.ptr(920, 952), new foldPair.ptr(921, 953), new foldPair.ptr(922, 954), new foldPair.ptr(924, 956), new foldPair.ptr(928, 960), new foldPair.ptr(929, 961), new foldPair.ptr(931, 962), new foldPair.ptr(934, 966), new foldPair.ptr(937, 969), new foldPair.ptr(946, 976), new foldPair.ptr(949, 1013), new foldPair.ptr(952, 977), new foldPair.ptr(953, 8126), new foldPair.ptr(954, 1008), new foldPair.ptr(956, 181), new foldPair.ptr(960, 982), new foldPair.ptr(961, 1009), new foldPair.ptr(962, 963), new foldPair.ptr(963, 931), new foldPair.ptr(966, 981), new foldPair.ptr(969, 8486), new foldPair.ptr(976, 914), new foldPair.ptr(977, 1012), new foldPair.ptr(981, 934), new foldPair.ptr(982, 928), new foldPair.ptr(1008, 922), new foldPair.ptr(1009, 929), new foldPair.ptr(1012, 920), new foldPair.ptr(1013, 917), new foldPair.ptr(1042, 1074), new foldPair.ptr(1044, 1076), new foldPair.ptr(1054, 1086), new foldPair.ptr(1057, 1089), new foldPair.ptr(1058, 1090), new foldPair.ptr(1066, 1098), new foldPair.ptr(1074, 7296), new foldPair.ptr(1076, 7297), new foldPair.ptr(1086, 7298), new foldPair.ptr(1089, 7299), new foldPair.ptr(1090, 7300), new foldPair.ptr(1098, 7302), new foldPair.ptr(1122, 1123), new foldPair.ptr(1123, 7303), new foldPair.ptr(7296, 1042), new foldPair.ptr(7297, 1044), new foldPair.ptr(7298, 1054), new foldPair.ptr(7299, 1057), new foldPair.ptr(7300, 7301), new foldPair.ptr(7301, 1058), new foldPair.ptr(7302, 1066), new foldPair.ptr(7303, 1122), new foldPair.ptr(7304, 42570), new foldPair.ptr(7776, 7777), new foldPair.ptr(7777, 7835), new foldPair.ptr(7835, 7776), new foldPair.ptr(7838, 223), new foldPair.ptr(8126, 837), new foldPair.ptr(8486, 937), new foldPair.ptr(8490, 75), new foldPair.ptr(8491, 197), new foldPair.ptr(42570, 42571), new foldPair.ptr(42571, 7304)]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -3720,6 +3877,758 @@ $packages["unicode/utf8"] = (function() {
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		first = $toNativeArray($kindUint8, [240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 240, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 19, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 35, 3, 3, 52, 4, 4, 4, 68, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241, 241]);
 		acceptRanges = $toNativeArray($kindStruct, [new acceptRange.ptr(128, 191), new acceptRange.ptr(160, 191), new acceptRange.ptr(128, 159), new acceptRange.ptr(144, 191), new acceptRange.ptr(128, 143)]);
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
+$packages["bytes"] = (function() {
+	var $pkg = {}, $init, errors, bytealg, io, unicode, utf8, Buffer, readOp, ptrType, sliceType, errNegativeRead, IndexByte, makeSlice, EqualFold;
+	errors = $packages["errors"];
+	bytealg = $packages["internal/bytealg"];
+	io = $packages["io"];
+	unicode = $packages["unicode"];
+	utf8 = $packages["unicode/utf8"];
+	Buffer = $pkg.Buffer = $newType(0, $kindStruct, "bytes.Buffer", true, "bytes", true, function(buf_, off_, lastRead_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.buf = sliceType.nil;
+			this.off = 0;
+			this.lastRead = 0;
+			return;
+		}
+		this.buf = buf_;
+		this.off = off_;
+		this.lastRead = lastRead_;
+	});
+	readOp = $pkg.readOp = $newType(1, $kindInt8, "bytes.readOp", true, "bytes", false, null);
+	ptrType = $ptrType(Buffer);
+	sliceType = $sliceType($Uint8);
+	IndexByte = function(s, c) {
+		var _i, _ref, b, c, i, s;
+		_ref = s;
+		_i = 0;
+		while (true) {
+			if (!(_i < _ref.$length)) { break; }
+			i = _i;
+			b = ((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]);
+			if (b === c) {
+				return i;
+			}
+			_i++;
+		}
+		return -1;
+	};
+	$pkg.IndexByte = IndexByte;
+	Buffer.ptr.prototype.Bytes = function() {
+		var b;
+		b = this;
+		return $subslice(b.buf, b.off);
+	};
+	Buffer.prototype.Bytes = function() { return this.$val.Bytes(); };
+	Buffer.ptr.prototype.String = function() {
+		var b;
+		b = this;
+		if (b === ptrType.nil) {
+			return "<nil>";
+		}
+		return ($bytesToString($subslice(b.buf, b.off)));
+	};
+	Buffer.prototype.String = function() { return this.$val.String(); };
+	Buffer.ptr.prototype.empty = function() {
+		var b;
+		b = this;
+		return b.buf.$length <= b.off;
+	};
+	Buffer.prototype.empty = function() { return this.$val.empty(); };
+	Buffer.ptr.prototype.Len = function() {
+		var b;
+		b = this;
+		return b.buf.$length - b.off >> 0;
+	};
+	Buffer.prototype.Len = function() { return this.$val.Len(); };
+	Buffer.ptr.prototype.Cap = function() {
+		var b;
+		b = this;
+		return b.buf.$capacity;
+	};
+	Buffer.prototype.Cap = function() { return this.$val.Cap(); };
+	Buffer.ptr.prototype.Truncate = function(n) {
+		var b, n;
+		b = this;
+		if (n === 0) {
+			b.Reset();
+			return;
+		}
+		b.lastRead = 0;
+		if (n < 0 || n > b.Len()) {
+			$panic(new $String("bytes.Buffer: truncation out of range"));
+		}
+		b.buf = $subslice(b.buf, 0, (b.off + n >> 0));
+	};
+	Buffer.prototype.Truncate = function(n) { return this.$val.Truncate(n); };
+	Buffer.ptr.prototype.Reset = function() {
+		var b;
+		b = this;
+		b.buf = $subslice(b.buf, 0, 0);
+		b.off = 0;
+		b.lastRead = 0;
+	};
+	Buffer.prototype.Reset = function() { return this.$val.Reset(); };
+	Buffer.ptr.prototype.tryGrowByReslice = function(n) {
+		var b, l, n;
+		b = this;
+		l = b.buf.$length;
+		if (n <= (b.buf.$capacity - l >> 0)) {
+			b.buf = $subslice(b.buf, 0, (l + n >> 0));
+			return [l, true];
+		}
+		return [0, false];
+	};
+	Buffer.prototype.tryGrowByReslice = function(n) { return this.$val.tryGrowByReslice(n); };
+	Buffer.ptr.prototype.grow = function(n) {
+		var _q, _tuple, b, buf, c, i, m, n, ok;
+		b = this;
+		m = b.Len();
+		if ((m === 0) && !((b.off === 0))) {
+			b.Reset();
+		}
+		_tuple = b.tryGrowByReslice(n);
+		i = _tuple[0];
+		ok = _tuple[1];
+		if (ok) {
+			return i;
+		}
+		if (b.buf === sliceType.nil && n <= 64) {
+			b.buf = $makeSlice(sliceType, n, 64);
+			return 0;
+		}
+		c = b.buf.$capacity;
+		if (n <= ((_q = c / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) - m >> 0)) {
+			$copySlice(b.buf, $subslice(b.buf, b.off));
+		} else if (c > ((2147483647 - c >> 0) - n >> 0)) {
+			$panic($pkg.ErrTooLarge);
+		} else {
+			buf = makeSlice(($imul(2, c)) + n >> 0);
+			$copySlice(buf, $subslice(b.buf, b.off));
+			b.buf = buf;
+		}
+		b.off = 0;
+		b.buf = $subslice(b.buf, 0, (m + n >> 0));
+		return m;
+	};
+	Buffer.prototype.grow = function(n) { return this.$val.grow(n); };
+	Buffer.ptr.prototype.Grow = function(n) {
+		var b, m, n;
+		b = this;
+		if (n < 0) {
+			$panic(new $String("bytes.Buffer.Grow: negative count"));
+		}
+		m = b.grow(n);
+		b.buf = $subslice(b.buf, 0, m);
+	};
+	Buffer.prototype.Grow = function(n) { return this.$val.Grow(n); };
+	Buffer.ptr.prototype.Write = function(p) {
+		var _tmp, _tmp$1, _tuple, b, err, m, n, ok, p;
+		n = 0;
+		err = $ifaceNil;
+		b = this;
+		b.lastRead = 0;
+		_tuple = b.tryGrowByReslice(p.$length);
+		m = _tuple[0];
+		ok = _tuple[1];
+		if (!ok) {
+			m = b.grow(p.$length);
+		}
+		_tmp = $copySlice($subslice(b.buf, m), p);
+		_tmp$1 = $ifaceNil;
+		n = _tmp;
+		err = _tmp$1;
+		return [n, err];
+	};
+	Buffer.prototype.Write = function(p) { return this.$val.Write(p); };
+	Buffer.ptr.prototype.WriteString = function(s) {
+		var _tmp, _tmp$1, _tuple, b, err, m, n, ok, s;
+		n = 0;
+		err = $ifaceNil;
+		b = this;
+		b.lastRead = 0;
+		_tuple = b.tryGrowByReslice(s.length);
+		m = _tuple[0];
+		ok = _tuple[1];
+		if (!ok) {
+			m = b.grow(s.length);
+		}
+		_tmp = $copyString($subslice(b.buf, m), s);
+		_tmp$1 = $ifaceNil;
+		n = _tmp;
+		err = _tmp$1;
+		return [n, err];
+	};
+	Buffer.prototype.WriteString = function(s) { return this.$val.WriteString(s); };
+	Buffer.ptr.prototype.ReadFrom = function(r) {
+		var _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, b, e, err, i, m, n, r, x, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; i = $f.i; m = $f.m; n = $f.n; r = $f.r; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		n = new $Int64(0, 0);
+		err = $ifaceNil;
+		b = this;
+		b.lastRead = 0;
+		/* while (true) { */ case 1:
+			i = b.grow(512);
+			b.buf = $subslice(b.buf, 0, i);
+			_r = r.Read($subslice(b.buf, i, b.buf.$capacity)); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_tuple = _r;
+			m = _tuple[0];
+			e = _tuple[1];
+			if (m < 0) {
+				$panic(errNegativeRead);
+			}
+			b.buf = $subslice(b.buf, 0, (i + m >> 0));
+			n = (x = (new $Int64(0, m)), new $Int64(n.$high + x.$high, n.$low + x.$low));
+			if ($interfaceIsEqual(e, io.EOF)) {
+				_tmp = n;
+				_tmp$1 = $ifaceNil;
+				n = _tmp;
+				err = _tmp$1;
+				$s = -1; return [n, err];
+			}
+			if (!($interfaceIsEqual(e, $ifaceNil))) {
+				_tmp$2 = n;
+				_tmp$3 = e;
+				n = _tmp$2;
+				err = _tmp$3;
+				$s = -1; return [n, err];
+			}
+		/* } */ $s = 1; continue; case 2:
+		$s = -1; return [n, err];
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Buffer.ptr.prototype.ReadFrom }; } $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.i = i; $f.m = m; $f.n = n; $f.r = r; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	Buffer.prototype.ReadFrom = function(r) { return this.$val.ReadFrom(r); };
+	makeSlice = function(n) {
+		var n, $deferred;
+		/* */ var $err = null; try { $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
+		$deferred.push([(function() {
+			if (!($interfaceIsEqual($recover(), $ifaceNil))) {
+				$panic($pkg.ErrTooLarge);
+			}
+		}), []]);
+		return $makeSlice(sliceType, n);
+		/* */ } catch(err) { $err = err; return sliceType.nil; } finally { $callDeferred($deferred, $err); }
+	};
+	Buffer.ptr.prototype.WriteTo = function(w) {
+		var _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, b, e, err, m, n, nBytes, w, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; m = $f.m; n = $f.n; nBytes = $f.nBytes; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		n = new $Int64(0, 0);
+		err = $ifaceNil;
+		b = this;
+		b.lastRead = 0;
+		nBytes = b.Len();
+		/* */ if (nBytes > 0) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (nBytes > 0) { */ case 1:
+			_r = w.Write($subslice(b.buf, b.off)); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			_tuple = _r;
+			m = _tuple[0];
+			e = _tuple[1];
+			if (m > nBytes) {
+				$panic(new $String("bytes.Buffer.WriteTo: invalid Write count"));
+			}
+			b.off = b.off + (m) >> 0;
+			n = (new $Int64(0, m));
+			if (!($interfaceIsEqual(e, $ifaceNil))) {
+				_tmp = n;
+				_tmp$1 = e;
+				n = _tmp;
+				err = _tmp$1;
+				$s = -1; return [n, err];
+			}
+			if (!((m === nBytes))) {
+				_tmp$2 = n;
+				_tmp$3 = io.ErrShortWrite;
+				n = _tmp$2;
+				err = _tmp$3;
+				$s = -1; return [n, err];
+			}
+		/* } */ case 2:
+		b.Reset();
+		_tmp$4 = n;
+		_tmp$5 = $ifaceNil;
+		n = _tmp$4;
+		err = _tmp$5;
+		$s = -1; return [n, err];
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Buffer.ptr.prototype.WriteTo }; } $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.n = n; $f.nBytes = nBytes; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	Buffer.prototype.WriteTo = function(w) { return this.$val.WriteTo(w); };
+	Buffer.ptr.prototype.WriteByte = function(c) {
+		var _tuple, b, c, m, ok, x;
+		b = this;
+		b.lastRead = 0;
+		_tuple = b.tryGrowByReslice(1);
+		m = _tuple[0];
+		ok = _tuple[1];
+		if (!ok) {
+			m = b.grow(1);
+		}
+		(x = b.buf, ((m < 0 || m >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + m] = c));
+		return $ifaceNil;
+	};
+	Buffer.prototype.WriteByte = function(c) { return this.$val.WriteByte(c); };
+	Buffer.ptr.prototype.WriteRune = function(r) {
+		var _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, b, err, m, n, ok, r;
+		n = 0;
+		err = $ifaceNil;
+		b = this;
+		if (r < 128) {
+			b.WriteByte(((r << 24 >>> 24)));
+			_tmp = 1;
+			_tmp$1 = $ifaceNil;
+			n = _tmp;
+			err = _tmp$1;
+			return [n, err];
+		}
+		b.lastRead = 0;
+		_tuple = b.tryGrowByReslice(4);
+		m = _tuple[0];
+		ok = _tuple[1];
+		if (!ok) {
+			m = b.grow(4);
+		}
+		n = utf8.EncodeRune($subslice(b.buf, m, (m + 4 >> 0)), r);
+		b.buf = $subslice(b.buf, 0, (m + n >> 0));
+		_tmp$2 = n;
+		_tmp$3 = $ifaceNil;
+		n = _tmp$2;
+		err = _tmp$3;
+		return [n, err];
+	};
+	Buffer.prototype.WriteRune = function(r) { return this.$val.WriteRune(r); };
+	Buffer.ptr.prototype.Read = function(p) {
+		var _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, b, err, n, p;
+		n = 0;
+		err = $ifaceNil;
+		b = this;
+		b.lastRead = 0;
+		if (b.empty()) {
+			b.Reset();
+			if (p.$length === 0) {
+				_tmp = 0;
+				_tmp$1 = $ifaceNil;
+				n = _tmp;
+				err = _tmp$1;
+				return [n, err];
+			}
+			_tmp$2 = 0;
+			_tmp$3 = io.EOF;
+			n = _tmp$2;
+			err = _tmp$3;
+			return [n, err];
+		}
+		n = $copySlice(p, $subslice(b.buf, b.off));
+		b.off = b.off + (n) >> 0;
+		if (n > 0) {
+			b.lastRead = -1;
+		}
+		_tmp$4 = n;
+		_tmp$5 = $ifaceNil;
+		n = _tmp$4;
+		err = _tmp$5;
+		return [n, err];
+	};
+	Buffer.prototype.Read = function(p) { return this.$val.Read(p); };
+	Buffer.ptr.prototype.Next = function(n) {
+		var b, data, m, n;
+		b = this;
+		b.lastRead = 0;
+		m = b.Len();
+		if (n > m) {
+			n = m;
+		}
+		data = $subslice(b.buf, b.off, (b.off + n >> 0));
+		b.off = b.off + (n) >> 0;
+		if (n > 0) {
+			b.lastRead = -1;
+		}
+		return data;
+	};
+	Buffer.prototype.Next = function(n) { return this.$val.Next(n); };
+	Buffer.ptr.prototype.ReadByte = function() {
+		var b, c, x, x$1;
+		b = this;
+		if (b.empty()) {
+			b.Reset();
+			return [0, io.EOF];
+		}
+		c = (x = b.buf, x$1 = b.off, ((x$1 < 0 || x$1 >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + x$1]));
+		b.off = b.off + (1) >> 0;
+		b.lastRead = -1;
+		return [c, $ifaceNil];
+	};
+	Buffer.prototype.ReadByte = function() { return this.$val.ReadByte(); };
+	Buffer.ptr.prototype.ReadRune = function() {
+		var _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tuple, b, c, err, n, r, size, x, x$1;
+		r = 0;
+		size = 0;
+		err = $ifaceNil;
+		b = this;
+		if (b.empty()) {
+			b.Reset();
+			_tmp = 0;
+			_tmp$1 = 0;
+			_tmp$2 = io.EOF;
+			r = _tmp;
+			size = _tmp$1;
+			err = _tmp$2;
+			return [r, size, err];
+		}
+		c = (x = b.buf, x$1 = b.off, ((x$1 < 0 || x$1 >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + x$1]));
+		if (c < 128) {
+			b.off = b.off + (1) >> 0;
+			b.lastRead = 1;
+			_tmp$3 = ((c >> 0));
+			_tmp$4 = 1;
+			_tmp$5 = $ifaceNil;
+			r = _tmp$3;
+			size = _tmp$4;
+			err = _tmp$5;
+			return [r, size, err];
+		}
+		_tuple = utf8.DecodeRune($subslice(b.buf, b.off));
+		r = _tuple[0];
+		n = _tuple[1];
+		b.off = b.off + (n) >> 0;
+		b.lastRead = ((n << 24 >> 24));
+		_tmp$6 = r;
+		_tmp$7 = n;
+		_tmp$8 = $ifaceNil;
+		r = _tmp$6;
+		size = _tmp$7;
+		err = _tmp$8;
+		return [r, size, err];
+	};
+	Buffer.prototype.ReadRune = function() { return this.$val.ReadRune(); };
+	Buffer.ptr.prototype.UnreadRune = function() {
+		var b;
+		b = this;
+		if (b.lastRead <= 0) {
+			return errors.New("bytes.Buffer: UnreadRune: previous operation was not a successful ReadRune");
+		}
+		if (b.off >= ((b.lastRead >> 0))) {
+			b.off = b.off - (((b.lastRead >> 0))) >> 0;
+		}
+		b.lastRead = 0;
+		return $ifaceNil;
+	};
+	Buffer.prototype.UnreadRune = function() { return this.$val.UnreadRune(); };
+	Buffer.ptr.prototype.UnreadByte = function() {
+		var b;
+		b = this;
+		if (b.lastRead === 0) {
+			return errors.New("bytes.Buffer: UnreadByte: previous operation was not a successful read");
+		}
+		b.lastRead = 0;
+		if (b.off > 0) {
+			b.off = b.off - (1) >> 0;
+		}
+		return $ifaceNil;
+	};
+	Buffer.prototype.UnreadByte = function() { return this.$val.UnreadByte(); };
+	Buffer.ptr.prototype.ReadBytes = function(delim) {
+		var _tmp, _tmp$1, _tuple, b, delim, err, line, slice;
+		line = sliceType.nil;
+		err = $ifaceNil;
+		b = this;
+		_tuple = b.readSlice(delim);
+		slice = _tuple[0];
+		err = _tuple[1];
+		line = $appendSlice(line, slice);
+		_tmp = line;
+		_tmp$1 = err;
+		line = _tmp;
+		err = _tmp$1;
+		return [line, err];
+	};
+	Buffer.prototype.ReadBytes = function(delim) { return this.$val.ReadBytes(delim); };
+	Buffer.ptr.prototype.readSlice = function(delim) {
+		var _tmp, _tmp$1, b, delim, end, err, i, line;
+		line = sliceType.nil;
+		err = $ifaceNil;
+		b = this;
+		i = IndexByte($subslice(b.buf, b.off), delim);
+		end = (b.off + i >> 0) + 1 >> 0;
+		if (i < 0) {
+			end = b.buf.$length;
+			err = io.EOF;
+		}
+		line = $subslice(b.buf, b.off, end);
+		b.off = end;
+		b.lastRead = -1;
+		_tmp = line;
+		_tmp$1 = err;
+		line = _tmp;
+		err = _tmp$1;
+		return [line, err];
+	};
+	Buffer.prototype.readSlice = function(delim) { return this.$val.readSlice(delim); };
+	Buffer.ptr.prototype.ReadString = function(delim) {
+		var _tmp, _tmp$1, _tuple, b, delim, err, line, slice;
+		line = "";
+		err = $ifaceNil;
+		b = this;
+		_tuple = b.readSlice(delim);
+		slice = _tuple[0];
+		err = _tuple[1];
+		_tmp = ($bytesToString(slice));
+		_tmp$1 = err;
+		line = _tmp;
+		err = _tmp$1;
+		return [line, err];
+	};
+	Buffer.prototype.ReadString = function(delim) { return this.$val.ReadString(delim); };
+	EqualFold = function(s, t) {
+		var _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple, _tuple$1, r, r$1, r$2, s, size, size$1, sr, t, tr;
+		while (true) {
+			if (!(!((s.$length === 0)) && !((t.$length === 0)))) { break; }
+			_tmp = 0;
+			_tmp$1 = 0;
+			sr = _tmp;
+			tr = _tmp$1;
+			if ((0 >= s.$length ? ($throwRuntimeError("index out of range"), undefined) : s.$array[s.$offset + 0]) < 128) {
+				_tmp$2 = (((0 >= s.$length ? ($throwRuntimeError("index out of range"), undefined) : s.$array[s.$offset + 0]) >> 0));
+				_tmp$3 = $subslice(s, 1);
+				sr = _tmp$2;
+				s = _tmp$3;
+			} else {
+				_tuple = utf8.DecodeRune(s);
+				r = _tuple[0];
+				size = _tuple[1];
+				_tmp$4 = r;
+				_tmp$5 = $subslice(s, size);
+				sr = _tmp$4;
+				s = _tmp$5;
+			}
+			if ((0 >= t.$length ? ($throwRuntimeError("index out of range"), undefined) : t.$array[t.$offset + 0]) < 128) {
+				_tmp$6 = (((0 >= t.$length ? ($throwRuntimeError("index out of range"), undefined) : t.$array[t.$offset + 0]) >> 0));
+				_tmp$7 = $subslice(t, 1);
+				tr = _tmp$6;
+				t = _tmp$7;
+			} else {
+				_tuple$1 = utf8.DecodeRune(t);
+				r$1 = _tuple$1[0];
+				size$1 = _tuple$1[1];
+				_tmp$8 = r$1;
+				_tmp$9 = $subslice(t, size$1);
+				tr = _tmp$8;
+				t = _tmp$9;
+			}
+			if (tr === sr) {
+				continue;
+			}
+			if (tr < sr) {
+				_tmp$10 = sr;
+				_tmp$11 = tr;
+				tr = _tmp$10;
+				sr = _tmp$11;
+			}
+			if (tr < 128) {
+				if (65 <= sr && sr <= 90 && (tr === ((sr + 97 >> 0) - 65 >> 0))) {
+					continue;
+				}
+				return false;
+			}
+			r$2 = unicode.SimpleFold(sr);
+			while (true) {
+				if (!(!((r$2 === sr)) && r$2 < tr)) { break; }
+				r$2 = unicode.SimpleFold(r$2);
+			}
+			if (r$2 === tr) {
+				continue;
+			}
+			return false;
+		}
+		return s.$length === t.$length;
+	};
+	$pkg.EqualFold = EqualFold;
+	ptrType.methods = [{prop: "Bytes", name: "Bytes", pkg: "", typ: $funcType([], [sliceType], false)}, {prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "empty", name: "empty", pkg: "bytes", typ: $funcType([], [$Bool], false)}, {prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Cap", name: "Cap", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Truncate", name: "Truncate", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Reset", name: "Reset", pkg: "", typ: $funcType([], [], false)}, {prop: "tryGrowByReslice", name: "tryGrowByReslice", pkg: "bytes", typ: $funcType([$Int], [$Int, $Bool], false)}, {prop: "grow", name: "grow", pkg: "bytes", typ: $funcType([$Int], [$Int], false)}, {prop: "Grow", name: "Grow", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Write", name: "Write", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "WriteString", name: "WriteString", pkg: "", typ: $funcType([$String], [$Int, $error], false)}, {prop: "ReadFrom", name: "ReadFrom", pkg: "", typ: $funcType([io.Reader], [$Int64, $error], false)}, {prop: "WriteTo", name: "WriteTo", pkg: "", typ: $funcType([io.Writer], [$Int64, $error], false)}, {prop: "WriteByte", name: "WriteByte", pkg: "", typ: $funcType([$Uint8], [$error], false)}, {prop: "WriteRune", name: "WriteRune", pkg: "", typ: $funcType([$Int32], [$Int, $error], false)}, {prop: "Read", name: "Read", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([$Int], [sliceType], false)}, {prop: "ReadByte", name: "ReadByte", pkg: "", typ: $funcType([], [$Uint8, $error], false)}, {prop: "ReadRune", name: "ReadRune", pkg: "", typ: $funcType([], [$Int32, $Int, $error], false)}, {prop: "UnreadRune", name: "UnreadRune", pkg: "", typ: $funcType([], [$error], false)}, {prop: "UnreadByte", name: "UnreadByte", pkg: "", typ: $funcType([], [$error], false)}, {prop: "ReadBytes", name: "ReadBytes", pkg: "", typ: $funcType([$Uint8], [sliceType, $error], false)}, {prop: "readSlice", name: "readSlice", pkg: "bytes", typ: $funcType([$Uint8], [sliceType, $error], false)}, {prop: "ReadString", name: "ReadString", pkg: "", typ: $funcType([$Uint8], [$String, $error], false)}];
+	Buffer.init("bytes", [{prop: "buf", name: "buf", embedded: false, exported: false, typ: sliceType, tag: ""}, {prop: "off", name: "off", embedded: false, exported: false, typ: $Int, tag: ""}, {prop: "lastRead", name: "lastRead", embedded: false, exported: false, typ: readOp, tag: ""}]);
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = bytealg.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = io.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = unicode.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = utf8.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$pkg.ErrTooLarge = errors.New("bytes.Buffer: too large");
+		errNegativeRead = errors.New("bytes.Buffer: reader returned negative count from Read");
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
+$packages["encoding"] = (function() {
+	var $pkg = {}, $init, TextMarshaler, TextUnmarshaler, sliceType;
+	TextMarshaler = $pkg.TextMarshaler = $newType(8, $kindInterface, "encoding.TextMarshaler", true, "encoding", true, null);
+	TextUnmarshaler = $pkg.TextUnmarshaler = $newType(8, $kindInterface, "encoding.TextUnmarshaler", true, "encoding", true, null);
+	sliceType = $sliceType($Uint8);
+	TextMarshaler.init([{prop: "MarshalText", name: "MarshalText", pkg: "", typ: $funcType([], [sliceType, $error], false)}]);
+	TextUnmarshaler.init([{prop: "UnmarshalText", name: "UnmarshalText", pkg: "", typ: $funcType([sliceType], [$error], false)}]);
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
+$packages["math/bits"] = (function() {
+	var $pkg = {}, $init, deBruijn32tab, deBruijn64tab, len8tab, LeadingZeros64, TrailingZeros, TrailingZeros32, TrailingZeros64, Len64;
+	LeadingZeros64 = function(x) {
+		var x;
+		return 64 - Len64(x) >> 0;
+	};
+	$pkg.LeadingZeros64 = LeadingZeros64;
+	TrailingZeros = function(x) {
+		var x;
+		if (true) {
+			return TrailingZeros32(((x >>> 0)));
+		}
+		return TrailingZeros64((new $Uint64(0, x)));
+	};
+	$pkg.TrailingZeros = TrailingZeros;
+	TrailingZeros32 = function(x) {
+		var x, x$1;
+		if (x === 0) {
+			return 32;
+		}
+		return (((x$1 = ($imul((((x & (-x >>> 0)) >>> 0)), 125613361) >>> 0) >>> 27 >>> 0, ((x$1 < 0 || x$1 >= deBruijn32tab.length) ? ($throwRuntimeError("index out of range"), undefined) : deBruijn32tab[x$1])) >> 0));
+	};
+	$pkg.TrailingZeros32 = TrailingZeros32;
+	TrailingZeros64 = function(x) {
+		var x, x$1, x$2;
+		if ((x.$high === 0 && x.$low === 0)) {
+			return 64;
+		}
+		return (((x$1 = $shiftRightUint64($mul64(((x$2 = new $Uint64(-x.$high, -x.$low), new $Uint64(x.$high & x$2.$high, (x.$low & x$2.$low) >>> 0))), new $Uint64(66559345, 3033172745)), 58), (($flatten64(x$1) < 0 || $flatten64(x$1) >= deBruijn64tab.length) ? ($throwRuntimeError("index out of range"), undefined) : deBruijn64tab[$flatten64(x$1)])) >> 0));
+	};
+	$pkg.TrailingZeros64 = TrailingZeros64;
+	Len64 = function(x) {
+		var n, x;
+		n = 0;
+		if ((x.$high > 1 || (x.$high === 1 && x.$low >= 0))) {
+			x = $shiftRightUint64(x, (32));
+			n = 32;
+		}
+		if ((x.$high > 0 || (x.$high === 0 && x.$low >= 65536))) {
+			x = $shiftRightUint64(x, (16));
+			n = n + (16) >> 0;
+		}
+		if ((x.$high > 0 || (x.$high === 0 && x.$low >= 256))) {
+			x = $shiftRightUint64(x, (8));
+			n = n + (8) >> 0;
+		}
+		n = n + (((($flatten64(x) < 0 || $flatten64(x) >= len8tab.length) ? ($throwRuntimeError("index out of range"), undefined) : len8tab[$flatten64(x)]) >> 0)) >> 0;
+		return n;
+	};
+	$pkg.Len64 = Len64;
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		deBruijn32tab = $toNativeArray($kindUint8, [0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9]);
+		deBruijn64tab = $toNativeArray($kindUint8, [0, 1, 56, 2, 57, 49, 28, 3, 61, 58, 42, 50, 38, 29, 17, 4, 62, 47, 59, 36, 45, 43, 51, 22, 53, 39, 33, 30, 24, 18, 12, 5, 63, 55, 48, 27, 60, 41, 37, 16, 46, 35, 44, 21, 52, 32, 23, 11, 54, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9, 13, 8, 7, 6]);
+		len8tab = $toNativeArray($kindUint8, [0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]);
+		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.$init = $init;
+	return $pkg;
+})();
+$packages["math"] = (function() {
+	var $pkg = {}, $init, js, bits, arrayType, arrayType$1, arrayType$2, structType, math, zero, posInf, negInf, nan, buf, Inf, IsInf, IsNaN, NaN, init, Float32bits, Float32frombits, Float64bits, Float64frombits, Abs;
+	js = $packages["github.com/gopherjs/gopherjs/js"];
+	bits = $packages["math/bits"];
+	arrayType = $arrayType($Uint32, 2);
+	arrayType$1 = $arrayType($Float32, 2);
+	arrayType$2 = $arrayType($Float64, 1);
+	structType = $structType("math", [{prop: "uint32array", name: "uint32array", embedded: false, exported: false, typ: arrayType, tag: ""}, {prop: "float32array", name: "float32array", embedded: false, exported: false, typ: arrayType$1, tag: ""}, {prop: "float64array", name: "float64array", embedded: false, exported: false, typ: arrayType$2, tag: ""}]);
+	Inf = function(sign) {
+		var sign;
+		if (sign >= 0) {
+			return posInf;
+		} else {
+			return negInf;
+		}
+	};
+	$pkg.Inf = Inf;
+	IsInf = function(f, sign) {
+		var f, sign;
+		if (f === posInf) {
+			return sign >= 0;
+		}
+		if (f === negInf) {
+			return sign <= 0;
+		}
+		return false;
+	};
+	$pkg.IsInf = IsInf;
+	IsNaN = function(f) {
+		var f, is;
+		is = false;
+		is = !((f === f));
+		return is;
+	};
+	$pkg.IsNaN = IsNaN;
+	NaN = function() {
+		return nan;
+	};
+	$pkg.NaN = NaN;
+	init = function() {
+		var ab;
+		ab = new ($global.ArrayBuffer)(8);
+		buf.uint32array = new ($global.Uint32Array)(ab);
+		buf.float32array = new ($global.Float32Array)(ab);
+		buf.float64array = new ($global.Float64Array)(ab);
+	};
+	Float32bits = function(f) {
+		var f;
+		buf.float32array[0] = f;
+		return buf.uint32array[0];
+	};
+	$pkg.Float32bits = Float32bits;
+	Float32frombits = function(b) {
+		var b;
+		buf.uint32array[0] = b;
+		return buf.float32array[0];
+	};
+	$pkg.Float32frombits = Float32frombits;
+	Float64bits = function(f) {
+		var f, x, x$1;
+		buf.float64array[0] = f;
+		return (x = $shiftLeft64((new $Uint64(0, buf.uint32array[1])), 32), x$1 = (new $Uint64(0, buf.uint32array[0])), new $Uint64(x.$high + x$1.$high, x.$low + x$1.$low));
+	};
+	$pkg.Float64bits = Float64bits;
+	Float64frombits = function(b) {
+		var b;
+		buf.uint32array[0] = ((b.$low >>> 0));
+		buf.uint32array[1] = (($shiftRightUint64(b, 32).$low >>> 0));
+		return buf.float64array[0];
+	};
+	$pkg.Float64frombits = Float64frombits;
+	Abs = function(x) {
+		var x, x$1;
+		return Float64frombits((x$1 = Float64bits(x), new $Uint64(x$1.$high & ~2147483648, (x$1.$low & ~0) >>> 0)));
+	};
+	$pkg.Abs = Abs;
+	$init = function() {
+		$pkg.$init = function() {};
+		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		$r = js.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = bits.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		buf = new structType.ptr(arrayType.zero(), arrayType$1.zero(), arrayType$2.zero());
+		math = $global.Math;
+		zero = 0;
+		posInf = 1 / zero;
+		negInf = -1 / zero;
+		nan = 0 / zero;
+		init();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -6271,312 +7180,6 @@ $packages["strconv"] = (function() {
 		isPrint32 = new sliceType$5([65536, 65613, 65616, 65629, 65664, 65786, 65792, 65794, 65799, 65843, 65847, 65947, 65952, 65952, 66000, 66045, 66176, 66204, 66208, 66256, 66272, 66299, 66304, 66339, 66349, 66378, 66384, 66426, 66432, 66499, 66504, 66517, 66560, 66717, 66720, 66729, 66736, 66771, 66776, 66811, 66816, 66855, 66864, 66915, 66927, 66927, 67072, 67382, 67392, 67413, 67424, 67431, 67584, 67589, 67592, 67640, 67644, 67644, 67647, 67742, 67751, 67759, 67808, 67829, 67835, 67867, 67871, 67897, 67903, 67903, 67968, 68023, 68028, 68047, 68050, 68102, 68108, 68147, 68152, 68154, 68159, 68167, 68176, 68184, 68192, 68255, 68288, 68326, 68331, 68342, 68352, 68405, 68409, 68437, 68440, 68466, 68472, 68497, 68505, 68508, 68521, 68527, 68608, 68680, 68736, 68786, 68800, 68850, 68858, 68863, 69216, 69246, 69632, 69709, 69714, 69743, 69759, 69825, 69840, 69864, 69872, 69881, 69888, 69955, 69968, 70006, 70016, 70093, 70096, 70132, 70144, 70206, 70272, 70313, 70320, 70378, 70384, 70393, 70400, 70412, 70415, 70416, 70419, 70457, 70460, 70468, 70471, 70472, 70475, 70477, 70480, 70480, 70487, 70487, 70493, 70499, 70502, 70508, 70512, 70516, 70656, 70749, 70784, 70855, 70864, 70873, 71040, 71093, 71096, 71133, 71168, 71236, 71248, 71257, 71264, 71276, 71296, 71351, 71360, 71369, 71424, 71449, 71453, 71467, 71472, 71487, 71840, 71922, 71935, 71935, 72192, 72263, 72272, 72323, 72326, 72354, 72384, 72440, 72704, 72773, 72784, 72812, 72816, 72847, 72850, 72886, 72960, 73014, 73018, 73031, 73040, 73049, 73728, 74649, 74752, 74868, 74880, 75075, 77824, 78894, 82944, 83526, 92160, 92728, 92736, 92777, 92782, 92783, 92880, 92909, 92912, 92917, 92928, 92997, 93008, 93047, 93053, 93071, 93952, 94020, 94032, 94078, 94095, 94111, 94176, 94177, 94208, 100332, 100352, 101106, 110592, 110878, 110960, 111355, 113664, 113770, 113776, 113788, 113792, 113800, 113808, 113817, 113820, 113823, 118784, 119029, 119040, 119078, 119081, 119154, 119163, 119272, 119296, 119365, 119552, 119638, 119648, 119665, 119808, 119967, 119970, 119970, 119973, 119974, 119977, 120074, 120077, 120134, 120138, 120485, 120488, 120779, 120782, 121483, 121499, 121519, 122880, 122904, 122907, 122922, 124928, 125124, 125127, 125142, 125184, 125258, 125264, 125273, 125278, 125279, 126464, 126500, 126503, 126523, 126530, 126530, 126535, 126548, 126551, 126564, 126567, 126619, 126625, 126651, 126704, 126705, 126976, 127019, 127024, 127123, 127136, 127150, 127153, 127221, 127232, 127244, 127248, 127339, 127344, 127404, 127462, 127490, 127504, 127547, 127552, 127560, 127568, 127569, 127584, 127589, 127744, 128724, 128736, 128748, 128752, 128760, 128768, 128883, 128896, 128980, 129024, 129035, 129040, 129095, 129104, 129113, 129120, 129159, 129168, 129197, 129280, 129291, 129296, 129356, 129360, 129387, 129408, 129431, 129472, 129472, 129488, 129510, 131072, 173782, 173824, 177972, 177984, 178205, 178208, 183969, 183984, 191456, 194560, 195101, 917760, 917999]);
 		isNotPrint32 = new sliceType$4([12, 39, 59, 62, 399, 926, 2057, 2102, 2134, 2291, 2564, 2580, 2584, 4285, 4405, 4576, 4626, 4743, 4745, 4750, 4766, 4868, 4905, 4913, 4916, 5210, 5212, 6813, 7177, 7223, 7336, 7431, 7434, 7483, 7486, 9327, 27231, 27482, 27490, 54357, 54429, 54445, 54458, 54460, 54468, 54534, 54549, 54557, 54586, 54591, 54597, 54609, 55968, 57351, 57378, 57381, 60932, 60960, 60963, 60968, 60979, 60984, 60986, 61000, 61002, 61004, 61008, 61011, 61016, 61018, 61020, 61022, 61024, 61027, 61035, 61043, 61048, 61053, 61055, 61066, 61092, 61098, 61632, 61648, 61743, 63807]);
 		isGraphic = new sliceType$4([160, 5760, 8192, 8193, 8194, 8195, 8196, 8197, 8198, 8199, 8200, 8201, 8202, 8239, 8287, 12288]);
-		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.$init = $init;
-	return $pkg;
-})();
-$packages["unicode"] = (function() {
-	var $pkg = {}, $init, RangeTable, Range16, Range32, CaseRange, d, foldPair, arrayType, sliceType, sliceType$1, sliceType$3, sliceType$4, _L, _Nd, _White_Space, _CaseRanges, properties, asciiFold, caseOrbit, to, IsDigit, IsLetter, IsSpace, is16, is32, isExcludingLatin, To, ToUpper, ToLower, SimpleFold;
-	RangeTable = $pkg.RangeTable = $newType(0, $kindStruct, "unicode.RangeTable", true, "unicode", true, function(R16_, R32_, LatinOffset_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.R16 = sliceType.nil;
-			this.R32 = sliceType$1.nil;
-			this.LatinOffset = 0;
-			return;
-		}
-		this.R16 = R16_;
-		this.R32 = R32_;
-		this.LatinOffset = LatinOffset_;
-	});
-	Range16 = $pkg.Range16 = $newType(0, $kindStruct, "unicode.Range16", true, "unicode", true, function(Lo_, Hi_, Stride_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Lo = 0;
-			this.Hi = 0;
-			this.Stride = 0;
-			return;
-		}
-		this.Lo = Lo_;
-		this.Hi = Hi_;
-		this.Stride = Stride_;
-	});
-	Range32 = $pkg.Range32 = $newType(0, $kindStruct, "unicode.Range32", true, "unicode", true, function(Lo_, Hi_, Stride_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Lo = 0;
-			this.Hi = 0;
-			this.Stride = 0;
-			return;
-		}
-		this.Lo = Lo_;
-		this.Hi = Hi_;
-		this.Stride = Stride_;
-	});
-	CaseRange = $pkg.CaseRange = $newType(0, $kindStruct, "unicode.CaseRange", true, "unicode", true, function(Lo_, Hi_, Delta_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.Lo = 0;
-			this.Hi = 0;
-			this.Delta = arrayType.zero();
-			return;
-		}
-		this.Lo = Lo_;
-		this.Hi = Hi_;
-		this.Delta = Delta_;
-	});
-	d = $pkg.d = $newType(12, $kindArray, "unicode.d", true, "unicode", false, null);
-	foldPair = $pkg.foldPair = $newType(0, $kindStruct, "unicode.foldPair", true, "unicode", false, function(From_, To_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.From = 0;
-			this.To = 0;
-			return;
-		}
-		this.From = From_;
-		this.To = To_;
-	});
-	arrayType = $arrayType($Int32, 3);
-	sliceType = $sliceType(Range16);
-	sliceType$1 = $sliceType(Range32);
-	sliceType$3 = $sliceType(CaseRange);
-	sliceType$4 = $sliceType(foldPair);
-	to = function(_case, r, caseRange) {
-		var _case, _q, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, caseRange, cr, delta, foundMapping, hi, lo, m, mappedRune, r, x;
-		mappedRune = 0;
-		foundMapping = false;
-		if (_case < 0 || 3 <= _case) {
-			_tmp = 65533;
-			_tmp$1 = false;
-			mappedRune = _tmp;
-			foundMapping = _tmp$1;
-			return [mappedRune, foundMapping];
-		}
-		lo = 0;
-		hi = caseRange.$length;
-		while (true) {
-			if (!(lo < hi)) { break; }
-			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
-			cr = ((m < 0 || m >= caseRange.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseRange.$array[caseRange.$offset + m]);
-			if (((cr.Lo >> 0)) <= r && r <= ((cr.Hi >> 0))) {
-				delta = ((x = cr.Delta, ((_case < 0 || _case >= x.length) ? ($throwRuntimeError("index out of range"), undefined) : x[_case])));
-				if (delta > 1114111) {
-					_tmp$2 = ((cr.Lo >> 0)) + ((((((r - ((cr.Lo >> 0)) >> 0)) & ~1) >> 0) | (((_case & 1) >> 0)))) >> 0;
-					_tmp$3 = true;
-					mappedRune = _tmp$2;
-					foundMapping = _tmp$3;
-					return [mappedRune, foundMapping];
-				}
-				_tmp$4 = r + delta >> 0;
-				_tmp$5 = true;
-				mappedRune = _tmp$4;
-				foundMapping = _tmp$5;
-				return [mappedRune, foundMapping];
-			}
-			if (r < ((cr.Lo >> 0))) {
-				hi = m;
-			} else {
-				lo = m + 1 >> 0;
-			}
-		}
-		_tmp$6 = r;
-		_tmp$7 = false;
-		mappedRune = _tmp$6;
-		foundMapping = _tmp$7;
-		return [mappedRune, foundMapping];
-	};
-	IsDigit = function(r) {
-		var r;
-		if (r <= 255) {
-			return 48 <= r && r <= 57;
-		}
-		return isExcludingLatin($pkg.Digit, r);
-	};
-	$pkg.IsDigit = IsDigit;
-	IsLetter = function(r) {
-		var r, x;
-		if (((r >>> 0)) <= 255) {
-			return !(((((x = ((r << 24 >>> 24)), ((x < 0 || x >= properties.length) ? ($throwRuntimeError("index out of range"), undefined) : properties[x])) & 96) >>> 0) === 0));
-		}
-		return isExcludingLatin($pkg.Letter, r);
-	};
-	$pkg.IsLetter = IsLetter;
-	IsSpace = function(r) {
-		var _1, r;
-		if (((r >>> 0)) <= 255) {
-			_1 = r;
-			if ((_1 === (9)) || (_1 === (10)) || (_1 === (11)) || (_1 === (12)) || (_1 === (13)) || (_1 === (32)) || (_1 === (133)) || (_1 === (160))) {
-				return true;
-			}
-			return false;
-		}
-		return isExcludingLatin($pkg.White_Space, r);
-	};
-	$pkg.IsSpace = IsSpace;
-	is16 = function(ranges, r) {
-		var _i, _q, _r, _r$1, _ref, hi, i, lo, m, r, range_, range_$1, ranges;
-		if (ranges.$length <= 18 || r <= 255) {
-			_ref = ranges;
-			_i = 0;
-			while (true) {
-				if (!(_i < _ref.$length)) { break; }
-				i = _i;
-				range_ = ((i < 0 || i >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + i]);
-				if (r < range_.Lo) {
-					return false;
-				}
-				if (r <= range_.Hi) {
-					return (range_.Stride === 1) || ((_r = ((r - range_.Lo << 16 >>> 16)) % range_.Stride, _r === _r ? _r : $throwRuntimeError("integer divide by zero")) === 0);
-				}
-				_i++;
-			}
-			return false;
-		}
-		lo = 0;
-		hi = ranges.$length;
-		while (true) {
-			if (!(lo < hi)) { break; }
-			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
-			range_$1 = ((m < 0 || m >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + m]);
-			if (range_$1.Lo <= r && r <= range_$1.Hi) {
-				return (range_$1.Stride === 1) || ((_r$1 = ((r - range_$1.Lo << 16 >>> 16)) % range_$1.Stride, _r$1 === _r$1 ? _r$1 : $throwRuntimeError("integer divide by zero")) === 0);
-			}
-			if (r < range_$1.Lo) {
-				hi = m;
-			} else {
-				lo = m + 1 >> 0;
-			}
-		}
-		return false;
-	};
-	is32 = function(ranges, r) {
-		var _i, _q, _r, _r$1, _ref, hi, i, lo, m, r, range_, range_$1, ranges;
-		if (ranges.$length <= 18) {
-			_ref = ranges;
-			_i = 0;
-			while (true) {
-				if (!(_i < _ref.$length)) { break; }
-				i = _i;
-				range_ = ((i < 0 || i >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + i]);
-				if (r < range_.Lo) {
-					return false;
-				}
-				if (r <= range_.Hi) {
-					return (range_.Stride === 1) || ((_r = ((r - range_.Lo >>> 0)) % range_.Stride, _r === _r ? _r : $throwRuntimeError("integer divide by zero")) === 0);
-				}
-				_i++;
-			}
-			return false;
-		}
-		lo = 0;
-		hi = ranges.$length;
-		while (true) {
-			if (!(lo < hi)) { break; }
-			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
-			range_$1 = $clone(((m < 0 || m >= ranges.$length) ? ($throwRuntimeError("index out of range"), undefined) : ranges.$array[ranges.$offset + m]), Range32);
-			if (range_$1.Lo <= r && r <= range_$1.Hi) {
-				return (range_$1.Stride === 1) || ((_r$1 = ((r - range_$1.Lo >>> 0)) % range_$1.Stride, _r$1 === _r$1 ? _r$1 : $throwRuntimeError("integer divide by zero")) === 0);
-			}
-			if (r < range_$1.Lo) {
-				hi = m;
-			} else {
-				lo = m + 1 >> 0;
-			}
-		}
-		return false;
-	};
-	isExcludingLatin = function(rangeTab, r) {
-		var off, r, r16, r32, rangeTab, x;
-		r16 = rangeTab.R16;
-		off = rangeTab.LatinOffset;
-		if (r16.$length > off && r <= (((x = r16.$length - 1 >> 0, ((x < 0 || x >= r16.$length) ? ($throwRuntimeError("index out of range"), undefined) : r16.$array[r16.$offset + x])).Hi >> 0))) {
-			return is16($subslice(r16, off), ((r << 16 >>> 16)));
-		}
-		r32 = rangeTab.R32;
-		if (r32.$length > 0 && r >= (((0 >= r32.$length ? ($throwRuntimeError("index out of range"), undefined) : r32.$array[r32.$offset + 0]).Lo >> 0))) {
-			return is32(r32, ((r >>> 0)));
-		}
-		return false;
-	};
-	To = function(_case, r) {
-		var _case, _tuple, r;
-		_tuple = to(_case, r, $pkg.CaseRanges);
-		r = _tuple[0];
-		return r;
-	};
-	$pkg.To = To;
-	ToUpper = function(r) {
-		var r;
-		if (r <= 127) {
-			if (97 <= r && r <= 122) {
-				r = r - (32) >> 0;
-			}
-			return r;
-		}
-		return To(0, r);
-	};
-	$pkg.ToUpper = ToUpper;
-	ToLower = function(r) {
-		var r;
-		if (r <= 127) {
-			if (65 <= r && r <= 90) {
-				r = r + (32) >> 0;
-			}
-			return r;
-		}
-		return To(1, r);
-	};
-	$pkg.ToLower = ToLower;
-	SimpleFold = function(r) {
-		var _q, hi, l, lo, m, r;
-		if (r < 0 || r > 1114111) {
-			return r;
-		}
-		if (((r >> 0)) < 128) {
-			return ((((r < 0 || r >= asciiFold.length) ? ($throwRuntimeError("index out of range"), undefined) : asciiFold[r]) >> 0));
-		}
-		lo = 0;
-		hi = caseOrbit.$length;
-		while (true) {
-			if (!(lo < hi)) { break; }
-			m = lo + (_q = ((hi - lo >> 0)) / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) >> 0;
-			if (((((m < 0 || m >= caseOrbit.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseOrbit.$array[caseOrbit.$offset + m]).From >> 0)) < r) {
-				lo = m + 1 >> 0;
-			} else {
-				hi = m;
-			}
-		}
-		if (lo < caseOrbit.$length && (((((lo < 0 || lo >= caseOrbit.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseOrbit.$array[caseOrbit.$offset + lo]).From >> 0)) === r)) {
-			return ((((lo < 0 || lo >= caseOrbit.$length) ? ($throwRuntimeError("index out of range"), undefined) : caseOrbit.$array[caseOrbit.$offset + lo]).To >> 0));
-		}
-		l = ToLower(r);
-		if (!((l === r))) {
-			return l;
-		}
-		return ToUpper(r);
-	};
-	$pkg.SimpleFold = SimpleFold;
-	RangeTable.init("", [{prop: "R16", name: "R16", embedded: false, exported: true, typ: sliceType, tag: ""}, {prop: "R32", name: "R32", embedded: false, exported: true, typ: sliceType$1, tag: ""}, {prop: "LatinOffset", name: "LatinOffset", embedded: false, exported: true, typ: $Int, tag: ""}]);
-	Range16.init("", [{prop: "Lo", name: "Lo", embedded: false, exported: true, typ: $Uint16, tag: ""}, {prop: "Hi", name: "Hi", embedded: false, exported: true, typ: $Uint16, tag: ""}, {prop: "Stride", name: "Stride", embedded: false, exported: true, typ: $Uint16, tag: ""}]);
-	Range32.init("", [{prop: "Lo", name: "Lo", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Hi", name: "Hi", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Stride", name: "Stride", embedded: false, exported: true, typ: $Uint32, tag: ""}]);
-	CaseRange.init("", [{prop: "Lo", name: "Lo", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Hi", name: "Hi", embedded: false, exported: true, typ: $Uint32, tag: ""}, {prop: "Delta", name: "Delta", embedded: false, exported: true, typ: d, tag: ""}]);
-	d.init($Int32, 3);
-	foldPair.init("", [{prop: "From", name: "From", embedded: false, exported: true, typ: $Uint16, tag: ""}, {prop: "To", name: "To", embedded: false, exported: true, typ: $Uint16, tag: ""}]);
-	$init = function() {
-		$pkg.$init = function() {};
-		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_L = new RangeTable.ptr(new sliceType([new Range16.ptr(65, 90, 1), new Range16.ptr(97, 122, 1), new Range16.ptr(170, 181, 11), new Range16.ptr(186, 192, 6), new Range16.ptr(193, 214, 1), new Range16.ptr(216, 246, 1), new Range16.ptr(248, 705, 1), new Range16.ptr(710, 721, 1), new Range16.ptr(736, 740, 1), new Range16.ptr(748, 750, 2), new Range16.ptr(880, 884, 1), new Range16.ptr(886, 887, 1), new Range16.ptr(890, 893, 1), new Range16.ptr(895, 902, 7), new Range16.ptr(904, 906, 1), new Range16.ptr(908, 910, 2), new Range16.ptr(911, 929, 1), new Range16.ptr(931, 1013, 1), new Range16.ptr(1015, 1153, 1), new Range16.ptr(1162, 1327, 1), new Range16.ptr(1329, 1366, 1), new Range16.ptr(1369, 1377, 8), new Range16.ptr(1378, 1415, 1), new Range16.ptr(1488, 1514, 1), new Range16.ptr(1520, 1522, 1), new Range16.ptr(1568, 1610, 1), new Range16.ptr(1646, 1647, 1), new Range16.ptr(1649, 1747, 1), new Range16.ptr(1749, 1765, 16), new Range16.ptr(1766, 1774, 8), new Range16.ptr(1775, 1786, 11), new Range16.ptr(1787, 1788, 1), new Range16.ptr(1791, 1808, 17), new Range16.ptr(1810, 1839, 1), new Range16.ptr(1869, 1957, 1), new Range16.ptr(1969, 1994, 25), new Range16.ptr(1995, 2026, 1), new Range16.ptr(2036, 2037, 1), new Range16.ptr(2042, 2048, 6), new Range16.ptr(2049, 2069, 1), new Range16.ptr(2074, 2084, 10), new Range16.ptr(2088, 2112, 24), new Range16.ptr(2113, 2136, 1), new Range16.ptr(2144, 2154, 1), new Range16.ptr(2208, 2228, 1), new Range16.ptr(2230, 2237, 1), new Range16.ptr(2308, 2361, 1), new Range16.ptr(2365, 2384, 19), new Range16.ptr(2392, 2401, 1), new Range16.ptr(2417, 2432, 1), new Range16.ptr(2437, 2444, 1), new Range16.ptr(2447, 2448, 1), new Range16.ptr(2451, 2472, 1), new Range16.ptr(2474, 2480, 1), new Range16.ptr(2482, 2486, 4), new Range16.ptr(2487, 2489, 1), new Range16.ptr(2493, 2510, 17), new Range16.ptr(2524, 2525, 1), new Range16.ptr(2527, 2529, 1), new Range16.ptr(2544, 2545, 1), new Range16.ptr(2556, 2565, 9), new Range16.ptr(2566, 2570, 1), new Range16.ptr(2575, 2576, 1), new Range16.ptr(2579, 2600, 1), new Range16.ptr(2602, 2608, 1), new Range16.ptr(2610, 2611, 1), new Range16.ptr(2613, 2614, 1), new Range16.ptr(2616, 2617, 1), new Range16.ptr(2649, 2652, 1), new Range16.ptr(2654, 2674, 20), new Range16.ptr(2675, 2676, 1), new Range16.ptr(2693, 2701, 1), new Range16.ptr(2703, 2705, 1), new Range16.ptr(2707, 2728, 1), new Range16.ptr(2730, 2736, 1), new Range16.ptr(2738, 2739, 1), new Range16.ptr(2741, 2745, 1), new Range16.ptr(2749, 2768, 19), new Range16.ptr(2784, 2785, 1), new Range16.ptr(2809, 2821, 12), new Range16.ptr(2822, 2828, 1), new Range16.ptr(2831, 2832, 1), new Range16.ptr(2835, 2856, 1), new Range16.ptr(2858, 2864, 1), new Range16.ptr(2866, 2867, 1), new Range16.ptr(2869, 2873, 1), new Range16.ptr(2877, 2908, 31), new Range16.ptr(2909, 2911, 2), new Range16.ptr(2912, 2913, 1), new Range16.ptr(2929, 2947, 18), new Range16.ptr(2949, 2954, 1), new Range16.ptr(2958, 2960, 1), new Range16.ptr(2962, 2965, 1), new Range16.ptr(2969, 2970, 1), new Range16.ptr(2972, 2974, 2), new Range16.ptr(2975, 2979, 4), new Range16.ptr(2980, 2984, 4), new Range16.ptr(2985, 2986, 1), new Range16.ptr(2990, 3001, 1), new Range16.ptr(3024, 3077, 53), new Range16.ptr(3078, 3084, 1), new Range16.ptr(3086, 3088, 1), new Range16.ptr(3090, 3112, 1), new Range16.ptr(3114, 3129, 1), new Range16.ptr(3133, 3160, 27), new Range16.ptr(3161, 3162, 1), new Range16.ptr(3168, 3169, 1), new Range16.ptr(3200, 3205, 5), new Range16.ptr(3206, 3212, 1), new Range16.ptr(3214, 3216, 1), new Range16.ptr(3218, 3240, 1), new Range16.ptr(3242, 3251, 1), new Range16.ptr(3253, 3257, 1), new Range16.ptr(3261, 3294, 33), new Range16.ptr(3296, 3297, 1), new Range16.ptr(3313, 3314, 1), new Range16.ptr(3333, 3340, 1), new Range16.ptr(3342, 3344, 1), new Range16.ptr(3346, 3386, 1), new Range16.ptr(3389, 3406, 17), new Range16.ptr(3412, 3414, 1), new Range16.ptr(3423, 3425, 1), new Range16.ptr(3450, 3455, 1), new Range16.ptr(3461, 3478, 1), new Range16.ptr(3482, 3505, 1), new Range16.ptr(3507, 3515, 1), new Range16.ptr(3517, 3520, 3), new Range16.ptr(3521, 3526, 1), new Range16.ptr(3585, 3632, 1), new Range16.ptr(3634, 3635, 1), new Range16.ptr(3648, 3654, 1), new Range16.ptr(3713, 3714, 1), new Range16.ptr(3716, 3719, 3), new Range16.ptr(3720, 3722, 2), new Range16.ptr(3725, 3732, 7), new Range16.ptr(3733, 3735, 1), new Range16.ptr(3737, 3743, 1), new Range16.ptr(3745, 3747, 1), new Range16.ptr(3749, 3751, 2), new Range16.ptr(3754, 3755, 1), new Range16.ptr(3757, 3760, 1), new Range16.ptr(3762, 3763, 1), new Range16.ptr(3773, 3776, 3), new Range16.ptr(3777, 3780, 1), new Range16.ptr(3782, 3804, 22), new Range16.ptr(3805, 3807, 1), new Range16.ptr(3840, 3904, 64), new Range16.ptr(3905, 3911, 1), new Range16.ptr(3913, 3948, 1), new Range16.ptr(3976, 3980, 1), new Range16.ptr(4096, 4138, 1), new Range16.ptr(4159, 4176, 17), new Range16.ptr(4177, 4181, 1), new Range16.ptr(4186, 4189, 1), new Range16.ptr(4193, 4197, 4), new Range16.ptr(4198, 4206, 8), new Range16.ptr(4207, 4208, 1), new Range16.ptr(4213, 4225, 1), new Range16.ptr(4238, 4256, 18), new Range16.ptr(4257, 4293, 1), new Range16.ptr(4295, 4301, 6), new Range16.ptr(4304, 4346, 1), new Range16.ptr(4348, 4680, 1), new Range16.ptr(4682, 4685, 1), new Range16.ptr(4688, 4694, 1), new Range16.ptr(4696, 4698, 2), new Range16.ptr(4699, 4701, 1), new Range16.ptr(4704, 4744, 1), new Range16.ptr(4746, 4749, 1), new Range16.ptr(4752, 4784, 1), new Range16.ptr(4786, 4789, 1), new Range16.ptr(4792, 4798, 1), new Range16.ptr(4800, 4802, 2), new Range16.ptr(4803, 4805, 1), new Range16.ptr(4808, 4822, 1), new Range16.ptr(4824, 4880, 1), new Range16.ptr(4882, 4885, 1), new Range16.ptr(4888, 4954, 1), new Range16.ptr(4992, 5007, 1), new Range16.ptr(5024, 5109, 1), new Range16.ptr(5112, 5117, 1), new Range16.ptr(5121, 5740, 1), new Range16.ptr(5743, 5759, 1), new Range16.ptr(5761, 5786, 1), new Range16.ptr(5792, 5866, 1), new Range16.ptr(5873, 5880, 1), new Range16.ptr(5888, 5900, 1), new Range16.ptr(5902, 5905, 1), new Range16.ptr(5920, 5937, 1), new Range16.ptr(5952, 5969, 1), new Range16.ptr(5984, 5996, 1), new Range16.ptr(5998, 6000, 1), new Range16.ptr(6016, 6067, 1), new Range16.ptr(6103, 6108, 5), new Range16.ptr(6176, 6263, 1), new Range16.ptr(6272, 6276, 1), new Range16.ptr(6279, 6312, 1), new Range16.ptr(6314, 6320, 6), new Range16.ptr(6321, 6389, 1), new Range16.ptr(6400, 6430, 1), new Range16.ptr(6480, 6509, 1), new Range16.ptr(6512, 6516, 1), new Range16.ptr(6528, 6571, 1), new Range16.ptr(6576, 6601, 1), new Range16.ptr(6656, 6678, 1), new Range16.ptr(6688, 6740, 1), new Range16.ptr(6823, 6917, 94), new Range16.ptr(6918, 6963, 1), new Range16.ptr(6981, 6987, 1), new Range16.ptr(7043, 7072, 1), new Range16.ptr(7086, 7087, 1), new Range16.ptr(7098, 7141, 1), new Range16.ptr(7168, 7203, 1), new Range16.ptr(7245, 7247, 1), new Range16.ptr(7258, 7293, 1), new Range16.ptr(7296, 7304, 1), new Range16.ptr(7401, 7404, 1), new Range16.ptr(7406, 7409, 1), new Range16.ptr(7413, 7414, 1), new Range16.ptr(7424, 7615, 1), new Range16.ptr(7680, 7957, 1), new Range16.ptr(7960, 7965, 1), new Range16.ptr(7968, 8005, 1), new Range16.ptr(8008, 8013, 1), new Range16.ptr(8016, 8023, 1), new Range16.ptr(8025, 8031, 2), new Range16.ptr(8032, 8061, 1), new Range16.ptr(8064, 8116, 1), new Range16.ptr(8118, 8124, 1), new Range16.ptr(8126, 8130, 4), new Range16.ptr(8131, 8132, 1), new Range16.ptr(8134, 8140, 1), new Range16.ptr(8144, 8147, 1), new Range16.ptr(8150, 8155, 1), new Range16.ptr(8160, 8172, 1), new Range16.ptr(8178, 8180, 1), new Range16.ptr(8182, 8188, 1), new Range16.ptr(8305, 8319, 14), new Range16.ptr(8336, 8348, 1), new Range16.ptr(8450, 8455, 5), new Range16.ptr(8458, 8467, 1), new Range16.ptr(8469, 8473, 4), new Range16.ptr(8474, 8477, 1), new Range16.ptr(8484, 8490, 2), new Range16.ptr(8491, 8493, 1), new Range16.ptr(8495, 8505, 1), new Range16.ptr(8508, 8511, 1), new Range16.ptr(8517, 8521, 1), new Range16.ptr(8526, 8579, 53), new Range16.ptr(8580, 11264, 2684), new Range16.ptr(11265, 11310, 1), new Range16.ptr(11312, 11358, 1), new Range16.ptr(11360, 11492, 1), new Range16.ptr(11499, 11502, 1), new Range16.ptr(11506, 11507, 1), new Range16.ptr(11520, 11557, 1), new Range16.ptr(11559, 11565, 6), new Range16.ptr(11568, 11623, 1), new Range16.ptr(11631, 11648, 17), new Range16.ptr(11649, 11670, 1), new Range16.ptr(11680, 11686, 1), new Range16.ptr(11688, 11694, 1), new Range16.ptr(11696, 11702, 1), new Range16.ptr(11704, 11710, 1), new Range16.ptr(11712, 11718, 1), new Range16.ptr(11720, 11726, 1), new Range16.ptr(11728, 11734, 1), new Range16.ptr(11736, 11742, 1), new Range16.ptr(11823, 12293, 470), new Range16.ptr(12294, 12337, 43), new Range16.ptr(12338, 12341, 1), new Range16.ptr(12347, 12348, 1), new Range16.ptr(12353, 12438, 1), new Range16.ptr(12445, 12447, 1), new Range16.ptr(12449, 12538, 1), new Range16.ptr(12540, 12543, 1), new Range16.ptr(12549, 12590, 1), new Range16.ptr(12593, 12686, 1), new Range16.ptr(12704, 12730, 1), new Range16.ptr(12784, 12799, 1), new Range16.ptr(13312, 19893, 1), new Range16.ptr(19968, 40938, 1), new Range16.ptr(40960, 42124, 1), new Range16.ptr(42192, 42237, 1), new Range16.ptr(42240, 42508, 1), new Range16.ptr(42512, 42527, 1), new Range16.ptr(42538, 42539, 1), new Range16.ptr(42560, 42606, 1), new Range16.ptr(42623, 42653, 1), new Range16.ptr(42656, 42725, 1), new Range16.ptr(42775, 42783, 1), new Range16.ptr(42786, 42888, 1), new Range16.ptr(42891, 42926, 1), new Range16.ptr(42928, 42935, 1), new Range16.ptr(42999, 43009, 1), new Range16.ptr(43011, 43013, 1), new Range16.ptr(43015, 43018, 1), new Range16.ptr(43020, 43042, 1), new Range16.ptr(43072, 43123, 1), new Range16.ptr(43138, 43187, 1), new Range16.ptr(43250, 43255, 1), new Range16.ptr(43259, 43261, 2), new Range16.ptr(43274, 43301, 1), new Range16.ptr(43312, 43334, 1), new Range16.ptr(43360, 43388, 1), new Range16.ptr(43396, 43442, 1), new Range16.ptr(43471, 43488, 17), new Range16.ptr(43489, 43492, 1), new Range16.ptr(43494, 43503, 1), new Range16.ptr(43514, 43518, 1), new Range16.ptr(43520, 43560, 1), new Range16.ptr(43584, 43586, 1), new Range16.ptr(43588, 43595, 1), new Range16.ptr(43616, 43638, 1), new Range16.ptr(43642, 43646, 4), new Range16.ptr(43647, 43695, 1), new Range16.ptr(43697, 43701, 4), new Range16.ptr(43702, 43705, 3), new Range16.ptr(43706, 43709, 1), new Range16.ptr(43712, 43714, 2), new Range16.ptr(43739, 43741, 1), new Range16.ptr(43744, 43754, 1), new Range16.ptr(43762, 43764, 1), new Range16.ptr(43777, 43782, 1), new Range16.ptr(43785, 43790, 1), new Range16.ptr(43793, 43798, 1), new Range16.ptr(43808, 43814, 1), new Range16.ptr(43816, 43822, 1), new Range16.ptr(43824, 43866, 1), new Range16.ptr(43868, 43877, 1), new Range16.ptr(43888, 44002, 1), new Range16.ptr(44032, 55203, 1), new Range16.ptr(55216, 55238, 1), new Range16.ptr(55243, 55291, 1), new Range16.ptr(63744, 64109, 1), new Range16.ptr(64112, 64217, 1), new Range16.ptr(64256, 64262, 1), new Range16.ptr(64275, 64279, 1), new Range16.ptr(64285, 64287, 2), new Range16.ptr(64288, 64296, 1), new Range16.ptr(64298, 64310, 1), new Range16.ptr(64312, 64316, 1), new Range16.ptr(64318, 64320, 2), new Range16.ptr(64321, 64323, 2), new Range16.ptr(64324, 64326, 2), new Range16.ptr(64327, 64433, 1), new Range16.ptr(64467, 64829, 1), new Range16.ptr(64848, 64911, 1), new Range16.ptr(64914, 64967, 1), new Range16.ptr(65008, 65019, 1), new Range16.ptr(65136, 65140, 1), new Range16.ptr(65142, 65276, 1), new Range16.ptr(65313, 65338, 1), new Range16.ptr(65345, 65370, 1), new Range16.ptr(65382, 65470, 1), new Range16.ptr(65474, 65479, 1), new Range16.ptr(65482, 65487, 1), new Range16.ptr(65490, 65495, 1), new Range16.ptr(65498, 65500, 1)]), new sliceType$1([new Range32.ptr(65536, 65547, 1), new Range32.ptr(65549, 65574, 1), new Range32.ptr(65576, 65594, 1), new Range32.ptr(65596, 65597, 1), new Range32.ptr(65599, 65613, 1), new Range32.ptr(65616, 65629, 1), new Range32.ptr(65664, 65786, 1), new Range32.ptr(66176, 66204, 1), new Range32.ptr(66208, 66256, 1), new Range32.ptr(66304, 66335, 1), new Range32.ptr(66349, 66368, 1), new Range32.ptr(66370, 66377, 1), new Range32.ptr(66384, 66421, 1), new Range32.ptr(66432, 66461, 1), new Range32.ptr(66464, 66499, 1), new Range32.ptr(66504, 66511, 1), new Range32.ptr(66560, 66717, 1), new Range32.ptr(66736, 66771, 1), new Range32.ptr(66776, 66811, 1), new Range32.ptr(66816, 66855, 1), new Range32.ptr(66864, 66915, 1), new Range32.ptr(67072, 67382, 1), new Range32.ptr(67392, 67413, 1), new Range32.ptr(67424, 67431, 1), new Range32.ptr(67584, 67589, 1), new Range32.ptr(67592, 67594, 2), new Range32.ptr(67595, 67637, 1), new Range32.ptr(67639, 67640, 1), new Range32.ptr(67644, 67647, 3), new Range32.ptr(67648, 67669, 1), new Range32.ptr(67680, 67702, 1), new Range32.ptr(67712, 67742, 1), new Range32.ptr(67808, 67826, 1), new Range32.ptr(67828, 67829, 1), new Range32.ptr(67840, 67861, 1), new Range32.ptr(67872, 67897, 1), new Range32.ptr(67968, 68023, 1), new Range32.ptr(68030, 68031, 1), new Range32.ptr(68096, 68112, 16), new Range32.ptr(68113, 68115, 1), new Range32.ptr(68117, 68119, 1), new Range32.ptr(68121, 68147, 1), new Range32.ptr(68192, 68220, 1), new Range32.ptr(68224, 68252, 1), new Range32.ptr(68288, 68295, 1), new Range32.ptr(68297, 68324, 1), new Range32.ptr(68352, 68405, 1), new Range32.ptr(68416, 68437, 1), new Range32.ptr(68448, 68466, 1), new Range32.ptr(68480, 68497, 1), new Range32.ptr(68608, 68680, 1), new Range32.ptr(68736, 68786, 1), new Range32.ptr(68800, 68850, 1), new Range32.ptr(69635, 69687, 1), new Range32.ptr(69763, 69807, 1), new Range32.ptr(69840, 69864, 1), new Range32.ptr(69891, 69926, 1), new Range32.ptr(69968, 70002, 1), new Range32.ptr(70006, 70019, 13), new Range32.ptr(70020, 70066, 1), new Range32.ptr(70081, 70084, 1), new Range32.ptr(70106, 70108, 2), new Range32.ptr(70144, 70161, 1), new Range32.ptr(70163, 70187, 1), new Range32.ptr(70272, 70278, 1), new Range32.ptr(70280, 70282, 2), new Range32.ptr(70283, 70285, 1), new Range32.ptr(70287, 70301, 1), new Range32.ptr(70303, 70312, 1), new Range32.ptr(70320, 70366, 1), new Range32.ptr(70405, 70412, 1), new Range32.ptr(70415, 70416, 1), new Range32.ptr(70419, 70440, 1), new Range32.ptr(70442, 70448, 1), new Range32.ptr(70450, 70451, 1), new Range32.ptr(70453, 70457, 1), new Range32.ptr(70461, 70480, 19), new Range32.ptr(70493, 70497, 1), new Range32.ptr(70656, 70708, 1), new Range32.ptr(70727, 70730, 1), new Range32.ptr(70784, 70831, 1), new Range32.ptr(70852, 70853, 1), new Range32.ptr(70855, 71040, 185), new Range32.ptr(71041, 71086, 1), new Range32.ptr(71128, 71131, 1), new Range32.ptr(71168, 71215, 1), new Range32.ptr(71236, 71296, 60), new Range32.ptr(71297, 71338, 1), new Range32.ptr(71424, 71449, 1), new Range32.ptr(71840, 71903, 1), new Range32.ptr(71935, 72192, 257), new Range32.ptr(72203, 72242, 1), new Range32.ptr(72250, 72272, 22), new Range32.ptr(72284, 72323, 1), new Range32.ptr(72326, 72329, 1), new Range32.ptr(72384, 72440, 1), new Range32.ptr(72704, 72712, 1), new Range32.ptr(72714, 72750, 1), new Range32.ptr(72768, 72818, 50), new Range32.ptr(72819, 72847, 1), new Range32.ptr(72960, 72966, 1), new Range32.ptr(72968, 72969, 1), new Range32.ptr(72971, 73008, 1), new Range32.ptr(73030, 73728, 698), new Range32.ptr(73729, 74649, 1), new Range32.ptr(74880, 75075, 1), new Range32.ptr(77824, 78894, 1), new Range32.ptr(82944, 83526, 1), new Range32.ptr(92160, 92728, 1), new Range32.ptr(92736, 92766, 1), new Range32.ptr(92880, 92909, 1), new Range32.ptr(92928, 92975, 1), new Range32.ptr(92992, 92995, 1), new Range32.ptr(93027, 93047, 1), new Range32.ptr(93053, 93071, 1), new Range32.ptr(93952, 94020, 1), new Range32.ptr(94032, 94099, 67), new Range32.ptr(94100, 94111, 1), new Range32.ptr(94176, 94177, 1), new Range32.ptr(94208, 100332, 1), new Range32.ptr(100352, 101106, 1), new Range32.ptr(110592, 110878, 1), new Range32.ptr(110960, 111355, 1), new Range32.ptr(113664, 113770, 1), new Range32.ptr(113776, 113788, 1), new Range32.ptr(113792, 113800, 1), new Range32.ptr(113808, 113817, 1), new Range32.ptr(119808, 119892, 1), new Range32.ptr(119894, 119964, 1), new Range32.ptr(119966, 119967, 1), new Range32.ptr(119970, 119973, 3), new Range32.ptr(119974, 119977, 3), new Range32.ptr(119978, 119980, 1), new Range32.ptr(119982, 119993, 1), new Range32.ptr(119995, 119997, 2), new Range32.ptr(119998, 120003, 1), new Range32.ptr(120005, 120069, 1), new Range32.ptr(120071, 120074, 1), new Range32.ptr(120077, 120084, 1), new Range32.ptr(120086, 120092, 1), new Range32.ptr(120094, 120121, 1), new Range32.ptr(120123, 120126, 1), new Range32.ptr(120128, 120132, 1), new Range32.ptr(120134, 120138, 4), new Range32.ptr(120139, 120144, 1), new Range32.ptr(120146, 120485, 1), new Range32.ptr(120488, 120512, 1), new Range32.ptr(120514, 120538, 1), new Range32.ptr(120540, 120570, 1), new Range32.ptr(120572, 120596, 1), new Range32.ptr(120598, 120628, 1), new Range32.ptr(120630, 120654, 1), new Range32.ptr(120656, 120686, 1), new Range32.ptr(120688, 120712, 1), new Range32.ptr(120714, 120744, 1), new Range32.ptr(120746, 120770, 1), new Range32.ptr(120772, 120779, 1), new Range32.ptr(124928, 125124, 1), new Range32.ptr(125184, 125251, 1), new Range32.ptr(126464, 126467, 1), new Range32.ptr(126469, 126495, 1), new Range32.ptr(126497, 126498, 1), new Range32.ptr(126500, 126503, 3), new Range32.ptr(126505, 126514, 1), new Range32.ptr(126516, 126519, 1), new Range32.ptr(126521, 126523, 2), new Range32.ptr(126530, 126535, 5), new Range32.ptr(126537, 126541, 2), new Range32.ptr(126542, 126543, 1), new Range32.ptr(126545, 126546, 1), new Range32.ptr(126548, 126551, 3), new Range32.ptr(126553, 126561, 2), new Range32.ptr(126562, 126564, 2), new Range32.ptr(126567, 126570, 1), new Range32.ptr(126572, 126578, 1), new Range32.ptr(126580, 126583, 1), new Range32.ptr(126585, 126588, 1), new Range32.ptr(126590, 126592, 2), new Range32.ptr(126593, 126601, 1), new Range32.ptr(126603, 126619, 1), new Range32.ptr(126625, 126627, 1), new Range32.ptr(126629, 126633, 1), new Range32.ptr(126635, 126651, 1), new Range32.ptr(131072, 173782, 1), new Range32.ptr(173824, 177972, 1), new Range32.ptr(177984, 178205, 1), new Range32.ptr(178208, 183969, 1), new Range32.ptr(183984, 191456, 1), new Range32.ptr(194560, 195101, 1)]), 6);
-		_Nd = new RangeTable.ptr(new sliceType([new Range16.ptr(48, 57, 1), new Range16.ptr(1632, 1641, 1), new Range16.ptr(1776, 1785, 1), new Range16.ptr(1984, 1993, 1), new Range16.ptr(2406, 2415, 1), new Range16.ptr(2534, 2543, 1), new Range16.ptr(2662, 2671, 1), new Range16.ptr(2790, 2799, 1), new Range16.ptr(2918, 2927, 1), new Range16.ptr(3046, 3055, 1), new Range16.ptr(3174, 3183, 1), new Range16.ptr(3302, 3311, 1), new Range16.ptr(3430, 3439, 1), new Range16.ptr(3558, 3567, 1), new Range16.ptr(3664, 3673, 1), new Range16.ptr(3792, 3801, 1), new Range16.ptr(3872, 3881, 1), new Range16.ptr(4160, 4169, 1), new Range16.ptr(4240, 4249, 1), new Range16.ptr(6112, 6121, 1), new Range16.ptr(6160, 6169, 1), new Range16.ptr(6470, 6479, 1), new Range16.ptr(6608, 6617, 1), new Range16.ptr(6784, 6793, 1), new Range16.ptr(6800, 6809, 1), new Range16.ptr(6992, 7001, 1), new Range16.ptr(7088, 7097, 1), new Range16.ptr(7232, 7241, 1), new Range16.ptr(7248, 7257, 1), new Range16.ptr(42528, 42537, 1), new Range16.ptr(43216, 43225, 1), new Range16.ptr(43264, 43273, 1), new Range16.ptr(43472, 43481, 1), new Range16.ptr(43504, 43513, 1), new Range16.ptr(43600, 43609, 1), new Range16.ptr(44016, 44025, 1), new Range16.ptr(65296, 65305, 1)]), new sliceType$1([new Range32.ptr(66720, 66729, 1), new Range32.ptr(69734, 69743, 1), new Range32.ptr(69872, 69881, 1), new Range32.ptr(69942, 69951, 1), new Range32.ptr(70096, 70105, 1), new Range32.ptr(70384, 70393, 1), new Range32.ptr(70736, 70745, 1), new Range32.ptr(70864, 70873, 1), new Range32.ptr(71248, 71257, 1), new Range32.ptr(71360, 71369, 1), new Range32.ptr(71472, 71481, 1), new Range32.ptr(71904, 71913, 1), new Range32.ptr(72784, 72793, 1), new Range32.ptr(73040, 73049, 1), new Range32.ptr(92768, 92777, 1), new Range32.ptr(93008, 93017, 1), new Range32.ptr(120782, 120831, 1), new Range32.ptr(125264, 125273, 1)]), 1);
-		$pkg.Digit = _Nd;
-		$pkg.Letter = _L;
-		_White_Space = new RangeTable.ptr(new sliceType([new Range16.ptr(9, 13, 1), new Range16.ptr(32, 32, 1), new Range16.ptr(133, 133, 1), new Range16.ptr(160, 160, 1), new Range16.ptr(5760, 5760, 1), new Range16.ptr(8192, 8202, 1), new Range16.ptr(8232, 8233, 1), new Range16.ptr(8239, 8239, 1), new Range16.ptr(8287, 8287, 1), new Range16.ptr(12288, 12288, 1)]), sliceType$1.nil, 4);
-		$pkg.White_Space = _White_Space;
-		_CaseRanges = new sliceType$3([new CaseRange.ptr(65, 90, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(97, 122, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(181, 181, $toNativeArray($kindInt32, [743, 0, 743])), new CaseRange.ptr(192, 214, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(216, 222, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(224, 246, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(248, 254, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(255, 255, $toNativeArray($kindInt32, [121, 0, 121])), new CaseRange.ptr(256, 303, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(304, 304, $toNativeArray($kindInt32, [0, -199, 0])), new CaseRange.ptr(305, 305, $toNativeArray($kindInt32, [-232, 0, -232])), new CaseRange.ptr(306, 311, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(313, 328, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(330, 375, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(376, 376, $toNativeArray($kindInt32, [0, -121, 0])), new CaseRange.ptr(377, 382, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(383, 383, $toNativeArray($kindInt32, [-300, 0, -300])), new CaseRange.ptr(384, 384, $toNativeArray($kindInt32, [195, 0, 195])), new CaseRange.ptr(385, 385, $toNativeArray($kindInt32, [0, 210, 0])), new CaseRange.ptr(386, 389, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(390, 390, $toNativeArray($kindInt32, [0, 206, 0])), new CaseRange.ptr(391, 392, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(393, 394, $toNativeArray($kindInt32, [0, 205, 0])), new CaseRange.ptr(395, 396, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(398, 398, $toNativeArray($kindInt32, [0, 79, 0])), new CaseRange.ptr(399, 399, $toNativeArray($kindInt32, [0, 202, 0])), new CaseRange.ptr(400, 400, $toNativeArray($kindInt32, [0, 203, 0])), new CaseRange.ptr(401, 402, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(403, 403, $toNativeArray($kindInt32, [0, 205, 0])), new CaseRange.ptr(404, 404, $toNativeArray($kindInt32, [0, 207, 0])), new CaseRange.ptr(405, 405, $toNativeArray($kindInt32, [97, 0, 97])), new CaseRange.ptr(406, 406, $toNativeArray($kindInt32, [0, 211, 0])), new CaseRange.ptr(407, 407, $toNativeArray($kindInt32, [0, 209, 0])), new CaseRange.ptr(408, 409, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(410, 410, $toNativeArray($kindInt32, [163, 0, 163])), new CaseRange.ptr(412, 412, $toNativeArray($kindInt32, [0, 211, 0])), new CaseRange.ptr(413, 413, $toNativeArray($kindInt32, [0, 213, 0])), new CaseRange.ptr(414, 414, $toNativeArray($kindInt32, [130, 0, 130])), new CaseRange.ptr(415, 415, $toNativeArray($kindInt32, [0, 214, 0])), new CaseRange.ptr(416, 421, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(422, 422, $toNativeArray($kindInt32, [0, 218, 0])), new CaseRange.ptr(423, 424, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(425, 425, $toNativeArray($kindInt32, [0, 218, 0])), new CaseRange.ptr(428, 429, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(430, 430, $toNativeArray($kindInt32, [0, 218, 0])), new CaseRange.ptr(431, 432, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(433, 434, $toNativeArray($kindInt32, [0, 217, 0])), new CaseRange.ptr(435, 438, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(439, 439, $toNativeArray($kindInt32, [0, 219, 0])), new CaseRange.ptr(440, 441, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(444, 445, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(447, 447, $toNativeArray($kindInt32, [56, 0, 56])), new CaseRange.ptr(452, 452, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(453, 453, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(454, 454, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(455, 455, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(456, 456, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(457, 457, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(458, 458, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(459, 459, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(460, 460, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(461, 476, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(477, 477, $toNativeArray($kindInt32, [-79, 0, -79])), new CaseRange.ptr(478, 495, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(497, 497, $toNativeArray($kindInt32, [0, 2, 1])), new CaseRange.ptr(498, 498, $toNativeArray($kindInt32, [-1, 1, 0])), new CaseRange.ptr(499, 499, $toNativeArray($kindInt32, [-2, 0, -1])), new CaseRange.ptr(500, 501, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(502, 502, $toNativeArray($kindInt32, [0, -97, 0])), new CaseRange.ptr(503, 503, $toNativeArray($kindInt32, [0, -56, 0])), new CaseRange.ptr(504, 543, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(544, 544, $toNativeArray($kindInt32, [0, -130, 0])), new CaseRange.ptr(546, 563, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(570, 570, $toNativeArray($kindInt32, [0, 10795, 0])), new CaseRange.ptr(571, 572, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(573, 573, $toNativeArray($kindInt32, [0, -163, 0])), new CaseRange.ptr(574, 574, $toNativeArray($kindInt32, [0, 10792, 0])), new CaseRange.ptr(575, 576, $toNativeArray($kindInt32, [10815, 0, 10815])), new CaseRange.ptr(577, 578, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(579, 579, $toNativeArray($kindInt32, [0, -195, 0])), new CaseRange.ptr(580, 580, $toNativeArray($kindInt32, [0, 69, 0])), new CaseRange.ptr(581, 581, $toNativeArray($kindInt32, [0, 71, 0])), new CaseRange.ptr(582, 591, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(592, 592, $toNativeArray($kindInt32, [10783, 0, 10783])), new CaseRange.ptr(593, 593, $toNativeArray($kindInt32, [10780, 0, 10780])), new CaseRange.ptr(594, 594, $toNativeArray($kindInt32, [10782, 0, 10782])), new CaseRange.ptr(595, 595, $toNativeArray($kindInt32, [-210, 0, -210])), new CaseRange.ptr(596, 596, $toNativeArray($kindInt32, [-206, 0, -206])), new CaseRange.ptr(598, 599, $toNativeArray($kindInt32, [-205, 0, -205])), new CaseRange.ptr(601, 601, $toNativeArray($kindInt32, [-202, 0, -202])), new CaseRange.ptr(603, 603, $toNativeArray($kindInt32, [-203, 0, -203])), new CaseRange.ptr(604, 604, $toNativeArray($kindInt32, [42319, 0, 42319])), new CaseRange.ptr(608, 608, $toNativeArray($kindInt32, [-205, 0, -205])), new CaseRange.ptr(609, 609, $toNativeArray($kindInt32, [42315, 0, 42315])), new CaseRange.ptr(611, 611, $toNativeArray($kindInt32, [-207, 0, -207])), new CaseRange.ptr(613, 613, $toNativeArray($kindInt32, [42280, 0, 42280])), new CaseRange.ptr(614, 614, $toNativeArray($kindInt32, [42308, 0, 42308])), new CaseRange.ptr(616, 616, $toNativeArray($kindInt32, [-209, 0, -209])), new CaseRange.ptr(617, 617, $toNativeArray($kindInt32, [-211, 0, -211])), new CaseRange.ptr(618, 618, $toNativeArray($kindInt32, [42308, 0, 42308])), new CaseRange.ptr(619, 619, $toNativeArray($kindInt32, [10743, 0, 10743])), new CaseRange.ptr(620, 620, $toNativeArray($kindInt32, [42305, 0, 42305])), new CaseRange.ptr(623, 623, $toNativeArray($kindInt32, [-211, 0, -211])), new CaseRange.ptr(625, 625, $toNativeArray($kindInt32, [10749, 0, 10749])), new CaseRange.ptr(626, 626, $toNativeArray($kindInt32, [-213, 0, -213])), new CaseRange.ptr(629, 629, $toNativeArray($kindInt32, [-214, 0, -214])), new CaseRange.ptr(637, 637, $toNativeArray($kindInt32, [10727, 0, 10727])), new CaseRange.ptr(640, 640, $toNativeArray($kindInt32, [-218, 0, -218])), new CaseRange.ptr(643, 643, $toNativeArray($kindInt32, [-218, 0, -218])), new CaseRange.ptr(647, 647, $toNativeArray($kindInt32, [42282, 0, 42282])), new CaseRange.ptr(648, 648, $toNativeArray($kindInt32, [-218, 0, -218])), new CaseRange.ptr(649, 649, $toNativeArray($kindInt32, [-69, 0, -69])), new CaseRange.ptr(650, 651, $toNativeArray($kindInt32, [-217, 0, -217])), new CaseRange.ptr(652, 652, $toNativeArray($kindInt32, [-71, 0, -71])), new CaseRange.ptr(658, 658, $toNativeArray($kindInt32, [-219, 0, -219])), new CaseRange.ptr(669, 669, $toNativeArray($kindInt32, [42261, 0, 42261])), new CaseRange.ptr(670, 670, $toNativeArray($kindInt32, [42258, 0, 42258])), new CaseRange.ptr(837, 837, $toNativeArray($kindInt32, [84, 0, 84])), new CaseRange.ptr(880, 883, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(886, 887, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(891, 893, $toNativeArray($kindInt32, [130, 0, 130])), new CaseRange.ptr(895, 895, $toNativeArray($kindInt32, [0, 116, 0])), new CaseRange.ptr(902, 902, $toNativeArray($kindInt32, [0, 38, 0])), new CaseRange.ptr(904, 906, $toNativeArray($kindInt32, [0, 37, 0])), new CaseRange.ptr(908, 908, $toNativeArray($kindInt32, [0, 64, 0])), new CaseRange.ptr(910, 911, $toNativeArray($kindInt32, [0, 63, 0])), new CaseRange.ptr(913, 929, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(931, 939, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(940, 940, $toNativeArray($kindInt32, [-38, 0, -38])), new CaseRange.ptr(941, 943, $toNativeArray($kindInt32, [-37, 0, -37])), new CaseRange.ptr(945, 961, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(962, 962, $toNativeArray($kindInt32, [-31, 0, -31])), new CaseRange.ptr(963, 971, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(972, 972, $toNativeArray($kindInt32, [-64, 0, -64])), new CaseRange.ptr(973, 974, $toNativeArray($kindInt32, [-63, 0, -63])), new CaseRange.ptr(975, 975, $toNativeArray($kindInt32, [0, 8, 0])), new CaseRange.ptr(976, 976, $toNativeArray($kindInt32, [-62, 0, -62])), new CaseRange.ptr(977, 977, $toNativeArray($kindInt32, [-57, 0, -57])), new CaseRange.ptr(981, 981, $toNativeArray($kindInt32, [-47, 0, -47])), new CaseRange.ptr(982, 982, $toNativeArray($kindInt32, [-54, 0, -54])), new CaseRange.ptr(983, 983, $toNativeArray($kindInt32, [-8, 0, -8])), new CaseRange.ptr(984, 1007, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1008, 1008, $toNativeArray($kindInt32, [-86, 0, -86])), new CaseRange.ptr(1009, 1009, $toNativeArray($kindInt32, [-80, 0, -80])), new CaseRange.ptr(1010, 1010, $toNativeArray($kindInt32, [7, 0, 7])), new CaseRange.ptr(1011, 1011, $toNativeArray($kindInt32, [-116, 0, -116])), new CaseRange.ptr(1012, 1012, $toNativeArray($kindInt32, [0, -60, 0])), new CaseRange.ptr(1013, 1013, $toNativeArray($kindInt32, [-96, 0, -96])), new CaseRange.ptr(1015, 1016, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1017, 1017, $toNativeArray($kindInt32, [0, -7, 0])), new CaseRange.ptr(1018, 1019, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1021, 1023, $toNativeArray($kindInt32, [0, -130, 0])), new CaseRange.ptr(1024, 1039, $toNativeArray($kindInt32, [0, 80, 0])), new CaseRange.ptr(1040, 1071, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(1072, 1103, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(1104, 1119, $toNativeArray($kindInt32, [-80, 0, -80])), new CaseRange.ptr(1120, 1153, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1162, 1215, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1216, 1216, $toNativeArray($kindInt32, [0, 15, 0])), new CaseRange.ptr(1217, 1230, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1231, 1231, $toNativeArray($kindInt32, [-15, 0, -15])), new CaseRange.ptr(1232, 1327, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(1329, 1366, $toNativeArray($kindInt32, [0, 48, 0])), new CaseRange.ptr(1377, 1414, $toNativeArray($kindInt32, [-48, 0, -48])), new CaseRange.ptr(4256, 4293, $toNativeArray($kindInt32, [0, 7264, 0])), new CaseRange.ptr(4295, 4295, $toNativeArray($kindInt32, [0, 7264, 0])), new CaseRange.ptr(4301, 4301, $toNativeArray($kindInt32, [0, 7264, 0])), new CaseRange.ptr(5024, 5103, $toNativeArray($kindInt32, [0, 38864, 0])), new CaseRange.ptr(5104, 5109, $toNativeArray($kindInt32, [0, 8, 0])), new CaseRange.ptr(5112, 5117, $toNativeArray($kindInt32, [-8, 0, -8])), new CaseRange.ptr(7296, 7296, $toNativeArray($kindInt32, [-6254, 0, -6254])), new CaseRange.ptr(7297, 7297, $toNativeArray($kindInt32, [-6253, 0, -6253])), new CaseRange.ptr(7298, 7298, $toNativeArray($kindInt32, [-6244, 0, -6244])), new CaseRange.ptr(7299, 7300, $toNativeArray($kindInt32, [-6242, 0, -6242])), new CaseRange.ptr(7301, 7301, $toNativeArray($kindInt32, [-6243, 0, -6243])), new CaseRange.ptr(7302, 7302, $toNativeArray($kindInt32, [-6236, 0, -6236])), new CaseRange.ptr(7303, 7303, $toNativeArray($kindInt32, [-6181, 0, -6181])), new CaseRange.ptr(7304, 7304, $toNativeArray($kindInt32, [35266, 0, 35266])), new CaseRange.ptr(7545, 7545, $toNativeArray($kindInt32, [35332, 0, 35332])), new CaseRange.ptr(7549, 7549, $toNativeArray($kindInt32, [3814, 0, 3814])), new CaseRange.ptr(7680, 7829, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(7835, 7835, $toNativeArray($kindInt32, [-59, 0, -59])), new CaseRange.ptr(7838, 7838, $toNativeArray($kindInt32, [0, -7615, 0])), new CaseRange.ptr(7840, 7935, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(7936, 7943, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7944, 7951, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(7952, 7957, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7960, 7965, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(7968, 7975, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7976, 7983, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(7984, 7991, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(7992, 7999, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8000, 8005, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8008, 8013, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8017, 8017, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8019, 8019, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8021, 8021, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8023, 8023, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8025, 8025, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8027, 8027, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8029, 8029, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8031, 8031, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8032, 8039, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8040, 8047, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8048, 8049, $toNativeArray($kindInt32, [74, 0, 74])), new CaseRange.ptr(8050, 8053, $toNativeArray($kindInt32, [86, 0, 86])), new CaseRange.ptr(8054, 8055, $toNativeArray($kindInt32, [100, 0, 100])), new CaseRange.ptr(8056, 8057, $toNativeArray($kindInt32, [128, 0, 128])), new CaseRange.ptr(8058, 8059, $toNativeArray($kindInt32, [112, 0, 112])), new CaseRange.ptr(8060, 8061, $toNativeArray($kindInt32, [126, 0, 126])), new CaseRange.ptr(8064, 8071, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8072, 8079, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8080, 8087, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8088, 8095, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8096, 8103, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8104, 8111, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8112, 8113, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8115, 8115, $toNativeArray($kindInt32, [9, 0, 9])), new CaseRange.ptr(8120, 8121, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8122, 8123, $toNativeArray($kindInt32, [0, -74, 0])), new CaseRange.ptr(8124, 8124, $toNativeArray($kindInt32, [0, -9, 0])), new CaseRange.ptr(8126, 8126, $toNativeArray($kindInt32, [-7205, 0, -7205])), new CaseRange.ptr(8131, 8131, $toNativeArray($kindInt32, [9, 0, 9])), new CaseRange.ptr(8136, 8139, $toNativeArray($kindInt32, [0, -86, 0])), new CaseRange.ptr(8140, 8140, $toNativeArray($kindInt32, [0, -9, 0])), new CaseRange.ptr(8144, 8145, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8152, 8153, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8154, 8155, $toNativeArray($kindInt32, [0, -100, 0])), new CaseRange.ptr(8160, 8161, $toNativeArray($kindInt32, [8, 0, 8])), new CaseRange.ptr(8165, 8165, $toNativeArray($kindInt32, [7, 0, 7])), new CaseRange.ptr(8168, 8169, $toNativeArray($kindInt32, [0, -8, 0])), new CaseRange.ptr(8170, 8171, $toNativeArray($kindInt32, [0, -112, 0])), new CaseRange.ptr(8172, 8172, $toNativeArray($kindInt32, [0, -7, 0])), new CaseRange.ptr(8179, 8179, $toNativeArray($kindInt32, [9, 0, 9])), new CaseRange.ptr(8184, 8185, $toNativeArray($kindInt32, [0, -128, 0])), new CaseRange.ptr(8186, 8187, $toNativeArray($kindInt32, [0, -126, 0])), new CaseRange.ptr(8188, 8188, $toNativeArray($kindInt32, [0, -9, 0])), new CaseRange.ptr(8486, 8486, $toNativeArray($kindInt32, [0, -7517, 0])), new CaseRange.ptr(8490, 8490, $toNativeArray($kindInt32, [0, -8383, 0])), new CaseRange.ptr(8491, 8491, $toNativeArray($kindInt32, [0, -8262, 0])), new CaseRange.ptr(8498, 8498, $toNativeArray($kindInt32, [0, 28, 0])), new CaseRange.ptr(8526, 8526, $toNativeArray($kindInt32, [-28, 0, -28])), new CaseRange.ptr(8544, 8559, $toNativeArray($kindInt32, [0, 16, 0])), new CaseRange.ptr(8560, 8575, $toNativeArray($kindInt32, [-16, 0, -16])), new CaseRange.ptr(8579, 8580, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(9398, 9423, $toNativeArray($kindInt32, [0, 26, 0])), new CaseRange.ptr(9424, 9449, $toNativeArray($kindInt32, [-26, 0, -26])), new CaseRange.ptr(11264, 11310, $toNativeArray($kindInt32, [0, 48, 0])), new CaseRange.ptr(11312, 11358, $toNativeArray($kindInt32, [-48, 0, -48])), new CaseRange.ptr(11360, 11361, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11362, 11362, $toNativeArray($kindInt32, [0, -10743, 0])), new CaseRange.ptr(11363, 11363, $toNativeArray($kindInt32, [0, -3814, 0])), new CaseRange.ptr(11364, 11364, $toNativeArray($kindInt32, [0, -10727, 0])), new CaseRange.ptr(11365, 11365, $toNativeArray($kindInt32, [-10795, 0, -10795])), new CaseRange.ptr(11366, 11366, $toNativeArray($kindInt32, [-10792, 0, -10792])), new CaseRange.ptr(11367, 11372, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11373, 11373, $toNativeArray($kindInt32, [0, -10780, 0])), new CaseRange.ptr(11374, 11374, $toNativeArray($kindInt32, [0, -10749, 0])), new CaseRange.ptr(11375, 11375, $toNativeArray($kindInt32, [0, -10783, 0])), new CaseRange.ptr(11376, 11376, $toNativeArray($kindInt32, [0, -10782, 0])), new CaseRange.ptr(11378, 11379, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11381, 11382, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11390, 11391, $toNativeArray($kindInt32, [0, -10815, 0])), new CaseRange.ptr(11392, 11491, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11499, 11502, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11506, 11507, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(11520, 11557, $toNativeArray($kindInt32, [-7264, 0, -7264])), new CaseRange.ptr(11559, 11559, $toNativeArray($kindInt32, [-7264, 0, -7264])), new CaseRange.ptr(11565, 11565, $toNativeArray($kindInt32, [-7264, 0, -7264])), new CaseRange.ptr(42560, 42605, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42624, 42651, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42786, 42799, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42802, 42863, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42873, 42876, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42877, 42877, $toNativeArray($kindInt32, [0, -35332, 0])), new CaseRange.ptr(42878, 42887, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42891, 42892, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42893, 42893, $toNativeArray($kindInt32, [0, -42280, 0])), new CaseRange.ptr(42896, 42899, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42902, 42921, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(42922, 42922, $toNativeArray($kindInt32, [0, -42308, 0])), new CaseRange.ptr(42923, 42923, $toNativeArray($kindInt32, [0, -42319, 0])), new CaseRange.ptr(42924, 42924, $toNativeArray($kindInt32, [0, -42315, 0])), new CaseRange.ptr(42925, 42925, $toNativeArray($kindInt32, [0, -42305, 0])), new CaseRange.ptr(42926, 42926, $toNativeArray($kindInt32, [0, -42308, 0])), new CaseRange.ptr(42928, 42928, $toNativeArray($kindInt32, [0, -42258, 0])), new CaseRange.ptr(42929, 42929, $toNativeArray($kindInt32, [0, -42282, 0])), new CaseRange.ptr(42930, 42930, $toNativeArray($kindInt32, [0, -42261, 0])), new CaseRange.ptr(42931, 42931, $toNativeArray($kindInt32, [0, 928, 0])), new CaseRange.ptr(42932, 42935, $toNativeArray($kindInt32, [1114112, 1114112, 1114112])), new CaseRange.ptr(43859, 43859, $toNativeArray($kindInt32, [-928, 0, -928])), new CaseRange.ptr(43888, 43967, $toNativeArray($kindInt32, [-38864, 0, -38864])), new CaseRange.ptr(65313, 65338, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(65345, 65370, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(66560, 66599, $toNativeArray($kindInt32, [0, 40, 0])), new CaseRange.ptr(66600, 66639, $toNativeArray($kindInt32, [-40, 0, -40])), new CaseRange.ptr(66736, 66771, $toNativeArray($kindInt32, [0, 40, 0])), new CaseRange.ptr(66776, 66811, $toNativeArray($kindInt32, [-40, 0, -40])), new CaseRange.ptr(68736, 68786, $toNativeArray($kindInt32, [0, 64, 0])), new CaseRange.ptr(68800, 68850, $toNativeArray($kindInt32, [-64, 0, -64])), new CaseRange.ptr(71840, 71871, $toNativeArray($kindInt32, [0, 32, 0])), new CaseRange.ptr(71872, 71903, $toNativeArray($kindInt32, [-32, 0, -32])), new CaseRange.ptr(125184, 125217, $toNativeArray($kindInt32, [0, 34, 0])), new CaseRange.ptr(125218, 125251, $toNativeArray($kindInt32, [-34, 0, -34]))]);
-		$pkg.CaseRanges = _CaseRanges;
-		properties = $toNativeArray($kindUint8, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 144, 130, 130, 130, 136, 130, 130, 130, 130, 130, 130, 136, 130, 130, 130, 130, 132, 132, 132, 132, 132, 132, 132, 132, 132, 132, 130, 130, 136, 136, 136, 130, 130, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 130, 130, 130, 136, 130, 136, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 130, 136, 130, 136, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 16, 130, 136, 136, 136, 136, 136, 130, 136, 136, 224, 130, 136, 0, 136, 136, 136, 136, 132, 132, 136, 192, 130, 130, 136, 132, 224, 130, 132, 132, 132, 130, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 160, 136, 160, 160, 160, 160, 160, 160, 160, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 192, 136, 192, 192, 192, 192, 192, 192, 192, 192]);
-		asciiFold = $toNativeArray($kindUint16, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 91, 92, 93, 94, 95, 96, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 8490, 76, 77, 78, 79, 80, 81, 82, 383, 84, 85, 86, 87, 88, 89, 90, 123, 124, 125, 126, 127]);
-		caseOrbit = new sliceType$4([new foldPair.ptr(75, 107), new foldPair.ptr(83, 115), new foldPair.ptr(107, 8490), new foldPair.ptr(115, 383), new foldPair.ptr(181, 924), new foldPair.ptr(197, 229), new foldPair.ptr(223, 7838), new foldPair.ptr(229, 8491), new foldPair.ptr(304, 304), new foldPair.ptr(305, 305), new foldPair.ptr(383, 83), new foldPair.ptr(452, 453), new foldPair.ptr(453, 454), new foldPair.ptr(454, 452), new foldPair.ptr(455, 456), new foldPair.ptr(456, 457), new foldPair.ptr(457, 455), new foldPair.ptr(458, 459), new foldPair.ptr(459, 460), new foldPair.ptr(460, 458), new foldPair.ptr(497, 498), new foldPair.ptr(498, 499), new foldPair.ptr(499, 497), new foldPair.ptr(837, 921), new foldPair.ptr(914, 946), new foldPair.ptr(917, 949), new foldPair.ptr(920, 952), new foldPair.ptr(921, 953), new foldPair.ptr(922, 954), new foldPair.ptr(924, 956), new foldPair.ptr(928, 960), new foldPair.ptr(929, 961), new foldPair.ptr(931, 962), new foldPair.ptr(934, 966), new foldPair.ptr(937, 969), new foldPair.ptr(946, 976), new foldPair.ptr(949, 1013), new foldPair.ptr(952, 977), new foldPair.ptr(953, 8126), new foldPair.ptr(954, 1008), new foldPair.ptr(956, 181), new foldPair.ptr(960, 982), new foldPair.ptr(961, 1009), new foldPair.ptr(962, 963), new foldPair.ptr(963, 931), new foldPair.ptr(966, 981), new foldPair.ptr(969, 8486), new foldPair.ptr(976, 914), new foldPair.ptr(977, 1012), new foldPair.ptr(981, 934), new foldPair.ptr(982, 928), new foldPair.ptr(1008, 922), new foldPair.ptr(1009, 929), new foldPair.ptr(1012, 920), new foldPair.ptr(1013, 917), new foldPair.ptr(1042, 1074), new foldPair.ptr(1044, 1076), new foldPair.ptr(1054, 1086), new foldPair.ptr(1057, 1089), new foldPair.ptr(1058, 1090), new foldPair.ptr(1066, 1098), new foldPair.ptr(1074, 7296), new foldPair.ptr(1076, 7297), new foldPair.ptr(1086, 7298), new foldPair.ptr(1089, 7299), new foldPair.ptr(1090, 7300), new foldPair.ptr(1098, 7302), new foldPair.ptr(1122, 1123), new foldPair.ptr(1123, 7303), new foldPair.ptr(7296, 1042), new foldPair.ptr(7297, 1044), new foldPair.ptr(7298, 1054), new foldPair.ptr(7299, 1057), new foldPair.ptr(7300, 7301), new foldPair.ptr(7301, 1058), new foldPair.ptr(7302, 1066), new foldPair.ptr(7303, 1122), new foldPair.ptr(7304, 42570), new foldPair.ptr(7776, 7777), new foldPair.ptr(7777, 7835), new foldPair.ptr(7835, 7776), new foldPair.ptr(7838, 223), new foldPair.ptr(8126, 837), new foldPair.ptr(8486, 937), new foldPair.ptr(8490, 75), new foldPair.ptr(8491, 197), new foldPair.ptr(42570, 42571), new foldPair.ptr(42571, 7304)]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -11661,604 +12264,6 @@ $packages["encoding/base64"] = (function() {
 		$pkg.URLEncoding = NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_");
 		$pkg.RawStdEncoding = $clone($pkg.StdEncoding, Encoding).WithPadding(-1);
 		$pkg.RawURLEncoding = $clone($pkg.URLEncoding, Encoding).WithPadding(-1);
-		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.$init = $init;
-	return $pkg;
-})();
-$packages["bytes"] = (function() {
-	var $pkg = {}, $init, errors, bytealg, io, unicode, utf8, Buffer, readOp, ptrType, sliceType, errNegativeRead, IndexByte, makeSlice, EqualFold;
-	errors = $packages["errors"];
-	bytealg = $packages["internal/bytealg"];
-	io = $packages["io"];
-	unicode = $packages["unicode"];
-	utf8 = $packages["unicode/utf8"];
-	Buffer = $pkg.Buffer = $newType(0, $kindStruct, "bytes.Buffer", true, "bytes", true, function(buf_, off_, lastRead_) {
-		this.$val = this;
-		if (arguments.length === 0) {
-			this.buf = sliceType.nil;
-			this.off = 0;
-			this.lastRead = 0;
-			return;
-		}
-		this.buf = buf_;
-		this.off = off_;
-		this.lastRead = lastRead_;
-	});
-	readOp = $pkg.readOp = $newType(1, $kindInt8, "bytes.readOp", true, "bytes", false, null);
-	ptrType = $ptrType(Buffer);
-	sliceType = $sliceType($Uint8);
-	IndexByte = function(s, c) {
-		var _i, _ref, b, c, i, s;
-		_ref = s;
-		_i = 0;
-		while (true) {
-			if (!(_i < _ref.$length)) { break; }
-			i = _i;
-			b = ((_i < 0 || _i >= _ref.$length) ? ($throwRuntimeError("index out of range"), undefined) : _ref.$array[_ref.$offset + _i]);
-			if (b === c) {
-				return i;
-			}
-			_i++;
-		}
-		return -1;
-	};
-	$pkg.IndexByte = IndexByte;
-	Buffer.ptr.prototype.Bytes = function() {
-		var b;
-		b = this;
-		return $subslice(b.buf, b.off);
-	};
-	Buffer.prototype.Bytes = function() { return this.$val.Bytes(); };
-	Buffer.ptr.prototype.String = function() {
-		var b;
-		b = this;
-		if (b === ptrType.nil) {
-			return "<nil>";
-		}
-		return ($bytesToString($subslice(b.buf, b.off)));
-	};
-	Buffer.prototype.String = function() { return this.$val.String(); };
-	Buffer.ptr.prototype.empty = function() {
-		var b;
-		b = this;
-		return b.buf.$length <= b.off;
-	};
-	Buffer.prototype.empty = function() { return this.$val.empty(); };
-	Buffer.ptr.prototype.Len = function() {
-		var b;
-		b = this;
-		return b.buf.$length - b.off >> 0;
-	};
-	Buffer.prototype.Len = function() { return this.$val.Len(); };
-	Buffer.ptr.prototype.Cap = function() {
-		var b;
-		b = this;
-		return b.buf.$capacity;
-	};
-	Buffer.prototype.Cap = function() { return this.$val.Cap(); };
-	Buffer.ptr.prototype.Truncate = function(n) {
-		var b, n;
-		b = this;
-		if (n === 0) {
-			b.Reset();
-			return;
-		}
-		b.lastRead = 0;
-		if (n < 0 || n > b.Len()) {
-			$panic(new $String("bytes.Buffer: truncation out of range"));
-		}
-		b.buf = $subslice(b.buf, 0, (b.off + n >> 0));
-	};
-	Buffer.prototype.Truncate = function(n) { return this.$val.Truncate(n); };
-	Buffer.ptr.prototype.Reset = function() {
-		var b;
-		b = this;
-		b.buf = $subslice(b.buf, 0, 0);
-		b.off = 0;
-		b.lastRead = 0;
-	};
-	Buffer.prototype.Reset = function() { return this.$val.Reset(); };
-	Buffer.ptr.prototype.tryGrowByReslice = function(n) {
-		var b, l, n;
-		b = this;
-		l = b.buf.$length;
-		if (n <= (b.buf.$capacity - l >> 0)) {
-			b.buf = $subslice(b.buf, 0, (l + n >> 0));
-			return [l, true];
-		}
-		return [0, false];
-	};
-	Buffer.prototype.tryGrowByReslice = function(n) { return this.$val.tryGrowByReslice(n); };
-	Buffer.ptr.prototype.grow = function(n) {
-		var _q, _tuple, b, buf, c, i, m, n, ok;
-		b = this;
-		m = b.Len();
-		if ((m === 0) && !((b.off === 0))) {
-			b.Reset();
-		}
-		_tuple = b.tryGrowByReslice(n);
-		i = _tuple[0];
-		ok = _tuple[1];
-		if (ok) {
-			return i;
-		}
-		if (b.buf === sliceType.nil && n <= 64) {
-			b.buf = $makeSlice(sliceType, n, 64);
-			return 0;
-		}
-		c = b.buf.$capacity;
-		if (n <= ((_q = c / 2, (_q === _q && _q !== 1/0 && _q !== -1/0) ? _q >> 0 : $throwRuntimeError("integer divide by zero")) - m >> 0)) {
-			$copySlice(b.buf, $subslice(b.buf, b.off));
-		} else if (c > ((2147483647 - c >> 0) - n >> 0)) {
-			$panic($pkg.ErrTooLarge);
-		} else {
-			buf = makeSlice(($imul(2, c)) + n >> 0);
-			$copySlice(buf, $subslice(b.buf, b.off));
-			b.buf = buf;
-		}
-		b.off = 0;
-		b.buf = $subslice(b.buf, 0, (m + n >> 0));
-		return m;
-	};
-	Buffer.prototype.grow = function(n) { return this.$val.grow(n); };
-	Buffer.ptr.prototype.Grow = function(n) {
-		var b, m, n;
-		b = this;
-		if (n < 0) {
-			$panic(new $String("bytes.Buffer.Grow: negative count"));
-		}
-		m = b.grow(n);
-		b.buf = $subslice(b.buf, 0, m);
-	};
-	Buffer.prototype.Grow = function(n) { return this.$val.Grow(n); };
-	Buffer.ptr.prototype.Write = function(p) {
-		var _tmp, _tmp$1, _tuple, b, err, m, n, ok, p;
-		n = 0;
-		err = $ifaceNil;
-		b = this;
-		b.lastRead = 0;
-		_tuple = b.tryGrowByReslice(p.$length);
-		m = _tuple[0];
-		ok = _tuple[1];
-		if (!ok) {
-			m = b.grow(p.$length);
-		}
-		_tmp = $copySlice($subslice(b.buf, m), p);
-		_tmp$1 = $ifaceNil;
-		n = _tmp;
-		err = _tmp$1;
-		return [n, err];
-	};
-	Buffer.prototype.Write = function(p) { return this.$val.Write(p); };
-	Buffer.ptr.prototype.WriteString = function(s) {
-		var _tmp, _tmp$1, _tuple, b, err, m, n, ok, s;
-		n = 0;
-		err = $ifaceNil;
-		b = this;
-		b.lastRead = 0;
-		_tuple = b.tryGrowByReslice(s.length);
-		m = _tuple[0];
-		ok = _tuple[1];
-		if (!ok) {
-			m = b.grow(s.length);
-		}
-		_tmp = $copyString($subslice(b.buf, m), s);
-		_tmp$1 = $ifaceNil;
-		n = _tmp;
-		err = _tmp$1;
-		return [n, err];
-	};
-	Buffer.prototype.WriteString = function(s) { return this.$val.WriteString(s); };
-	Buffer.ptr.prototype.ReadFrom = function(r) {
-		var _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, b, e, err, i, m, n, r, x, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; i = $f.i; m = $f.m; n = $f.n; r = $f.r; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = new $Int64(0, 0);
-		err = $ifaceNil;
-		b = this;
-		b.lastRead = 0;
-		/* while (true) { */ case 1:
-			i = b.grow(512);
-			b.buf = $subslice(b.buf, 0, i);
-			_r = r.Read($subslice(b.buf, i, b.buf.$capacity)); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			_tuple = _r;
-			m = _tuple[0];
-			e = _tuple[1];
-			if (m < 0) {
-				$panic(errNegativeRead);
-			}
-			b.buf = $subslice(b.buf, 0, (i + m >> 0));
-			n = (x = (new $Int64(0, m)), new $Int64(n.$high + x.$high, n.$low + x.$low));
-			if ($interfaceIsEqual(e, io.EOF)) {
-				_tmp = n;
-				_tmp$1 = $ifaceNil;
-				n = _tmp;
-				err = _tmp$1;
-				$s = -1; return [n, err];
-			}
-			if (!($interfaceIsEqual(e, $ifaceNil))) {
-				_tmp$2 = n;
-				_tmp$3 = e;
-				n = _tmp$2;
-				err = _tmp$3;
-				$s = -1; return [n, err];
-			}
-		/* } */ $s = 1; continue; case 2:
-		$s = -1; return [n, err];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: Buffer.ptr.prototype.ReadFrom }; } $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.i = i; $f.m = m; $f.n = n; $f.r = r; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	Buffer.prototype.ReadFrom = function(r) { return this.$val.ReadFrom(r); };
-	makeSlice = function(n) {
-		var n, $deferred;
-		/* */ var $err = null; try { $deferred = []; $deferred.index = $curGoroutine.deferStack.length; $curGoroutine.deferStack.push($deferred);
-		$deferred.push([(function() {
-			if (!($interfaceIsEqual($recover(), $ifaceNil))) {
-				$panic($pkg.ErrTooLarge);
-			}
-		}), []]);
-		return $makeSlice(sliceType, n);
-		/* */ } catch(err) { $err = err; return sliceType.nil; } finally { $callDeferred($deferred, $err); }
-	};
-	Buffer.ptr.prototype.WriteTo = function(w) {
-		var _r, _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tuple, b, e, err, m, n, nBytes, w, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tmp$2 = $f._tmp$2; _tmp$3 = $f._tmp$3; _tmp$4 = $f._tmp$4; _tmp$5 = $f._tmp$5; _tuple = $f._tuple; b = $f.b; e = $f.e; err = $f.err; m = $f.m; n = $f.n; nBytes = $f.nBytes; w = $f.w; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		n = new $Int64(0, 0);
-		err = $ifaceNil;
-		b = this;
-		b.lastRead = 0;
-		nBytes = b.Len();
-		/* */ if (nBytes > 0) { $s = 1; continue; }
-		/* */ $s = 2; continue;
-		/* if (nBytes > 0) { */ case 1:
-			_r = w.Write($subslice(b.buf, b.off)); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
-			_tuple = _r;
-			m = _tuple[0];
-			e = _tuple[1];
-			if (m > nBytes) {
-				$panic(new $String("bytes.Buffer.WriteTo: invalid Write count"));
-			}
-			b.off = b.off + (m) >> 0;
-			n = (new $Int64(0, m));
-			if (!($interfaceIsEqual(e, $ifaceNil))) {
-				_tmp = n;
-				_tmp$1 = e;
-				n = _tmp;
-				err = _tmp$1;
-				$s = -1; return [n, err];
-			}
-			if (!((m === nBytes))) {
-				_tmp$2 = n;
-				_tmp$3 = io.ErrShortWrite;
-				n = _tmp$2;
-				err = _tmp$3;
-				$s = -1; return [n, err];
-			}
-		/* } */ case 2:
-		b.Reset();
-		_tmp$4 = n;
-		_tmp$5 = $ifaceNil;
-		n = _tmp$4;
-		err = _tmp$5;
-		$s = -1; return [n, err];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: Buffer.ptr.prototype.WriteTo }; } $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f.b = b; $f.e = e; $f.err = err; $f.m = m; $f.n = n; $f.nBytes = nBytes; $f.w = w; $f.$s = $s; $f.$r = $r; return $f;
-	};
-	Buffer.prototype.WriteTo = function(w) { return this.$val.WriteTo(w); };
-	Buffer.ptr.prototype.WriteByte = function(c) {
-		var _tuple, b, c, m, ok, x;
-		b = this;
-		b.lastRead = 0;
-		_tuple = b.tryGrowByReslice(1);
-		m = _tuple[0];
-		ok = _tuple[1];
-		if (!ok) {
-			m = b.grow(1);
-		}
-		(x = b.buf, ((m < 0 || m >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + m] = c));
-		return $ifaceNil;
-	};
-	Buffer.prototype.WriteByte = function(c) { return this.$val.WriteByte(c); };
-	Buffer.ptr.prototype.WriteRune = function(r) {
-		var _tmp, _tmp$1, _tmp$2, _tmp$3, _tuple, b, err, m, n, ok, r;
-		n = 0;
-		err = $ifaceNil;
-		b = this;
-		if (r < 128) {
-			b.WriteByte(((r << 24 >>> 24)));
-			_tmp = 1;
-			_tmp$1 = $ifaceNil;
-			n = _tmp;
-			err = _tmp$1;
-			return [n, err];
-		}
-		b.lastRead = 0;
-		_tuple = b.tryGrowByReslice(4);
-		m = _tuple[0];
-		ok = _tuple[1];
-		if (!ok) {
-			m = b.grow(4);
-		}
-		n = utf8.EncodeRune($subslice(b.buf, m, (m + 4 >> 0)), r);
-		b.buf = $subslice(b.buf, 0, (m + n >> 0));
-		_tmp$2 = n;
-		_tmp$3 = $ifaceNil;
-		n = _tmp$2;
-		err = _tmp$3;
-		return [n, err];
-	};
-	Buffer.prototype.WriteRune = function(r) { return this.$val.WriteRune(r); };
-	Buffer.ptr.prototype.Read = function(p) {
-		var _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, b, err, n, p;
-		n = 0;
-		err = $ifaceNil;
-		b = this;
-		b.lastRead = 0;
-		if (b.empty()) {
-			b.Reset();
-			if (p.$length === 0) {
-				_tmp = 0;
-				_tmp$1 = $ifaceNil;
-				n = _tmp;
-				err = _tmp$1;
-				return [n, err];
-			}
-			_tmp$2 = 0;
-			_tmp$3 = io.EOF;
-			n = _tmp$2;
-			err = _tmp$3;
-			return [n, err];
-		}
-		n = $copySlice(p, $subslice(b.buf, b.off));
-		b.off = b.off + (n) >> 0;
-		if (n > 0) {
-			b.lastRead = -1;
-		}
-		_tmp$4 = n;
-		_tmp$5 = $ifaceNil;
-		n = _tmp$4;
-		err = _tmp$5;
-		return [n, err];
-	};
-	Buffer.prototype.Read = function(p) { return this.$val.Read(p); };
-	Buffer.ptr.prototype.Next = function(n) {
-		var b, data, m, n;
-		b = this;
-		b.lastRead = 0;
-		m = b.Len();
-		if (n > m) {
-			n = m;
-		}
-		data = $subslice(b.buf, b.off, (b.off + n >> 0));
-		b.off = b.off + (n) >> 0;
-		if (n > 0) {
-			b.lastRead = -1;
-		}
-		return data;
-	};
-	Buffer.prototype.Next = function(n) { return this.$val.Next(n); };
-	Buffer.ptr.prototype.ReadByte = function() {
-		var b, c, x, x$1;
-		b = this;
-		if (b.empty()) {
-			b.Reset();
-			return [0, io.EOF];
-		}
-		c = (x = b.buf, x$1 = b.off, ((x$1 < 0 || x$1 >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + x$1]));
-		b.off = b.off + (1) >> 0;
-		b.lastRead = -1;
-		return [c, $ifaceNil];
-	};
-	Buffer.prototype.ReadByte = function() { return this.$val.ReadByte(); };
-	Buffer.ptr.prototype.ReadRune = function() {
-		var _tmp, _tmp$1, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tuple, b, c, err, n, r, size, x, x$1;
-		r = 0;
-		size = 0;
-		err = $ifaceNil;
-		b = this;
-		if (b.empty()) {
-			b.Reset();
-			_tmp = 0;
-			_tmp$1 = 0;
-			_tmp$2 = io.EOF;
-			r = _tmp;
-			size = _tmp$1;
-			err = _tmp$2;
-			return [r, size, err];
-		}
-		c = (x = b.buf, x$1 = b.off, ((x$1 < 0 || x$1 >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + x$1]));
-		if (c < 128) {
-			b.off = b.off + (1) >> 0;
-			b.lastRead = 1;
-			_tmp$3 = ((c >> 0));
-			_tmp$4 = 1;
-			_tmp$5 = $ifaceNil;
-			r = _tmp$3;
-			size = _tmp$4;
-			err = _tmp$5;
-			return [r, size, err];
-		}
-		_tuple = utf8.DecodeRune($subslice(b.buf, b.off));
-		r = _tuple[0];
-		n = _tuple[1];
-		b.off = b.off + (n) >> 0;
-		b.lastRead = ((n << 24 >> 24));
-		_tmp$6 = r;
-		_tmp$7 = n;
-		_tmp$8 = $ifaceNil;
-		r = _tmp$6;
-		size = _tmp$7;
-		err = _tmp$8;
-		return [r, size, err];
-	};
-	Buffer.prototype.ReadRune = function() { return this.$val.ReadRune(); };
-	Buffer.ptr.prototype.UnreadRune = function() {
-		var b;
-		b = this;
-		if (b.lastRead <= 0) {
-			return errors.New("bytes.Buffer: UnreadRune: previous operation was not a successful ReadRune");
-		}
-		if (b.off >= ((b.lastRead >> 0))) {
-			b.off = b.off - (((b.lastRead >> 0))) >> 0;
-		}
-		b.lastRead = 0;
-		return $ifaceNil;
-	};
-	Buffer.prototype.UnreadRune = function() { return this.$val.UnreadRune(); };
-	Buffer.ptr.prototype.UnreadByte = function() {
-		var b;
-		b = this;
-		if (b.lastRead === 0) {
-			return errors.New("bytes.Buffer: UnreadByte: previous operation was not a successful read");
-		}
-		b.lastRead = 0;
-		if (b.off > 0) {
-			b.off = b.off - (1) >> 0;
-		}
-		return $ifaceNil;
-	};
-	Buffer.prototype.UnreadByte = function() { return this.$val.UnreadByte(); };
-	Buffer.ptr.prototype.ReadBytes = function(delim) {
-		var _tmp, _tmp$1, _tuple, b, delim, err, line, slice;
-		line = sliceType.nil;
-		err = $ifaceNil;
-		b = this;
-		_tuple = b.readSlice(delim);
-		slice = _tuple[0];
-		err = _tuple[1];
-		line = $appendSlice(line, slice);
-		_tmp = line;
-		_tmp$1 = err;
-		line = _tmp;
-		err = _tmp$1;
-		return [line, err];
-	};
-	Buffer.prototype.ReadBytes = function(delim) { return this.$val.ReadBytes(delim); };
-	Buffer.ptr.prototype.readSlice = function(delim) {
-		var _tmp, _tmp$1, b, delim, end, err, i, line;
-		line = sliceType.nil;
-		err = $ifaceNil;
-		b = this;
-		i = IndexByte($subslice(b.buf, b.off), delim);
-		end = (b.off + i >> 0) + 1 >> 0;
-		if (i < 0) {
-			end = b.buf.$length;
-			err = io.EOF;
-		}
-		line = $subslice(b.buf, b.off, end);
-		b.off = end;
-		b.lastRead = -1;
-		_tmp = line;
-		_tmp$1 = err;
-		line = _tmp;
-		err = _tmp$1;
-		return [line, err];
-	};
-	Buffer.prototype.readSlice = function(delim) { return this.$val.readSlice(delim); };
-	Buffer.ptr.prototype.ReadString = function(delim) {
-		var _tmp, _tmp$1, _tuple, b, delim, err, line, slice;
-		line = "";
-		err = $ifaceNil;
-		b = this;
-		_tuple = b.readSlice(delim);
-		slice = _tuple[0];
-		err = _tuple[1];
-		_tmp = ($bytesToString(slice));
-		_tmp$1 = err;
-		line = _tmp;
-		err = _tmp$1;
-		return [line, err];
-	};
-	Buffer.prototype.ReadString = function(delim) { return this.$val.ReadString(delim); };
-	EqualFold = function(s, t) {
-		var _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple, _tuple$1, r, r$1, r$2, s, size, size$1, sr, t, tr;
-		while (true) {
-			if (!(!((s.$length === 0)) && !((t.$length === 0)))) { break; }
-			_tmp = 0;
-			_tmp$1 = 0;
-			sr = _tmp;
-			tr = _tmp$1;
-			if ((0 >= s.$length ? ($throwRuntimeError("index out of range"), undefined) : s.$array[s.$offset + 0]) < 128) {
-				_tmp$2 = (((0 >= s.$length ? ($throwRuntimeError("index out of range"), undefined) : s.$array[s.$offset + 0]) >> 0));
-				_tmp$3 = $subslice(s, 1);
-				sr = _tmp$2;
-				s = _tmp$3;
-			} else {
-				_tuple = utf8.DecodeRune(s);
-				r = _tuple[0];
-				size = _tuple[1];
-				_tmp$4 = r;
-				_tmp$5 = $subslice(s, size);
-				sr = _tmp$4;
-				s = _tmp$5;
-			}
-			if ((0 >= t.$length ? ($throwRuntimeError("index out of range"), undefined) : t.$array[t.$offset + 0]) < 128) {
-				_tmp$6 = (((0 >= t.$length ? ($throwRuntimeError("index out of range"), undefined) : t.$array[t.$offset + 0]) >> 0));
-				_tmp$7 = $subslice(t, 1);
-				tr = _tmp$6;
-				t = _tmp$7;
-			} else {
-				_tuple$1 = utf8.DecodeRune(t);
-				r$1 = _tuple$1[0];
-				size$1 = _tuple$1[1];
-				_tmp$8 = r$1;
-				_tmp$9 = $subslice(t, size$1);
-				tr = _tmp$8;
-				t = _tmp$9;
-			}
-			if (tr === sr) {
-				continue;
-			}
-			if (tr < sr) {
-				_tmp$10 = sr;
-				_tmp$11 = tr;
-				tr = _tmp$10;
-				sr = _tmp$11;
-			}
-			if (tr < 128) {
-				if (65 <= sr && sr <= 90 && (tr === ((sr + 97 >> 0) - 65 >> 0))) {
-					continue;
-				}
-				return false;
-			}
-			r$2 = unicode.SimpleFold(sr);
-			while (true) {
-				if (!(!((r$2 === sr)) && r$2 < tr)) { break; }
-				r$2 = unicode.SimpleFold(r$2);
-			}
-			if (r$2 === tr) {
-				continue;
-			}
-			return false;
-		}
-		return s.$length === t.$length;
-	};
-	$pkg.EqualFold = EqualFold;
-	ptrType.methods = [{prop: "Bytes", name: "Bytes", pkg: "", typ: $funcType([], [sliceType], false)}, {prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "empty", name: "empty", pkg: "bytes", typ: $funcType([], [$Bool], false)}, {prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Cap", name: "Cap", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Truncate", name: "Truncate", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Reset", name: "Reset", pkg: "", typ: $funcType([], [], false)}, {prop: "tryGrowByReslice", name: "tryGrowByReslice", pkg: "bytes", typ: $funcType([$Int], [$Int, $Bool], false)}, {prop: "grow", name: "grow", pkg: "bytes", typ: $funcType([$Int], [$Int], false)}, {prop: "Grow", name: "Grow", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Write", name: "Write", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "WriteString", name: "WriteString", pkg: "", typ: $funcType([$String], [$Int, $error], false)}, {prop: "ReadFrom", name: "ReadFrom", pkg: "", typ: $funcType([io.Reader], [$Int64, $error], false)}, {prop: "WriteTo", name: "WriteTo", pkg: "", typ: $funcType([io.Writer], [$Int64, $error], false)}, {prop: "WriteByte", name: "WriteByte", pkg: "", typ: $funcType([$Uint8], [$error], false)}, {prop: "WriteRune", name: "WriteRune", pkg: "", typ: $funcType([$Int32], [$Int, $error], false)}, {prop: "Read", name: "Read", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "Next", name: "Next", pkg: "", typ: $funcType([$Int], [sliceType], false)}, {prop: "ReadByte", name: "ReadByte", pkg: "", typ: $funcType([], [$Uint8, $error], false)}, {prop: "ReadRune", name: "ReadRune", pkg: "", typ: $funcType([], [$Int32, $Int, $error], false)}, {prop: "UnreadRune", name: "UnreadRune", pkg: "", typ: $funcType([], [$error], false)}, {prop: "UnreadByte", name: "UnreadByte", pkg: "", typ: $funcType([], [$error], false)}, {prop: "ReadBytes", name: "ReadBytes", pkg: "", typ: $funcType([$Uint8], [sliceType, $error], false)}, {prop: "readSlice", name: "readSlice", pkg: "bytes", typ: $funcType([$Uint8], [sliceType, $error], false)}, {prop: "ReadString", name: "ReadString", pkg: "", typ: $funcType([$Uint8], [$String, $error], false)}];
-	Buffer.init("bytes", [{prop: "buf", name: "buf", embedded: false, exported: false, typ: sliceType, tag: ""}, {prop: "off", name: "off", embedded: false, exported: false, typ: $Int, tag: ""}, {prop: "lastRead", name: "lastRead", embedded: false, exported: false, typ: readOp, tag: ""}]);
-	$init = function() {
-		$pkg.$init = function() {};
-		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = errors.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = bytealg.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = io.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = unicode.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = utf8.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$pkg.ErrTooLarge = errors.New("bytes.Buffer: too large");
-		errNegativeRead = errors.New("bytes.Buffer: reader returned negative count from Read");
-		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
-	};
-	$pkg.$init = $init;
-	return $pkg;
-})();
-$packages["encoding"] = (function() {
-	var $pkg = {}, $init, TextMarshaler, TextUnmarshaler, sliceType;
-	TextMarshaler = $pkg.TextMarshaler = $newType(8, $kindInterface, "encoding.TextMarshaler", true, "encoding", true, null);
-	TextUnmarshaler = $pkg.TextUnmarshaler = $newType(8, $kindInterface, "encoding.TextUnmarshaler", true, "encoding", true, null);
-	sliceType = $sliceType($Uint8);
-	TextMarshaler.init([{prop: "MarshalText", name: "MarshalText", pkg: "", typ: $funcType([], [sliceType, $error], false)}]);
-	TextUnmarshaler.init([{prop: "UnmarshalText", name: "UnmarshalText", pkg: "", typ: $funcType([sliceType], [$error], false)}]);
-	$init = function() {
-		$pkg.$init = function() {};
-		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
@@ -26233,7 +26238,7 @@ $packages["github.com/tidwall/match"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/tidwall/pretty"] = (function() {
-	var $pkg = {}, $init, sort, Options, pair, byKey, Style, stackt, arrayType, ptrType, sliceType, sliceType$1, ptrType$1, sliceType$2, ptrType$2, funcType, Pretty, PrettyOptions, Ugly, ugly, appendPrettyAny, appendPrettyObject, sortPairs, appendPrettyString, appendPrettyNumber, appendTabs, hexp, Color;
+	var $pkg = {}, $init, sort, Options, pair, byKey, Style, stackt, ptrType, ptrType$1, sliceType, sliceType$1, arrayType, sliceType$2, ptrType$2, funcType, Pretty, PrettyOptions, Ugly, ugly, appendPrettyAny, appendPrettyObject, sortPairs, appendPrettyString, appendPrettyNumber, appendTabs, hexp, init, Color;
 	sort = $packages["sort"];
 	Options = $pkg.Options = $newType(0, $kindStruct, "pretty.Options", true, "github.com/tidwall/pretty", true, function(Width_, Prefix_, Indent_, SortKeys_) {
 		this.$val = this;
@@ -26305,18 +26310,18 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		this.kind = kind_;
 		this.key = key_;
 	});
-	arrayType = $arrayType($String, 2);
-	ptrType = $ptrType(Options);
+	ptrType = $ptrType(Style);
+	ptrType$1 = $ptrType(Options);
 	sliceType = $sliceType($Uint8);
 	sliceType$1 = $sliceType(pair);
-	ptrType$1 = $ptrType(Style);
+	arrayType = $arrayType($String, 2);
 	sliceType$2 = $sliceType(stackt);
 	ptrType$2 = $ptrType(byKey);
 	funcType = $funcType([sliceType, $Uint8], [sliceType], false);
 	Pretty = function(json) {
 		var _r, json, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; json = $f.json; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		_r = PrettyOptions(json, ptrType.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		_r = PrettyOptions(json, ptrType$1.nil); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 		$s = -1; return _r;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: Pretty }; } $f._r = _r; $f.json = json; $f.$s = $s; $f.$r = $r; return $f;
 	};
@@ -26324,7 +26329,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 	PrettyOptions = function(json, opts) {
 		var _r, _tuple, buf, json, opts, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _tuple = $f._tuple; buf = $f.buf; json = $f.json; opts = $f.opts; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		if (opts === ptrType.nil) {
+		if (opts === ptrType$1.nil) {
 			opts = $pkg.DefaultOptions;
 		}
 		buf = $makeSlice(sliceType, 0, json.$length);
@@ -26679,10 +26684,21 @@ $packages["github.com/tidwall/pretty"] = (function() {
 			return ((p - 10 << 24 >>> 24)) + 97 << 24 >>> 24;
 		}
 	};
+	init = function() {
+		$pkg.TerminalStyle = new Style.ptr($toNativeArray($kindString, ["\x1B[94m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[92m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[93m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[91m", "\x1B[0m"]), (function(dst, c) {
+			var c, dst;
+			if (c < 32 && (!((c === 13)) && !((c === 10)) && !((c === 9)) && !((c === 11)))) {
+				dst = $appendSlice(dst, "\\u00");
+				dst = $append(dst, hexp((((c >>> 4 << 24 >>> 24)) & 15) >>> 0));
+				return $append(dst, hexp(((c) & 15) >>> 0));
+			}
+			return $append(dst, c);
+		}));
+	};
 	Color = function(src, style) {
 		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, apnd, dst, i, j, key, kind, src, stack, style, x, x$1, x$2, x$3, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; apnd = $f.apnd; dst = $f.dst; i = $f.i; j = $f.j; key = $f.key; kind = $f.kind; src = $f.src; stack = $f.stack; style = $f.style; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		if (style === ptrType$1.nil) {
+		if (style === ptrType.nil) {
 			style = $pkg.TerminalStyle;
 		}
 		apnd = style.Append;
@@ -26820,33 +26836,21 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		$r = sort.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$pkg.TerminalStyle = ptrType.nil;
 		$pkg.DefaultOptions = new Options.ptr(80, "", "  ", false);
-		$pkg.TerminalStyle = new Style.ptr($toNativeArray($kindString, ["\x1B[94m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[92m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[93m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[91m", "\x1B[0m"]), (function(dst, c) {
-			var c, dst;
-			if (c < 32 && (!((c === 13)) && !((c === 10)) && !((c === 9)) && !((c === 11)))) {
-				dst = $appendSlice(dst, "\\u00");
-				dst = $append(dst, hexp((((c >>> 4 << 24 >>> 24)) & 15) >>> 0));
-				return $append(dst, hexp(((c) & 15) >>> 0));
-			}
-			return $append(dst, c);
-		}));
+		init();
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
 	return $pkg;
 })();
 $packages["github.com/tidwall/gjson"] = (function() {
-	var $pkg = {}, $init, base64, json, errors, match, pretty, reflect, strconv, strings, sync, atomic, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, funcType, mapType$1, fields, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, floatToUint, floatToInt, execModifier, modPretty, modThis, modUgly, modReverse, fillIndex, stringBytes, bytesString;
-	base64 = $packages["encoding/base64"];
+	var $pkg = {}, $init, json, match, pretty, strconv, strings, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, funcType, mapType$1, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, floatToUint, floatToInt, execModifier, unwrap, modPretty, modThis, modUgly, modReverse, modFlatten, modJoin, modValid, fillIndex, stringBytes, bytesString;
 	json = $packages["encoding/json"];
-	errors = $packages["errors"];
 	match = $packages["github.com/tidwall/match"];
 	pretty = $packages["github.com/tidwall/pretty"];
-	reflect = $packages["reflect"];
 	strconv = $packages["strconv"];
 	strings = $packages["strings"];
-	sync = $packages["sync"];
-	atomic = $packages["sync/atomic"];
 	time = $packages["time"];
 	utf16 = $packages["unicode/utf16"];
 	utf8 = $packages["unicode/utf8"];
@@ -30282,6 +30286,14 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		$s = -1; return [pathOut, res, ok];
 		/* */ } return; } if ($f === undefined) { $f = { $blk: execModifier }; } $f._1 = _1; $f._entry = _entry; $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tuple = _tuple; $f.args = args; $f.fn = fn; $f.hasArgs = hasArgs; $f.i = i; $f.idx = idx; $f.json$1 = json$1; $f.name = name; $f.ok = ok; $f.ok$1 = ok$1; $f.parsedArgs = parsedArgs; $f.path = path; $f.pathOut = pathOut; $f.res = res; $f.res$1 = res$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	unwrap = function(json$1) {
+		var json$1;
+		json$1 = trim(json$1);
+		if (json$1.length >= 2 && (json$1.charCodeAt(0) === 91) || (json$1.charCodeAt(0) === 123)) {
+			json$1 = $substring(json$1, 1, (json$1.length - 1 >> 0));
+		}
+		return json$1;
+	};
 	modPretty = function(json$1, arg) {
 		var _r, _r$1, _r$2, _r$3, arg, json$1, opts, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; arg = $f.arg; json$1 = $f.json$1; opts = $f.opts; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -30390,6 +30402,154 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		$s = -1; return json$1;
 		/* */ } return; } if ($f === undefined) { $f = { $blk: modReverse }; } $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tmp$2 = _tmp$2; $f._tmp$3 = _tmp$3; $f._tmp$4 = _tmp$4; $f._tmp$5 = _tmp$5; $f._tmp$6 = _tmp$6; $f._tmp$7 = _tmp$7; $f.arg = arg; $f.i = i; $f.i$1 = i$1; $f.j = j; $f.j$1 = j$1; $f.json$1 = json$1; $f.keyValues = keyValues; $f.out = out; $f.out$1 = out$1; $f.res = res; $f.values = values; $f.x = x; $f.x$1 = x$1; $f.$s = $s; $f.$r = $r; return $f;
 	};
+	modFlatten = function(json$1, arg) {
+		var arg, deep, idx, json$1, out, res, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; arg = $f.arg; deep = $f.deep; idx = $f.idx; json$1 = $f.json$1; out = $f.out; res = $f.res; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		arg = [arg];
+		deep = [deep];
+		idx = [idx];
+		out = [out];
+		res = $clone(Parse(json$1), Result);
+		if (!$clone(res, Result).IsArray()) {
+			$s = -1; return json$1;
+		}
+		deep[0] = false;
+		/* */ if (!(arg[0] === "")) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!(arg[0] === "")) { */ case 1:
+			$r = $clone(Parse(arg[0]), Result).ForEach((function(arg, deep, idx, out) { return function(key, value) {
+				var key, value;
+				if ($clone(key, Result).String() === "deep") {
+					deep[0] = $clone(value, Result).Bool();
+				}
+				return true;
+			}; })(arg, deep, idx, out)); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 2:
+		out[0] = sliceType$2.nil;
+		out[0] = $append(out[0], 91);
+		idx[0] = 0;
+		$r = $clone(res, Result).ForEach((function(arg, deep, idx, out) { return function $b(param, value) {
+			var _arg, _arg$1, _r, _r$1, param, value, $s, $r;
+			/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _arg = $f._arg; _arg$1 = $f._arg$1; _r = $f._r; _r$1 = $f._r$1; param = $f.param; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+			if (idx[0] > 0) {
+				out[0] = $append(out[0], 44);
+			}
+			/* */ if ($clone(value, Result).IsArray()) { $s = 1; continue; }
+			/* */ $s = 2; continue;
+			/* if ($clone(value, Result).IsArray()) { */ case 1:
+				/* */ if (deep[0]) { $s = 4; continue; }
+				/* */ $s = 5; continue;
+				/* if (deep[0]) { */ case 4:
+					_arg = out[0];
+					_r = modFlatten(value.Raw, arg[0]); /* */ $s = 7; case 7: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+					_r$1 = unwrap(_r); /* */ $s = 8; case 8: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+					_arg$1 = _r$1;
+					out[0] = $appendSlice(_arg, _arg$1);
+					$s = 6; continue;
+				/* } else { */ case 5:
+					out[0] = $appendSlice(out[0], unwrap(value.Raw));
+				/* } */ case 6:
+				$s = 3; continue;
+			/* } else { */ case 2:
+				out[0] = $appendSlice(out[0], value.Raw);
+			/* } */ case 3:
+			idx[0] = idx[0] + (1) >> 0;
+			$s = -1; return true;
+			/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._arg = _arg; $f._arg$1 = _arg$1; $f._r = _r; $f._r$1 = _r$1; $f.param = param; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
+		}; })(arg, deep, idx, out)); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		out[0] = $append(out[0], 93);
+		$s = -1; return bytesString(out[0]);
+		/* */ } return; } if ($f === undefined) { $f = { $blk: modFlatten }; } $f.arg = arg; $f.deep = deep; $f.idx = idx; $f.json$1 = json$1; $f.out = out; $f.res = res; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	modJoin = function(json$1, arg) {
+		var _entry, arg, i, idx, json$1, keys, kvals, out, preserve, res, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _entry = $f._entry; arg = $f.arg; i = $f.i; idx = $f.idx; json$1 = $f.json$1; keys = $f.keys; kvals = $f.kvals; out = $f.out; preserve = $f.preserve; res = $f.res; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		idx = [idx];
+		keys = [keys];
+		kvals = [kvals];
+		out = [out];
+		preserve = [preserve];
+		res = $clone(Parse(json$1), Result);
+		if (!$clone(res, Result).IsArray()) {
+			$s = -1; return json$1;
+		}
+		preserve[0] = false;
+		/* */ if (!(arg === "")) { $s = 1; continue; }
+		/* */ $s = 2; continue;
+		/* if (!(arg === "")) { */ case 1:
+			$r = $clone(Parse(arg), Result).ForEach((function(idx, keys, kvals, out, preserve) { return function(key, value) {
+				var key, value;
+				if ($clone(key, Result).String() === "preserve") {
+					preserve[0] = $clone(value, Result).Bool();
+				}
+				return true;
+			}; })(idx, keys, kvals, out, preserve)); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		/* } */ case 2:
+		out[0] = sliceType$2.nil;
+		out[0] = $append(out[0], 123);
+		/* */ if (preserve[0]) { $s = 4; continue; }
+		/* */ $s = 5; continue;
+		/* if (preserve[0]) { */ case 4:
+			idx[0] = 0;
+			$r = $clone(res, Result).ForEach((function(idx, keys, kvals, out, preserve) { return function(param, value) {
+				var param, value;
+				if (!$clone(value, Result).IsObject()) {
+					return true;
+				}
+				if (idx[0] > 0) {
+					out[0] = $append(out[0], 44);
+				}
+				out[0] = $appendSlice(out[0], unwrap(value.Raw));
+				idx[0] = idx[0] + (1) >> 0;
+				return true;
+			}; })(idx, keys, kvals, out, preserve)); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			$s = 6; continue;
+		/* } else { */ case 5:
+			keys[0] = sliceType.nil;
+			kvals[0] = {};
+			$r = $clone(res, Result).ForEach((function(idx, keys, kvals, out, preserve) { return function $b(param, value) {
+				var param, value, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; param = $f.param; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				if (!$clone(value, Result).IsObject()) {
+					$s = -1; return true;
+				}
+				$r = $clone(value, Result).ForEach((function(idx, keys, kvals, out, preserve) { return function(key, value$1) {
+					var _entry, _key, _tuple, k, key, ok, value$1;
+					k = $clone(key, Result).String();
+					_tuple = (_entry = kvals[0][$String.keyFor(k)], _entry !== undefined ? [_entry.v, true] : [new Result.ptr(0, "", "", 0, 0), false]);
+					ok = _tuple[1];
+					if (!ok) {
+						keys[0] = $append(keys[0], key);
+					}
+					_key = k; (kvals[0] || $throwRuntimeError("assignment to entry in nil map"))[$String.keyFor(_key)] = { k: _key, v: $clone(value$1, Result) };
+					return true;
+				}; })(idx, keys, kvals, out, preserve)); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+				$s = -1; return true;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f.param = param; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
+			}; })(idx, keys, kvals, out, preserve)); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+			i = 0;
+			while (true) {
+				if (!(i < keys[0].$length)) { break; }
+				if (i > 0) {
+					out[0] = $append(out[0], 44);
+				}
+				out[0] = $appendSlice(out[0], ((i < 0 || i >= keys[0].$length) ? ($throwRuntimeError("index out of range"), undefined) : keys[0].$array[keys[0].$offset + i]).Raw);
+				out[0] = $append(out[0], 58);
+				out[0] = $appendSlice(out[0], (_entry = kvals[0][$String.keyFor($clone(((i < 0 || i >= keys[0].$length) ? ($throwRuntimeError("index out of range"), undefined) : keys[0].$array[keys[0].$offset + i]), Result).String())], _entry !== undefined ? _entry.v : new Result.ptr(0, "", "", 0, 0)).Raw);
+				i = i + (1) >> 0;
+			}
+		/* } */ case 6:
+		out[0] = $append(out[0], 125);
+		$s = -1; return bytesString(out[0]);
+		/* */ } return; } if ($f === undefined) { $f = { $blk: modJoin }; } $f._entry = _entry; $f.arg = arg; $f.i = i; $f.idx = idx; $f.json$1 = json$1; $f.keys = keys; $f.kvals = kvals; $f.out = out; $f.preserve = preserve; $f.res = res; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	modValid = function(json$1, arg) {
+		var arg, json$1;
+		if (!Valid(json$1)) {
+			return "";
+		}
+		return json$1;
+	};
 	fillIndex = function(json$1, c) {
 		var c, json$1;
 	};
@@ -30412,22 +30572,16 @@ $packages["github.com/tidwall/gjson"] = (function() {
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
-		$r = base64.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = json.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = errors.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = match.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = pretty.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = reflect.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strconv.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = strings.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = sync.$init(); /* */ $s = 9; case 9: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = atomic.$init(); /* */ $s = 10; case 10: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = time.$init(); /* */ $s = 11; case 11: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = utf16.$init(); /* */ $s = 12; case 12: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		$r = utf8.$init(); /* */ $s = 13; case 13: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
-		fields = {};
+		$r = json.$init(); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = match.$init(); /* */ $s = 2; case 2: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = pretty.$init(); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strconv.$init(); /* */ $s = 4; case 4: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = strings.$init(); /* */ $s = 5; case 5: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = time.$init(); /* */ $s = 6; case 6: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = utf16.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		$r = utf8.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$pkg.DisableModifiers = false;
-		modifiers = $makeMap($String.keyFor, [{ k: "pretty", v: modPretty }, { k: "ugly", v: modUgly }, { k: "reverse", v: modReverse }, { k: "this", v: modThis }]);
+		modifiers = $makeMap($String.keyFor, [{ k: "pretty", v: modPretty }, { k: "ugly", v: modUgly }, { k: "reverse", v: modReverse }, { k: "this", v: modThis }, { k: "flatten", v: modFlatten }, { k: "join", v: modJoin }, { k: "valid", v: modValid }]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.$init = $init;
