@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/tidwall/gjson"
 	"github.com/tidwall/pretty"
 )
 
@@ -39,6 +38,7 @@ func main() {
 	js.Global.Set("jsonColor", func(json string) string {
 		return string(pretty.Color([]byte(json), &style))
 	})
+
 	killTabs()
 	path = js.Global.Get("document").Call("getElementById", "path")
 	input = js.Global.Get("document").Call("getElementById", "json-input")
@@ -56,7 +56,7 @@ func main() {
 }
 
 func doGet() {
-	res := gjson.Get(input.Get("value").String(), path.Get("value").String())
+	res := Get(input.Get("value").String(), path.Get("value").String())
 	output.Set("innerHTML", string(pretty.Color([]byte(res.Raw), &style)))
 }
 

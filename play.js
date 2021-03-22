@@ -27135,7 +27135,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/tidwall/gjson"] = (function() {
-	var $pkg = {}, $init, json, match, pretty, strconv, strings, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, stringHeader, sliceHeader, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, ptrType, ptrType$1, funcType, mapType$1, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, isDotPiperChar, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, safeInt, execModifier, unwrap, cleanWS, modPretty, modThis, modUgly, modReverse, modFlatten, modJoin, modValid, fillIndex, stringBytes, bytesString;
+	var $pkg = {}, $init, json, match, pretty, strconv, strings, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, stringHeader, sliceHeader, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, ptrType, ptrType$1, funcType, mapType$1, modifiers, useSafe, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, isDotPiperChar, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, safeInt, execModifier, unwrap, cleanWS, modPretty, modThis, modUgly, modReverse, modFlatten, modJoin, modValid, fillIndex, stringBytes, bytesString, safeStringBytes, safeBytesString;
 	json = $packages["encoding/json"];
 	match = $packages["github.com/tidwall/match"];
 	pretty = $packages["github.com/tidwall/pretty"];
@@ -30931,11 +30931,25 @@ $packages["github.com/tidwall/gjson"] = (function() {
 	};
 	stringBytes = function(s) {
 		var s, s$24ptr;
+		if (useSafe) {
+			return safeStringBytes(s);
+		}
 		return new sliceHeader.ptr(($pointerOfStructConversion(((s$24ptr || (s$24ptr = new ptrType$1(function() { return s; }, function($v) { s = $v; })))), ptrType)).data, s.length, s.length);
 	};
 	bytesString = function(b) {
 		var b;
+		if (useSafe) {
+			return safeBytesString(b);
+		}
 		return b;
+	};
+	safeStringBytes = function(s) {
+		var s;
+		return (new sliceType$2($stringToBytes(s)));
+	};
+	safeBytesString = function(b) {
+		var b;
+		return ($bytesToString(b));
 	};
 	Type.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
 	Result.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Bool", name: "Bool", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Int", name: "Int", pkg: "", typ: $funcType([], [$Int64], false)}, {prop: "Uint", name: "Uint", pkg: "", typ: $funcType([], [$Uint64], false)}, {prop: "Float", name: "Float", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Time", name: "Time", pkg: "", typ: $funcType([], [time.Time], false)}, {prop: "Array", name: "Array", pkg: "", typ: $funcType([], [sliceType], false)}, {prop: "IsObject", name: "IsObject", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "IsArray", name: "IsArray", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ForEach", name: "ForEach", pkg: "", typ: $funcType([funcType], [], false)}, {prop: "Map", name: "Map", pkg: "", typ: $funcType([], [mapType$1], false)}, {prop: "Get", name: "Get", pkg: "", typ: $funcType([$String], [Result], false)}, {prop: "arrayOrMap", name: "arrayOrMap", pkg: "github.com/tidwall/gjson", typ: $funcType([$Uint8, $Bool], [arrayOrMapResult], false)}, {prop: "Exists", name: "Exists", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Value", name: "Value", pkg: "", typ: $funcType([], [$emptyInterface], false)}, {prop: "Less", name: "Less", pkg: "", typ: $funcType([Result, $Bool], [$Bool], false)}];
@@ -30959,6 +30973,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		$r = utf16.$init(); /* */ $s = 7; case 7: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$r = utf8.$init(); /* */ $s = 8; case 8: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		$pkg.DisableModifiers = false;
+		useSafe = true;
 		modifiers = $makeMap($String.keyFor, [{ k: "pretty", v: modPretty }, { k: "ugly", v: modUgly }, { k: "reverse", v: modReverse }, { k: "this", v: modThis }, { k: "flatten", v: modFlatten }, { k: "join", v: modJoin }, { k: "valid", v: modValid }]);
 		/* */ } return; } if ($f === undefined) { $f = { $blk: $init }; } $f.$s = $s; $f.$r = $r; return $f;
 	};
