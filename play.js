@@ -4635,7 +4635,7 @@ $packages["math"] = (function() {
 	return $pkg;
 })();
 $packages["strconv"] = (function() {
-	var $pkg = {}, $init, errors, bytealg, math, bits, utf8, NumError, decimal, leftCheat, extFloat, floatInfo, decimalSlice, sliceType, sliceType$1, sliceType$2, sliceType$3, sliceType$4, sliceType$5, arrayType, sliceType$6, ptrType, arrayType$1, arrayType$2, ptrType$1, arrayType$3, arrayType$4, ptrType$2, ptrType$3, ptrType$4, optimize, powtab, float64pow10, float32pow10, leftcheats, smallPowersOfTen, powersOfTen, uint64pow10, float32info, float32info$24ptr, float64info, float64info$24ptr, isPrint16, isNotPrint16, isPrint32, isNotPrint32, isGraphic, equalIgnoreCase, special, readFloat, atof64exact, atof32exact, atof32, atof64, ParseFloat, syntaxError, rangeError, baseError, bitSizeError, ParseUint, ParseInt, digitZero, trim, rightShift, prefixIsLessThan, leftShift, shouldRoundUp, frexp10Many, adjustLastDigitFixed, adjustLastDigit, FormatFloat, AppendFloat, genericFtoa, bigFtoa, formatDigits, roundShortest, fmtE, fmtF, fmtB, min, max, FormatUint, FormatInt, Itoa, AppendInt, AppendUint, small, formatBits, isPowerOfTwo, quoteWith, appendQuotedWith, appendQuotedRuneWith, appendEscapedRune, Quote, AppendQuote, AppendQuoteToASCII, AppendQuoteRune, AppendQuoteRuneToASCII, CanBackquote, unhex, UnquoteChar, Unquote, contains, bsearch16, bsearch32, IsPrint, isInGraphicList;
+	var $pkg = {}, $init, errors, bytealg, math, bits, utf8, NumError, decimal, leftCheat, extFloat, floatInfo, decimalSlice, sliceType, sliceType$1, sliceType$2, sliceType$3, sliceType$4, sliceType$5, arrayType, sliceType$6, ptrType, arrayType$1, arrayType$2, ptrType$1, arrayType$3, arrayType$4, ptrType$2, ptrType$3, ptrType$4, optimize, powtab, float64pow10, float32pow10, leftcheats, smallPowersOfTen, powersOfTen, uint64pow10, float32info, float32info$24ptr, float64info, float64info$24ptr, isPrint16, isNotPrint16, isPrint32, isNotPrint32, isGraphic, ParseBool, equalIgnoreCase, special, readFloat, atof64exact, atof32exact, atof32, atof64, ParseFloat, syntaxError, rangeError, baseError, bitSizeError, ParseUint, ParseInt, digitZero, trim, rightShift, prefixIsLessThan, leftShift, shouldRoundUp, frexp10Many, adjustLastDigitFixed, adjustLastDigit, FormatFloat, AppendFloat, genericFtoa, bigFtoa, formatDigits, roundShortest, fmtE, fmtF, fmtB, min, max, FormatUint, FormatInt, Itoa, AppendInt, AppendUint, small, formatBits, isPowerOfTwo, quoteWith, appendQuotedWith, appendQuotedRuneWith, appendEscapedRune, Quote, AppendQuote, AppendQuoteToASCII, AppendQuoteRune, AppendQuoteRuneToASCII, CanBackquote, unhex, UnquoteChar, Unquote, contains, bsearch16, bsearch32, IsPrint, isInGraphicList;
 	errors = $packages["errors"];
 	bytealg = $packages["internal/bytealg"];
 	math = $packages["math"];
@@ -4734,6 +4734,17 @@ $packages["strconv"] = (function() {
 	ptrType$2 = $ptrType(decimal);
 	ptrType$3 = $ptrType(decimalSlice);
 	ptrType$4 = $ptrType(extFloat);
+	ParseBool = function(str) {
+		var _1, str;
+		_1 = str;
+		if (_1 === ("1") || _1 === ("t") || _1 === ("T") || _1 === ("true") || _1 === ("TRUE") || _1 === ("True")) {
+			return [true, $ifaceNil];
+		} else if (_1 === ("0") || _1 === ("f") || _1 === ("F") || _1 === ("false") || _1 === ("FALSE") || _1 === ("False")) {
+			return [false, $ifaceNil];
+		}
+		return [false, syntaxError("ParseBool", str)];
+	};
+	$pkg.ParseBool = ParseBool;
 	equalIgnoreCase = function(s1, s2) {
 		var c1, c2, i, s1, s2;
 		if (!((s1.length === s2.length))) {
@@ -23638,7 +23649,7 @@ $packages["fmt"] = (function() {
 	return $pkg;
 })();
 $packages["strings"] = (function() {
-	var $pkg = {}, $init, errors, js, bytealg, io, sync, unicode, utf8, IndexByte, Index, ContainsRune, IndexRune, TrimLeftFunc, TrimRightFunc, TrimFunc, indexFunc, lastIndexFunc, TrimSpace;
+	var $pkg = {}, $init, errors, js, bytealg, io, sync, unicode, utf8, Builder, ptrType, sliceType, IndexByte, Index, ContainsRune, IndexRune, Map, ToLower, TrimLeftFunc, TrimRightFunc, TrimFunc, indexFunc, lastIndexFunc, TrimSpace;
 	errors = $packages["errors"];
 	js = $packages["github.com/gopherjs/gopherjs/js"];
 	bytealg = $packages["internal/bytealg"];
@@ -23646,6 +23657,18 @@ $packages["strings"] = (function() {
 	sync = $packages["sync"];
 	unicode = $packages["unicode"];
 	utf8 = $packages["unicode/utf8"];
+	Builder = $pkg.Builder = $newType(0, $kindStruct, "strings.Builder", true, "strings", true, function(addr_, buf_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.addr = ptrType.nil;
+			this.buf = sliceType.nil;
+			return;
+		}
+		this.addr = addr_;
+		this.buf = buf_;
+	});
+	ptrType = $ptrType(Builder);
+	sliceType = $sliceType($Uint8);
 	IndexByte = function(s, c) {
 		var c, s;
 		return $parseInt(s.indexOf($global.String.fromCharCode(c))) >> 0;
@@ -23656,6 +23679,102 @@ $packages["strings"] = (function() {
 		return $parseInt(s.indexOf(sep)) >> 0;
 	};
 	$pkg.Index = Index;
+	Builder.ptr.prototype.String = function() {
+		var b;
+		b = this;
+		return ($bytesToString(b.buf));
+	};
+	Builder.prototype.String = function() { return this.$val.String(); };
+	Builder.ptr.prototype.copyCheck = function() {
+		var b;
+		b = this;
+		if (b.addr === ptrType.nil) {
+			b.addr = b;
+		} else if (!(b.addr === b)) {
+			$panic(new $String("strings: illegal use of non-zero Builder copied by value"));
+		}
+	};
+	Builder.prototype.copyCheck = function() { return this.$val.copyCheck(); };
+	Builder.ptr.prototype.Len = function() {
+		var b;
+		b = this;
+		return b.buf.$length;
+	};
+	Builder.prototype.Len = function() { return this.$val.Len(); };
+	Builder.ptr.prototype.Cap = function() {
+		var b;
+		b = this;
+		return b.buf.$capacity;
+	};
+	Builder.prototype.Cap = function() { return this.$val.Cap(); };
+	Builder.ptr.prototype.Reset = function() {
+		var b;
+		b = this;
+		b.addr = ptrType.nil;
+		b.buf = sliceType.nil;
+	};
+	Builder.prototype.Reset = function() { return this.$val.Reset(); };
+	Builder.ptr.prototype.grow = function(n) {
+		var b, buf, n;
+		b = this;
+		buf = $makeSlice(sliceType, b.buf.$length, (($imul(2, b.buf.$capacity)) + n >> 0));
+		$copySlice(buf, b.buf);
+		b.buf = buf;
+	};
+	Builder.prototype.grow = function(n) { return this.$val.grow(n); };
+	Builder.ptr.prototype.Grow = function(n) {
+		var b, n;
+		b = this;
+		b.copyCheck();
+		if (n < 0) {
+			$panic(new $String("strings.Builder.Grow: negative count"));
+		}
+		if ((b.buf.$capacity - b.buf.$length >> 0) < n) {
+			b.grow(n);
+		}
+	};
+	Builder.prototype.Grow = function(n) { return this.$val.Grow(n); };
+	Builder.ptr.prototype.Write = function(p) {
+		var b, p;
+		b = this;
+		b.copyCheck();
+		b.buf = $appendSlice(b.buf, p);
+		return [p.$length, $ifaceNil];
+	};
+	Builder.prototype.Write = function(p) { return this.$val.Write(p); };
+	Builder.ptr.prototype.WriteByte = function(c) {
+		var b, c;
+		b = this;
+		b.copyCheck();
+		b.buf = $append(b.buf, c);
+		return $ifaceNil;
+	};
+	Builder.prototype.WriteByte = function(c) { return this.$val.WriteByte(c); };
+	Builder.ptr.prototype.WriteRune = function(r) {
+		var b, l, n, r;
+		b = this;
+		b.copyCheck();
+		if (r < 128) {
+			b.buf = $append(b.buf, ((r << 24 >>> 24)));
+			return [1, $ifaceNil];
+		}
+		l = b.buf.$length;
+		if ((b.buf.$capacity - l >> 0) < 4) {
+			b.grow(4);
+		}
+		n = utf8.EncodeRune($subslice(b.buf, l, (l + 4 >> 0)), r);
+		b.buf = $subslice(b.buf, 0, (l + n >> 0));
+		return [n, $ifaceNil];
+	};
+	Builder.prototype.WriteRune = function(r) { return this.$val.WriteRune(r); };
+	Builder.ptr.prototype.WriteString = function(s) {
+		var b, s;
+		b = this;
+		b.copyCheck();
+		b.buf = $appendSlice(b.buf, s);
+		return [s.length, $ifaceNil];
+	};
+	Builder.prototype.WriteString = function(s) { return this.$val.WriteString(s); };
 	ContainsRune = function(s, r) {
 		var r, s;
 		return IndexRune(s, r) >= 0;
@@ -23686,6 +23805,108 @@ $packages["strings"] = (function() {
 		}
 	};
 	$pkg.IndexRune = IndexRune;
+	Map = function(mapping, s) {
+		var _i, _i$1, _r, _r$1, _ref, _ref$1, _rune, _rune$1, _tuple, b, c, c$1, i, mapping, r, r$1, s, width, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _i = $f._i; _i$1 = $f._i$1; _r = $f._r; _r$1 = $f._r$1; _ref = $f._ref; _ref$1 = $f._ref$1; _rune = $f._rune; _rune$1 = $f._rune$1; _tuple = $f._tuple; b = $f.b; c = $f.c; c$1 = $f.c$1; i = $f.i; mapping = $f.mapping; r = $f.r; r$1 = $f.r$1; s = $f.s; width = $f.width; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		b = new Builder.ptr(ptrType.nil, sliceType.nil);
+		_ref = s;
+		_i = 0;
+		/* while (true) { */ case 1:
+			/* if (!(_i < _ref.length)) { break; } */ if(!(_i < _ref.length)) { $s = 2; continue; }
+			_rune = $decodeRune(_ref, _i);
+			i = _i;
+			c = _rune[0];
+			_r = mapping(c); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+			r = _r;
+			if ((r === c) && !((c === 65533))) {
+				_i += _rune[1];
+				/* continue; */ $s = 1; continue;
+			}
+			width = 0;
+			if (c === 65533) {
+				_tuple = utf8.DecodeRuneInString($substring(s, i));
+				c = _tuple[0];
+				width = _tuple[1];
+				if (!((width === 1)) && (r === c)) {
+					_i += _rune[1];
+					/* continue; */ $s = 1; continue;
+				}
+			} else {
+				width = utf8.RuneLen(c);
+			}
+			b.Grow(s.length + 4 >> 0);
+			b.WriteString($substring(s, 0, i));
+			if (r >= 0) {
+				b.WriteRune(r);
+			}
+			s = $substring(s, (i + width >> 0));
+			/* break; */ $s = 2; continue;
+		/* } */ $s = 1; continue; case 2:
+		if (b.Cap() === 0) {
+			$s = -1; return s;
+		}
+		_ref$1 = s;
+		_i$1 = 0;
+		/* while (true) { */ case 4:
+			/* if (!(_i$1 < _ref$1.length)) { break; } */ if(!(_i$1 < _ref$1.length)) { $s = 5; continue; }
+			_rune$1 = $decodeRune(_ref$1, _i$1);
+			c$1 = _rune$1[0];
+			_r$1 = mapping(c$1); /* */ $s = 6; case 6: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+			r$1 = _r$1;
+			if (r$1 >= 0) {
+				if (r$1 < 128) {
+					b.WriteByte(((r$1 << 24 >>> 24)));
+				} else {
+					b.WriteRune(r$1);
+				}
+			}
+			_i$1 += _rune$1[1];
+		/* } */ $s = 4; continue; case 5:
+		$s = -1; return b.String();
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Map }; } $f._i = _i; $f._i$1 = _i$1; $f._r = _r; $f._r$1 = _r$1; $f._ref = _ref; $f._ref$1 = _ref$1; $f._rune = _rune; $f._rune$1 = _rune$1; $f._tuple = _tuple; $f.b = b; $f.c = c; $f.c$1 = c$1; $f.i = i; $f.mapping = mapping; $f.r = r; $f.r$1 = r$1; $f.s = s; $f.width = width; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.Map = Map;
+	ToLower = function(s) {
+		var _r, _tmp, _tmp$1, b, c, c$1, hasUpper, i, i$1, isASCII, s, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; b = $f.b; c = $f.c; c$1 = $f.c$1; hasUpper = $f.hasUpper; i = $f.i; i$1 = $f.i$1; isASCII = $f.isASCII; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		_tmp = true;
+		_tmp$1 = false;
+		isASCII = _tmp;
+		hasUpper = _tmp$1;
+		i = 0;
+		while (true) {
+			if (!(i < s.length)) { break; }
+			c = s.charCodeAt(i);
+			if (c >= 128) {
+				isASCII = false;
+				break;
+			}
+			hasUpper = hasUpper || (c >= 65 && c <= 90);
+			i = i + (1) >> 0;
+		}
+		if (isASCII) {
+			if (!hasUpper) {
+				$s = -1; return s;
+			}
+			b = new Builder.ptr(ptrType.nil, sliceType.nil);
+			b.Grow(s.length);
+			i$1 = 0;
+			while (true) {
+				if (!(i$1 < s.length)) { break; }
+				c$1 = s.charCodeAt(i$1);
+				if (c$1 >= 65 && c$1 <= 90) {
+					c$1 = c$1 + (32) << 24 >>> 24;
+				}
+				b.WriteByte(c$1);
+				i$1 = i$1 + (1) >> 0;
+			}
+			$s = -1; return b.String();
+		}
+		_r = Map(unicode.ToLower, s); /* */ $s = 1; case 1: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+		$s = -1; return _r;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: ToLower }; } $f._r = _r; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f.b = b; $f.c = c; $f.c$1 = c$1; $f.hasUpper = hasUpper; $f.i = i; $f.i$1 = i$1; $f.isASCII = isASCII; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
+	};
+	$pkg.ToLower = ToLower;
 	TrimLeftFunc = function(s, f) {
 		var _r, f, i, s, $s, $r;
 		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; f = $f.f; i = $f.i; s = $f.s; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -23772,6 +23993,8 @@ $packages["strings"] = (function() {
 		/* */ } return; } if ($f === undefined) { $f = { $blk: TrimSpace }; } $f._r = _r; $f.s = s; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.TrimSpace = TrimSpace;
+	ptrType.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "copyCheck", name: "copyCheck", pkg: "strings", typ: $funcType([], [], false)}, {prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Cap", name: "Cap", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Reset", name: "Reset", pkg: "", typ: $funcType([], [], false)}, {prop: "grow", name: "grow", pkg: "strings", typ: $funcType([$Int], [], false)}, {prop: "Grow", name: "Grow", pkg: "", typ: $funcType([$Int], [], false)}, {prop: "Write", name: "Write", pkg: "", typ: $funcType([sliceType], [$Int, $error], false)}, {prop: "WriteByte", name: "WriteByte", pkg: "", typ: $funcType([$Uint8], [$error], false)}, {prop: "WriteRune", name: "WriteRune", pkg: "", typ: $funcType([$Int32], [$Int, $error], false)}, {prop: "WriteString", name: "WriteString", pkg: "", typ: $funcType([$String], [$Int, $error], false)}];
+	Builder.init("strings", [{prop: "addr", name: "addr", embedded: false, exported: false, typ: ptrType, tag: ""}, {prop: "buf", name: "buf", embedded: false, exported: false, typ: sliceType, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -26084,14 +26307,18 @@ $packages["github.com/tidwall/match"] = (function() {
 	sliceType = $sliceType($Uint8);
 	Match = function(str, pattern) {
 		var pattern, str;
-		if (pattern === "*") {
-			return true;
-		}
 		return deepMatch(str, pattern);
 	};
 	$pkg.Match = Match;
 	deepMatch = function(str, pattern) {
 		var _1, pattern, str;
+		if (pattern === "*") {
+			return true;
+		}
+		while (true) {
+			if (!(pattern.length > 1 && (pattern.charCodeAt(0) === 42) && (pattern.charCodeAt(1) === 42))) { break; }
+			pattern = $substring(pattern, 1);
+		}
 		while (true) {
 			if (!(pattern.length > 0)) { break; }
 			if (pattern.charCodeAt(0) > 127) {
@@ -26122,6 +26349,13 @@ $packages["github.com/tidwall/match"] = (function() {
 	};
 	deepMatchRune = function(str, pattern) {
 		var _1, _tmp, _tmp$1, _tmp$10, _tmp$11, _tmp$12, _tmp$13, _tmp$14, _tmp$15, _tmp$16, _tmp$17, _tmp$18, _tmp$19, _tmp$2, _tmp$3, _tmp$4, _tmp$5, _tmp$6, _tmp$7, _tmp$8, _tmp$9, _tuple, _tuple$1, _tuple$2, _tuple$3, pattern, pr, prsz, sr, srsz, str;
+		if (pattern === "*") {
+			return true;
+		}
+		while (true) {
+			if (!(pattern.length > 1 && (pattern.charCodeAt(0) === 42) && (pattern.charCodeAt(1) === 42))) { break; }
+			pattern = $substring(pattern, 1);
+		}
 		_tmp = 0;
 		_tmp$1 = 0;
 		sr = _tmp;
@@ -26238,7 +26472,7 @@ $packages["github.com/tidwall/match"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/tidwall/pretty"] = (function() {
-	var $pkg = {}, $init, sort, Options, pair, byKey, Style, stackt, ptrType, ptrType$1, sliceType, sliceType$1, arrayType, sliceType$2, ptrType$2, funcType, Pretty, PrettyOptions, Ugly, ugly, appendPrettyAny, appendPrettyObject, sortPairs, appendPrettyString, appendPrettyNumber, appendTabs, hexp, init, Color;
+	var $pkg = {}, $init, sort, Options, pair, byKeyVal, Style, stackt, ptrType, ptrType$1, sliceType, sliceType$1, arrayType, sliceType$2, ptrType$2, funcType, Pretty, PrettyOptions, Ugly, ugly, appendPrettyAny, appendPrettyObject, sortPairs, appendPrettyString, appendPrettyNumber, appendTabs, hexp, init, Color;
 	sort = $packages["sort"];
 	Options = $pkg.Options = $newType(0, $kindStruct, "pretty.Options", true, "github.com/tidwall/pretty", true, function(Width_, Prefix_, Indent_, SortKeys_) {
 		this.$val = this;
@@ -26268,7 +26502,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		this.vstart = vstart_;
 		this.vend = vend_;
 	});
-	byKey = $pkg.byKey = $newType(0, $kindStruct, "pretty.byKey", true, "github.com/tidwall/pretty", false, function(sorted_, json_, pairs_) {
+	byKeyVal = $pkg.byKeyVal = $newType(0, $kindStruct, "pretty.byKeyVal", true, "github.com/tidwall/pretty", false, function(sorted_, json_, pairs_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.sorted = false;
@@ -26280,7 +26514,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		this.json = json_;
 		this.pairs = pairs_;
 	});
-	Style = $pkg.Style = $newType(0, $kindStruct, "pretty.Style", true, "github.com/tidwall/pretty", true, function(Key_, String_, Number_, True_, False_, Null_, Append_) {
+	Style = $pkg.Style = $newType(0, $kindStruct, "pretty.Style", true, "github.com/tidwall/pretty", true, function(Key_, String_, Number_, True_, False_, Null_, Escape_, Append_) {
 		this.$val = this;
 		if (arguments.length === 0) {
 			this.Key = arrayType.zero();
@@ -26289,6 +26523,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 			this.True = arrayType.zero();
 			this.False = arrayType.zero();
 			this.Null = arrayType.zero();
+			this.Escape = arrayType.zero();
 			this.Append = $throwNilPointerError;
 			return;
 		}
@@ -26298,6 +26533,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		this.True = True_;
 		this.False = False_;
 		this.Null = Null_;
+		this.Escape = Escape_;
 		this.Append = Append_;
 	});
 	stackt = $newType(0, $kindStruct, "pretty.stackt", true, "github.com/tidwall/pretty", false, function(kind_, key_) {
@@ -26316,7 +26552,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 	sliceType$1 = $sliceType(pair);
 	arrayType = $arrayType($String, 2);
 	sliceType$2 = $sliceType(stackt);
-	ptrType$2 = $ptrType(byKey);
+	ptrType$2 = $ptrType(byKeyVal);
 	funcType = $funcType([sliceType, $Uint8], [sliceType], false);
 	Pretty = function(json) {
 		var _r, json, $s, $r;
@@ -26427,21 +26663,27 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		$s = -1; return [buf, i, nl, true];
 		/* */ } return; } if ($f === undefined) { $f = { $blk: appendPrettyAny }; } $f._1 = _1; $f._r = _r; $f._r$1 = _r$1; $f.buf = buf; $f.i = i; $f.indent = indent; $f.json = json; $f.max = max; $f.nl = nl; $f.prefix = prefix; $f.pretty = pretty; $f.sortkeys = sortkeys; $f.tabs = tabs; $f.width = width; $f.$s = $s; $f.$r = $r; return $f;
 	};
-	byKey.ptr.prototype.Len = function() {
+	byKeyVal.ptr.prototype.Len = function() {
 		var arr;
 		arr = this;
 		return arr.pairs.$length;
 	};
-	byKey.prototype.Len = function() { return this.$val.Len(); };
-	byKey.ptr.prototype.Less = function(i, j) {
-		var arr, i, j, key1, key2, x, x$1, x$2, x$3;
+	byKeyVal.prototype.Len = function() { return this.$val.Len(); };
+	byKeyVal.ptr.prototype.Less = function(i, j) {
+		var arr, i, j, key1, key2, x, x$1, x$2, x$3, x$4, x$5;
 		arr = this;
 		key1 = $subslice(arr.json, ((x = arr.pairs, ((i < 0 || i >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + i])).kstart + 1 >> 0), ((x$1 = arr.pairs, ((i < 0 || i >= x$1.$length) ? ($throwRuntimeError("index out of range"), undefined) : x$1.$array[x$1.$offset + i])).kend - 1 >> 0));
 		key2 = $subslice(arr.json, ((x$2 = arr.pairs, ((j < 0 || j >= x$2.$length) ? ($throwRuntimeError("index out of range"), undefined) : x$2.$array[x$2.$offset + j])).kstart + 1 >> 0), ((x$3 = arr.pairs, ((j < 0 || j >= x$3.$length) ? ($throwRuntimeError("index out of range"), undefined) : x$3.$array[x$3.$offset + j])).kend - 1 >> 0));
-		return ($bytesToString(key1)) < ($bytesToString(key2));
+		if (($bytesToString(key1)) < ($bytesToString(key2))) {
+			return true;
+		}
+		if (($bytesToString(key1)) > ($bytesToString(key2))) {
+			return false;
+		}
+		return (x$4 = arr.pairs, ((i < 0 || i >= x$4.$length) ? ($throwRuntimeError("index out of range"), undefined) : x$4.$array[x$4.$offset + i])).vstart < (x$5 = arr.pairs, ((j < 0 || j >= x$5.$length) ? ($throwRuntimeError("index out of range"), undefined) : x$5.$array[x$5.$offset + j])).vstart;
 	};
-	byKey.prototype.Less = function(i, j) { return this.$val.Less(i, j); };
-	byKey.ptr.prototype.Swap = function(i, j) {
+	byKeyVal.prototype.Less = function(i, j) { return this.$val.Less(i, j); };
+	byKeyVal.ptr.prototype.Swap = function(i, j) {
 		var _tmp, _tmp$1, arr, i, j, x, x$1, x$2, x$3;
 		arr = this;
 		_tmp = $clone((x = arr.pairs, ((j < 0 || j >= x.$length) ? ($throwRuntimeError("index out of range"), undefined) : x.$array[x.$offset + j])), pair);
@@ -26450,10 +26692,10 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		pair.copy((x$3 = arr.pairs, ((j < 0 || j >= x$3.$length) ? ($throwRuntimeError("index out of range"), undefined) : x$3.$array[x$3.$offset + j])), _tmp$1);
 		arr.sorted = true;
 	};
-	byKey.prototype.Swap = function(i, j) { return this.$val.Swap(i, j); };
+	byKeyVal.prototype.Swap = function(i, j) { return this.$val.Swap(i, j); };
 	appendPrettyObject = function(buf, json, i, open, close, pretty, width, prefix, indent, sortkeys, tabs, nl, max) {
-		var _r, _r$1, _r$2, _tmp, _tmp$1, _tuple, _tuple$1, _tuple$2, buf, close, i, indent, json, max, max$1, n, nl, ok, open, p, pairs, prefix, pretty, s1, s2, sortkeys, tabs, width, x, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; buf = $f.buf; close = $f.close; i = $f.i; indent = $f.indent; json = $f.json; max = $f.max; max$1 = $f.max$1; n = $f.n; nl = $f.nl; ok = $f.ok; open = $f.open; p = $f.p; pairs = $f.pairs; prefix = $f.prefix; pretty = $f.pretty; s1 = $f.s1; s2 = $f.s2; sortkeys = $f.sortkeys; tabs = $f.tabs; width = $f.width; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _r, _r$1, _r$2, _tmp, _tmp$1, _tuple, _tuple$1, _tuple$2, buf, close, i, indent, json, max, max$1, n, nl, ok, open, p, pairs, prefix, pretty, s1, s2, sortkeys, tabs, width, x, x$1, x$2, x$3, x$4, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _tmp = $f._tmp; _tmp$1 = $f._tmp$1; _tuple = $f._tuple; _tuple$1 = $f._tuple$1; _tuple$2 = $f._tuple$2; buf = $f.buf; close = $f.close; i = $f.i; indent = $f.indent; json = $f.json; max = $f.max; max$1 = $f.max$1; n = $f.n; nl = $f.nl; ok = $f.ok; open = $f.open; p = $f.p; pairs = $f.pairs; prefix = $f.prefix; pretty = $f.pretty; s1 = $f.s1; s2 = $f.s2; sortkeys = $f.sortkeys; tabs = $f.tabs; width = $f.width; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		ok = false;
 		/* */ if (width > 0) { $s = 1; continue; }
 		/* */ $s = 2; continue;
@@ -26515,9 +26757,13 @@ $packages["github.com/tidwall/pretty"] = (function() {
 					/* } */ case 18:
 					if (n > 0) {
 						nl = buf.$length;
-						buf = $append(buf, 10);
+						if ((x = nl - 1 >> 0, ((x < 0 || x >= buf.$length) ? ($throwRuntimeError("index out of range"), undefined) : buf.$array[buf.$offset + x])) === 32) {
+							(x$1 = nl - 1 >> 0, ((x$1 < 0 || x$1 >= buf.$length) ? ($throwRuntimeError("index out of range"), undefined) : buf.$array[buf.$offset + x$1] = 10));
+						} else {
+							buf = $append(buf, 10);
+						}
 					}
-					if (!(((x = buf.$length - 1 >> 0, ((x < 0 || x >= buf.$length) ? ($throwRuntimeError("index out of range"), undefined) : buf.$array[buf.$offset + x])) === open))) {
+					if (!(((x$2 = buf.$length - 1 >> 0, ((x$2 < 0 || x$2 >= buf.$length) ? ($throwRuntimeError("index out of range"), undefined) : buf.$array[buf.$offset + x$2])) === open))) {
 						buf = appendTabs(buf, prefix, indent, tabs);
 					}
 				/* } */ case 16:
@@ -26536,7 +26782,11 @@ $packages["github.com/tidwall/pretty"] = (function() {
 				p = new pair.ptr(0, 0, 0, 0);
 				if (pretty) {
 					nl = buf.$length;
-					buf = $append(buf, 10);
+					if ((x$3 = nl - 1 >> 0, ((x$3 < 0 || x$3 >= buf.$length) ? ($throwRuntimeError("index out of range"), undefined) : buf.$array[buf.$offset + x$3])) === 32) {
+						(x$4 = nl - 1 >> 0, ((x$4 < 0 || x$4 >= buf.$length) ? ($throwRuntimeError("index out of range"), undefined) : buf.$array[buf.$offset + x$4] = 10));
+					} else {
+						buf = $append(buf, 10);
+					}
 					if ((open === 123) && sortkeys) {
 						p.kstart = i;
 						p.vstart = buf.$length;
@@ -26579,7 +26829,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 			i = i + (1) >> 0;
 		/* } */ $s = 9; continue; case 10:
 		$s = -1; return [buf, i, nl, !((open === 123))];
-		/* */ } return; } if ($f === undefined) { $f = { $blk: appendPrettyObject }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.buf = buf; $f.close = close; $f.i = i; $f.indent = indent; $f.json = json; $f.max = max; $f.max$1 = max$1; $f.n = n; $f.nl = nl; $f.ok = ok; $f.open = open; $f.p = p; $f.pairs = pairs; $f.prefix = prefix; $f.pretty = pretty; $f.s1 = s1; $f.s2 = s2; $f.sortkeys = sortkeys; $f.tabs = tabs; $f.width = width; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: appendPrettyObject }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._tmp = _tmp; $f._tmp$1 = _tmp$1; $f._tuple = _tuple; $f._tuple$1 = _tuple$1; $f._tuple$2 = _tuple$2; $f.buf = buf; $f.close = close; $f.i = i; $f.indent = indent; $f.json = json; $f.max = max; $f.max$1 = max$1; $f.n = n; $f.nl = nl; $f.ok = ok; $f.open = open; $f.p = p; $f.pairs = pairs; $f.prefix = prefix; $f.pretty = pretty; $f.s1 = s1; $f.s2 = s2; $f.sortkeys = sortkeys; $f.tabs = tabs; $f.width = width; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	sortPairs = function(json, buf, pairs) {
 		var _i, _ref, arr, buf, i, json, nbuf, p, pairs, vend, vstart, x, $s, $r;
@@ -26590,8 +26840,8 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		}
 		vstart = (0 >= pairs.$length ? ($throwRuntimeError("index out of range"), undefined) : pairs.$array[pairs.$offset + 0]).vstart;
 		vend = (x = pairs.$length - 1 >> 0, ((x < 0 || x >= pairs.$length) ? ($throwRuntimeError("index out of range"), undefined) : pairs.$array[pairs.$offset + x])).vend;
-		arr[0] = new byKey.ptr(false, json, pairs);
-		$r = sort.Sort(arr[0]); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
+		arr[0] = new byKeyVal.ptr(false, json, pairs);
+		$r = sort.Stable(arr[0]); /* */ $s = 1; case 1: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		if (!arr[0].sorted) {
 			$s = -1; return buf;
 		}
@@ -26685,7 +26935,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		}
 	};
 	init = function() {
-		$pkg.TerminalStyle = new Style.ptr($toNativeArray($kindString, ["\x1B[94m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[92m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[93m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[91m", "\x1B[0m"]), (function(dst, c) {
+		$pkg.TerminalStyle = new Style.ptr($toNativeArray($kindString, ["\x1B[94m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[92m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[93m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[96m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[91m", "\x1B[0m"]), $toNativeArray($kindString, ["\x1B[35m", "\x1B[0m"]), (function(dst, c) {
 			var c, dst;
 			if (c < 32 && (!((c === 13)) && !((c === 10)) && !((c === 9)) && !((c === 11)))) {
 				dst = $appendSlice(dst, "\\u00");
@@ -26696,8 +26946,8 @@ $packages["github.com/tidwall/pretty"] = (function() {
 		}));
 	};
 	Color = function(src, style) {
-		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, apnd, dst, i, j, key, kind, src, stack, style, x, x$1, x$2, x$3, $s, $r;
-		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; apnd = $f.apnd; dst = $f.dst; i = $f.i; j = $f.j; key = $f.key; kind = $f.kind; src = $f.src; stack = $f.stack; style = $f.style; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+		var _r, _r$1, _r$2, _r$3, _r$4, _r$5, _r$6, _r$7, _r$8, _r$9, apnd, dst, esc, i, j, key, kind, src, stack, style, uesc, x, x$1, x$2, x$3, x$4, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; _r$1 = $f._r$1; _r$2 = $f._r$2; _r$3 = $f._r$3; _r$4 = $f._r$4; _r$5 = $f._r$5; _r$6 = $f._r$6; _r$7 = $f._r$7; _r$8 = $f._r$8; _r$9 = $f._r$9; apnd = $f.apnd; dst = $f.dst; esc = $f.esc; i = $f.i; j = $f.j; key = $f.key; kind = $f.kind; src = $f.src; stack = $f.stack; style = $f.style; uesc = $f.uesc; x = $f.x; x$1 = $f.x$1; x$2 = $f.x$2; x$3 = $f.x$3; x$4 = $f.x$4; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		if (style === ptrType.nil) {
 			style = $pkg.TerminalStyle;
 		}
@@ -26729,11 +26979,49 @@ $packages["github.com/tidwall/pretty"] = (function() {
 				}
 				_r = apnd(dst, 34); /* */ $s = 11; case 11: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 				dst = _r;
+				esc = false;
+				uesc = 0;
 				i = i + 1 >> 0;
 				/* while (true) { */ case 12:
 					/* if (!(i < src.$length)) { break; } */ if(!(i < src.$length)) { $s = 13; continue; }
-					_r$1 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 14; case 14: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
-					dst = _r$1;
+					/* */ if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 92) { $s = 14; continue; }
+					/* */ if (esc) { $s = 15; continue; }
+					/* */ $s = 16; continue;
+					/* if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 92) { */ case 14:
+						if (key) {
+							dst = $appendSlice(dst, style.Key[1]);
+						} else {
+							dst = $appendSlice(dst, style.String[1]);
+						}
+						dst = $appendSlice(dst, style.Escape[0]);
+						_r$1 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 18; case 18: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+						dst = _r$1;
+						esc = true;
+						if ((i + 1 >> 0) < src.$length && ((x$2 = i + 1 >> 0, ((x$2 < 0 || x$2 >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + x$2])) === 117)) {
+							uesc = 5;
+						} else {
+							uesc = 1;
+						}
+						$s = 17; continue;
+					/* } else if (esc) { */ case 15:
+						_r$2 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 19; case 19: if($c) { $c = false; _r$2 = _r$2.$blk(); } if (_r$2 && _r$2.$blk !== undefined) { break s; }
+						dst = _r$2;
+						if (uesc === 1) {
+							esc = false;
+							dst = $appendSlice(dst, style.Escape[1]);
+							if (key) {
+								dst = $appendSlice(dst, style.Key[0]);
+							} else {
+								dst = $appendSlice(dst, style.String[0]);
+							}
+						} else {
+							uesc = uesc - (1) >> 0;
+						}
+						$s = 17; continue;
+					/* } else { */ case 16:
+						_r$3 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 20; case 20: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
+						dst = _r$3;
+					/* } */ case 17:
 					if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 34) {
 						j = i - 1 >> 0;
 						while (true) {
@@ -26742,13 +27030,15 @@ $packages["github.com/tidwall/pretty"] = (function() {
 							}
 							j = j - (1) >> 0;
 						}
-						if (!(((_r$2 = ((j - i >> 0)) % 2, _r$2 === _r$2 ? _r$2 : $throwRuntimeError("integer divide by zero")) === 0))) {
+						if (!(((_r$4 = ((j - i >> 0)) % 2, _r$4 === _r$4 ? _r$4 : $throwRuntimeError("integer divide by zero")) === 0))) {
 							/* break; */ $s = 13; continue;
 						}
 					}
 					i = i + (1) >> 0;
 				/* } */ $s = 12; continue; case 13:
-				if (key) {
+				if (esc) {
+					dst = $appendSlice(dst, style.Escape[1]);
+				} else if (key) {
 					dst = $appendSlice(dst, style.Key[1]);
 				} else {
 					dst = $appendSlice(dst, style.String[1]);
@@ -26756,59 +27046,59 @@ $packages["github.com/tidwall/pretty"] = (function() {
 				$s = 10; continue;
 			/* } else if ((((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 123) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 91)) { */ case 6:
 				stack = $append(stack, new stackt.ptr(((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]), ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 123));
-				_r$3 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 15; case 15: if($c) { $c = false; _r$3 = _r$3.$blk(); } if (_r$3 && _r$3.$blk !== undefined) { break s; }
-				dst = _r$3;
+				_r$5 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 21; case 21: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
+				dst = _r$5;
 				$s = 10; continue;
 			/* } else if (((((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 125) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 93)) && stack.$length > 0) { */ case 7:
 				stack = $subslice(stack, 0, (stack.$length - 1 >> 0));
-				_r$4 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 16; case 16: if($c) { $c = false; _r$4 = _r$4.$blk(); } if (_r$4 && _r$4.$blk !== undefined) { break s; }
-				dst = _r$4;
+				_r$6 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 22; case 22: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
+				dst = _r$6;
 				$s = 10; continue;
 			/* } else if (((((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 58) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 44)) && stack.$length > 0 && ((x = stack.$length - 1 >> 0, ((x < 0 || x >= stack.$length) ? ($throwRuntimeError("index out of range"), undefined) : stack.$array[stack.$offset + x])).kind === 123)) { */ case 8:
-				(x$3 = stack.$length - 1 >> 0, ((x$3 < 0 || x$3 >= stack.$length) ? ($throwRuntimeError("index out of range"), undefined) : stack.$array[stack.$offset + x$3])).key = !(x$2 = stack.$length - 1 >> 0, ((x$2 < 0 || x$2 >= stack.$length) ? ($throwRuntimeError("index out of range"), undefined) : stack.$array[stack.$offset + x$2])).key;
-				_r$5 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 17; case 17: if($c) { $c = false; _r$5 = _r$5.$blk(); } if (_r$5 && _r$5.$blk !== undefined) { break s; }
-				dst = _r$5;
+				(x$4 = stack.$length - 1 >> 0, ((x$4 < 0 || x$4 >= stack.$length) ? ($throwRuntimeError("index out of range"), undefined) : stack.$array[stack.$offset + x$4])).key = !(x$3 = stack.$length - 1 >> 0, ((x$3 < 0 || x$3 >= stack.$length) ? ($throwRuntimeError("index out of range"), undefined) : stack.$array[stack.$offset + x$3])).key;
+				_r$7 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 23; case 23: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
+				dst = _r$7;
 				$s = 10; continue;
 			/* } else { */ case 9:
 				kind = 0;
-				/* */ if ((((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) >= 48 && ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) <= 57) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 45)) { $s = 18; continue; }
-				/* */ if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 116) { $s = 19; continue; }
-				/* */ if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 102) { $s = 20; continue; }
-				/* */ if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 110) { $s = 21; continue; }
-				/* */ $s = 22; continue;
-				/* if ((((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) >= 48 && ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) <= 57) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 45)) { */ case 18:
+				/* */ if ((((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) >= 48 && ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) <= 57) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 45)) { $s = 24; continue; }
+				/* */ if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 116) { $s = 25; continue; }
+				/* */ if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 102) { $s = 26; continue; }
+				/* */ if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 110) { $s = 27; continue; }
+				/* */ $s = 28; continue;
+				/* if ((((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) >= 48 && ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) <= 57) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 45)) { */ case 24:
 					kind = 48;
 					dst = $appendSlice(dst, style.Number[0]);
-					$s = 23; continue;
-				/* } else if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 116) { */ case 19:
+					$s = 29; continue;
+				/* } else if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 116) { */ case 25:
 					kind = 116;
 					dst = $appendSlice(dst, style.True[0]);
-					$s = 23; continue;
-				/* } else if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 102) { */ case 20:
+					$s = 29; continue;
+				/* } else if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 102) { */ case 26:
 					kind = 102;
 					dst = $appendSlice(dst, style.False[0]);
-					$s = 23; continue;
-				/* } else if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 110) { */ case 21:
+					$s = 29; continue;
+				/* } else if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 110) { */ case 27:
 					kind = 110;
 					dst = $appendSlice(dst, style.Null[0]);
-					$s = 23; continue;
-				/* } else { */ case 22:
-					_r$6 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 24; case 24: if($c) { $c = false; _r$6 = _r$6.$blk(); } if (_r$6 && _r$6.$blk !== undefined) { break s; }
-					dst = _r$6;
-				/* } */ case 23:
-				/* */ if (!((kind === 0))) { $s = 25; continue; }
-				/* */ $s = 26; continue;
-				/* if (!((kind === 0))) { */ case 25:
-					/* while (true) { */ case 27:
-						/* if (!(i < src.$length)) { break; } */ if(!(i < src.$length)) { $s = 28; continue; }
+					$s = 29; continue;
+				/* } else { */ case 28:
+					_r$8 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 30; case 30: if($c) { $c = false; _r$8 = _r$8.$blk(); } if (_r$8 && _r$8.$blk !== undefined) { break s; }
+					dst = _r$8;
+				/* } */ case 29:
+				/* */ if (!((kind === 0))) { $s = 31; continue; }
+				/* */ $s = 32; continue;
+				/* if (!((kind === 0))) { */ case 31:
+					/* while (true) { */ case 33:
+						/* if (!(i < src.$length)) { break; } */ if(!(i < src.$length)) { $s = 34; continue; }
 						if (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) <= 32 || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 44) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 58) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 93) || (((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i]) === 125)) {
 							i = i - (1) >> 0;
-							/* break; */ $s = 28; continue;
+							/* break; */ $s = 34; continue;
 						}
-						_r$7 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 29; case 29: if($c) { $c = false; _r$7 = _r$7.$blk(); } if (_r$7 && _r$7.$blk !== undefined) { break s; }
-						dst = _r$7;
+						_r$9 = apnd(dst, ((i < 0 || i >= src.$length) ? ($throwRuntimeError("index out of range"), undefined) : src.$array[src.$offset + i])); /* */ $s = 35; case 35: if($c) { $c = false; _r$9 = _r$9.$blk(); } if (_r$9 && _r$9.$blk !== undefined) { break s; }
+						dst = _r$9;
 						i = i + (1) >> 0;
-					/* } */ $s = 27; continue; case 28:
+					/* } */ $s = 33; continue; case 34:
 					if (kind === 48) {
 						dst = $appendSlice(dst, style.Number[1]);
 					} else if (kind === 116) {
@@ -26818,19 +27108,19 @@ $packages["github.com/tidwall/pretty"] = (function() {
 					} else if (kind === 110) {
 						dst = $appendSlice(dst, style.Null[1]);
 					}
-				/* } */ case 26:
+				/* } */ case 32:
 			/* } */ case 10:
 			i = i + (1) >> 0;
 		/* } */ $s = 3; continue; case 4:
 		$s = -1; return dst;
-		/* */ } return; } if ($f === undefined) { $f = { $blk: Color }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f.apnd = apnd; $f.dst = dst; $f.i = i; $f.j = j; $f.key = key; $f.kind = kind; $f.src = src; $f.stack = stack; $f.style = style; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.$s = $s; $f.$r = $r; return $f;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Color }; } $f._r = _r; $f._r$1 = _r$1; $f._r$2 = _r$2; $f._r$3 = _r$3; $f._r$4 = _r$4; $f._r$5 = _r$5; $f._r$6 = _r$6; $f._r$7 = _r$7; $f._r$8 = _r$8; $f._r$9 = _r$9; $f.apnd = apnd; $f.dst = dst; $f.esc = esc; $f.i = i; $f.j = j; $f.key = key; $f.kind = kind; $f.src = src; $f.stack = stack; $f.style = style; $f.uesc = uesc; $f.x = x; $f.x$1 = x$1; $f.x$2 = x$2; $f.x$3 = x$3; $f.x$4 = x$4; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	$pkg.Color = Color;
 	ptrType$2.methods = [{prop: "Len", name: "Len", pkg: "", typ: $funcType([], [$Int], false)}, {prop: "Less", name: "Less", pkg: "", typ: $funcType([$Int, $Int], [$Bool], false)}, {prop: "Swap", name: "Swap", pkg: "", typ: $funcType([$Int, $Int], [], false)}];
 	Options.init("", [{prop: "Width", name: "Width", embedded: false, exported: true, typ: $Int, tag: ""}, {prop: "Prefix", name: "Prefix", embedded: false, exported: true, typ: $String, tag: ""}, {prop: "Indent", name: "Indent", embedded: false, exported: true, typ: $String, tag: ""}, {prop: "SortKeys", name: "SortKeys", embedded: false, exported: true, typ: $Bool, tag: ""}]);
 	pair.init("github.com/tidwall/pretty", [{prop: "kstart", name: "kstart", embedded: false, exported: false, typ: $Int, tag: ""}, {prop: "kend", name: "kend", embedded: false, exported: false, typ: $Int, tag: ""}, {prop: "vstart", name: "vstart", embedded: false, exported: false, typ: $Int, tag: ""}, {prop: "vend", name: "vend", embedded: false, exported: false, typ: $Int, tag: ""}]);
-	byKey.init("github.com/tidwall/pretty", [{prop: "sorted", name: "sorted", embedded: false, exported: false, typ: $Bool, tag: ""}, {prop: "json", name: "json", embedded: false, exported: false, typ: sliceType, tag: ""}, {prop: "pairs", name: "pairs", embedded: false, exported: false, typ: sliceType$1, tag: ""}]);
-	Style.init("", [{prop: "Key", name: "Key", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "String", name: "String", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "Number", name: "Number", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "True", name: "True", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "False", name: "False", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "Null", name: "Null", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "Append", name: "Append", embedded: false, exported: true, typ: funcType, tag: ""}]);
+	byKeyVal.init("github.com/tidwall/pretty", [{prop: "sorted", name: "sorted", embedded: false, exported: false, typ: $Bool, tag: ""}, {prop: "json", name: "json", embedded: false, exported: false, typ: sliceType, tag: ""}, {prop: "pairs", name: "pairs", embedded: false, exported: false, typ: sliceType$1, tag: ""}]);
+	Style.init("", [{prop: "Key", name: "Key", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "String", name: "String", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "Number", name: "Number", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "True", name: "True", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "False", name: "False", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "Null", name: "Null", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "Escape", name: "Escape", embedded: false, exported: true, typ: arrayType, tag: ""}, {prop: "Append", name: "Append", embedded: false, exported: true, typ: funcType, tag: ""}]);
 	stackt.init("github.com/tidwall/pretty", [{prop: "kind", name: "kind", embedded: false, exported: false, typ: $Uint8, tag: ""}, {prop: "key", name: "key", embedded: false, exported: false, typ: $Bool, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
@@ -26845,7 +27135,7 @@ $packages["github.com/tidwall/pretty"] = (function() {
 	return $pkg;
 })();
 $packages["github.com/tidwall/gjson"] = (function() {
-	var $pkg = {}, $init, json, match, pretty, strconv, strings, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, funcType, mapType$1, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, floatToUint, floatToInt, execModifier, unwrap, modPretty, modThis, modUgly, modReverse, modFlatten, modJoin, modValid, fillIndex, stringBytes, bytesString;
+	var $pkg = {}, $init, json, match, pretty, strconv, strings, time, utf16, utf8, Type, Result, arrayOrMapResult, arrayPathResult, objectPathResult, subSelector, parseContext, stringHeader, sliceHeader, sliceType, sliceType$1, mapType, structType, sliceType$2, sliceType$3, sliceType$4, ptrType, ptrType$1, funcType, mapType$1, modifiers, Parse, squash, tonum, tolit, tostr, parseString, parseNumber, parseLiteral, parseArrayPath, parseQuery, trim, isDotPiperChar, parseObjectPath, parseSquash, parseObject, queryMatches, parseArray, splitPossiblePipe, parseSubSelectors, nameOfLast, isSimpleName, appendJSONString, Get, runeit, unescape, stringLessInsensitive, parseAny, validpayload, validany, validobject, validcolon, validcomma, validarray, validstring, validnumber, validtrue, validfalse, validnull, Valid, parseUint, parseInt, safeInt, execModifier, unwrap, cleanWS, modPretty, modThis, modUgly, modReverse, modFlatten, modJoin, modValid, fillIndex, stringBytes, bytesString;
 	json = $packages["encoding/json"];
 	match = $packages["github.com/tidwall/match"];
 	pretty = $packages["github.com/tidwall/pretty"];
@@ -26957,6 +27247,28 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		this.calcd = calcd_;
 		this.lines = lines_;
 	});
+	stringHeader = $pkg.stringHeader = $newType(0, $kindStruct, "gjson.stringHeader", true, "github.com/tidwall/gjson", false, function(data_, len_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.data = 0;
+			this.len = 0;
+			return;
+		}
+		this.data = data_;
+		this.len = len_;
+	});
+	sliceHeader = $pkg.sliceHeader = $newType(0, $kindStruct, "gjson.sliceHeader", true, "github.com/tidwall/gjson", false, function(data_, len_, cap_) {
+		this.$val = this;
+		if (arguments.length === 0) {
+			this.data = 0;
+			this.len = 0;
+			this.cap = 0;
+			return;
+		}
+		this.data = data_;
+		this.len = len_;
+		this.cap = cap_;
+	});
 	sliceType = $sliceType(Result);
 	sliceType$1 = $sliceType($emptyInterface);
 	mapType = $mapType($String, $emptyInterface);
@@ -26964,6 +27276,8 @@ $packages["github.com/tidwall/gjson"] = (function() {
 	sliceType$2 = $sliceType($Uint8);
 	sliceType$3 = $sliceType($Int);
 	sliceType$4 = $sliceType(subSelector);
+	ptrType = $ptrType(stringHeader);
+	ptrType$1 = $ptrType($String);
 	funcType = $funcType([Result, Result], [$Bool], false);
 	mapType$1 = $mapType($String, Result);
 	Type.prototype.String = function() {
@@ -27021,22 +27335,34 @@ $packages["github.com/tidwall/gjson"] = (function() {
 	};
 	Result.prototype.String = function() { return this.$val.String(); };
 	Result.ptr.prototype.Bool = function() {
-		var _1, t;
+		var _1, _r, _r$1, _tuple, b, t, $s, $r;
+		/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _r = $f._r; _r$1 = $f._r$1; _tuple = $f._tuple; b = $f.b; t = $f.t; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
 		t = this;
-		_1 = t.Type;
-		if (_1 === (4)) {
-			return true;
-		} else if (_1 === (3)) {
-			return !(t.Str === "") && !(t.Str === "0") && !(t.Str === "false");
-		} else if (_1 === (2)) {
-			return !((t.Num === 0));
-		} else {
-			return false;
-		}
+			_1 = t.Type;
+			/* */ if (_1 === (4)) { $s = 2; continue; }
+			/* */ if (_1 === (3)) { $s = 3; continue; }
+			/* */ if (_1 === (2)) { $s = 4; continue; }
+			/* */ $s = 5; continue;
+			/* if (_1 === (4)) { */ case 2:
+				$s = -1; return true;
+			/* } else if (_1 === (3)) { */ case 3:
+				_r = strings.ToLower(t.Str); /* */ $s = 7; case 7: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+				_r$1 = strconv.ParseBool(_r); /* */ $s = 8; case 8: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
+				_tuple = _r$1;
+				b = _tuple[0];
+				$s = -1; return b;
+			/* } else if (_1 === (2)) { */ case 4:
+				$s = -1; return !((t.Num === 0));
+			/* } else { */ case 5:
+				$s = -1; return false;
+			/* } */ case 6:
+		case 1:
+		$s = -1; return false;
+		/* */ } return; } if ($f === undefined) { $f = { $blk: Result.ptr.prototype.Bool }; } $f._1 = _1; $f._r = _r; $f._r$1 = _r$1; $f._tuple = _tuple; $f.b = b; $f.t = t; $f.$s = $s; $f.$r = $r; return $f;
 	};
 	Result.prototype.Bool = function() { return this.$val.Bool(); };
 	Result.ptr.prototype.Int = function() {
-		var _1, _tuple, _tuple$1, _tuple$2, n, n$1, ok, t;
+		var _1, _tuple, _tuple$1, _tuple$2, i, n, ok, t;
 		t = this;
 		_1 = t.Type;
 		if (_1 === (4)) {
@@ -27046,25 +27372,26 @@ $packages["github.com/tidwall/gjson"] = (function() {
 			n = _tuple[0];
 			return n;
 		} else if (_1 === (2)) {
-			_tuple$1 = floatToInt(t.Num);
-			n$1 = _tuple$1[0];
+			_tuple$1 = safeInt(t.Num);
+			i = _tuple$1[0];
 			ok = _tuple$1[1];
-			if (!ok) {
-				_tuple$2 = parseInt(t.Raw);
-				n$1 = _tuple$2[0];
-				ok = _tuple$2[1];
-				if (!ok) {
-					return (new $Int64(0, t.Num));
-				}
+			if (ok) {
+				return i;
 			}
-			return n$1;
+			_tuple$2 = parseInt(t.Raw);
+			i = _tuple$2[0];
+			ok = _tuple$2[1];
+			if (ok) {
+				return i;
+			}
+			return (new $Int64(0, t.Num));
 		} else {
 			return new $Int64(0, 0);
 		}
 	};
 	Result.prototype.Int = function() { return this.$val.Int(); };
 	Result.ptr.prototype.Uint = function() {
-		var _1, _tuple, _tuple$1, _tuple$2, n, n$1, ok, t;
+		var _1, _tuple, _tuple$1, _tuple$2, i, n, ok, t, u;
 		t = this;
 		_1 = t.Type;
 		if (_1 === (4)) {
@@ -27074,18 +27401,19 @@ $packages["github.com/tidwall/gjson"] = (function() {
 			n = _tuple[0];
 			return n;
 		} else if (_1 === (2)) {
-			_tuple$1 = floatToUint(t.Num);
-			n$1 = _tuple$1[0];
+			_tuple$1 = safeInt(t.Num);
+			i = _tuple$1[0];
 			ok = _tuple$1[1];
-			if (!ok) {
-				_tuple$2 = parseUint(t.Raw);
-				n$1 = _tuple$2[0];
-				ok = _tuple$2[1];
-				if (!ok) {
-					return (new $Uint64(0, t.Num));
-				}
+			if (ok && (i.$high > 0 || (i.$high === 0 && i.$low >= 0))) {
+				return (new $Uint64(i.$high, i.$low));
 			}
-			return n$1;
+			_tuple$2 = parseUint(t.Raw);
+			u = _tuple$2[0];
+			ok = _tuple$2[1];
+			if (ok) {
+				return u;
+			}
+			return (new $Uint64(0, t.Num));
 		} else {
 			return new $Uint64(0, 0);
 		}
@@ -27494,6 +27822,9 @@ $packages["github.com/tidwall/gjson"] = (function() {
 						i = i + (1) >> 0;
 					}
 					if (depth === 0) {
+						if (i >= json$1.length) {
+							return json$1;
+						}
 						return $substring(json$1, 0, (i + 1 >> 0));
 					}
 				} else if ((_1 === (123)) || (_1 === (91)) || (_1 === (40))) {
@@ -27745,8 +28076,13 @@ $packages["github.com/tidwall/gjson"] = (function() {
 			}
 			if (path.charCodeAt(i) === 46) {
 				r.part = $substring(path, 0, i);
-				r.path = $substring(path, (i + 1 >> 0));
-				r.more = true;
+				if (!r.arrch && i < (path.length - 1 >> 0) && isDotPiperChar(path.charCodeAt((i + 1 >> 0)))) {
+					r.pipe = $substring(path, (i + 1 >> 0));
+					r.piped = true;
+				} else {
+					r.path = $substring(path, (i + 1 >> 0));
+					r.more = true;
+				}
 				return r;
 			}
 			if (path.charCodeAt(i) === 35) {
@@ -28035,6 +28371,10 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		$s = -1; return s;
 		/* */ } return; }
 	};
+	isDotPiperChar = function(c) {
+		var c;
+		return !$pkg.DisableModifiers && ((c === 64) || (c === 91) || (c === 123));
+	};
 	parseObjectPath = function(path) {
 		var epart, i, path, r;
 		r = new objectPathResult.ptr("", "", "", false, false, false);
@@ -28049,7 +28389,7 @@ $packages["github.com/tidwall/gjson"] = (function() {
 			}
 			if (path.charCodeAt(i) === 46) {
 				r.part = $substring(path, 0, i);
-				if (!$pkg.DisableModifiers && i < (path.length - 1 >> 0) && ((path.charCodeAt((i + 1 >> 0)) === 64) || (path.charCodeAt((i + 1 >> 0)) === 91) || (path.charCodeAt((i + 1 >> 0)) === 123))) {
+				if (i < (path.length - 1 >> 0) && isDotPiperChar(path.charCodeAt((i + 1 >> 0)))) {
 					r.pipe = $substring(path, (i + 1 >> 0));
 					r.piped = true;
 				} else {
@@ -28080,12 +28420,11 @@ $packages["github.com/tidwall/gjson"] = (function() {
 							continue;
 						} else if (path.charCodeAt(i) === 46) {
 							r.part = ($bytesToString(epart));
-							if (!$pkg.DisableModifiers && i < (path.length - 1 >> 0) && (path.charCodeAt((i + 1 >> 0)) === 64)) {
+							if (i < (path.length - 1 >> 0) && isDotPiperChar(path.charCodeAt((i + 1 >> 0)))) {
 								r.pipe = $substring(path, (i + 1 >> 0));
 								r.piped = true;
 							} else {
 								r.path = $substring(path, (i + 1 >> 0));
-								r.more = true;
 							}
 							r.more = true;
 							return r;
@@ -30174,38 +30513,19 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		ok = _tmp$7;
 		return [n, ok];
 	};
-	floatToUint = function(f) {
-		var _tmp, _tmp$1, _tmp$2, _tmp$3, f, n, ok;
-		n = new $Uint64(0, 0);
-		ok = false;
-		n = (new $Uint64(0, f));
-		if ((($flatten64(n)) === f) && (n.$high > 0 || (n.$high === 0 && n.$low >= 0)) && (n.$high < 1048575 || (n.$high === 1048575 && n.$low <= 4294967295))) {
-			_tmp = n;
-			_tmp$1 = true;
-			n = _tmp;
-			ok = _tmp$1;
-			return [n, ok];
-		}
-		_tmp$2 = new $Uint64(0, 0);
-		_tmp$3 = false;
-		n = _tmp$2;
-		ok = _tmp$3;
-		return [n, ok];
-	};
-	floatToInt = function(f) {
+	safeInt = function(f) {
 		var _tmp, _tmp$1, _tmp$2, _tmp$3, f, n, ok;
 		n = new $Int64(0, 0);
 		ok = false;
-		n = (new $Int64(0, f));
-		if ((($flatten64(n)) === f) && (n.$high > -524288 || (n.$high === -524288 && n.$low >= 0)) && (n.$high < 524287 || (n.$high === 524287 && n.$low <= 4294967295))) {
-			_tmp = n;
-			_tmp$1 = true;
+		if (f < -9.007199254740991e+15 || f > 9.007199254740991e+15) {
+			_tmp = new $Int64(0, 0);
+			_tmp$1 = false;
 			n = _tmp;
 			ok = _tmp$1;
 			return [n, ok];
 		}
-		_tmp$2 = new $Int64(0, 0);
-		_tmp$3 = false;
+		_tmp$2 = (new $Int64(0, f));
+		_tmp$3 = true;
 		n = _tmp$2;
 		ok = _tmp$3;
 		return [n, ok];
@@ -30289,10 +30609,36 @@ $packages["github.com/tidwall/gjson"] = (function() {
 	unwrap = function(json$1) {
 		var json$1;
 		json$1 = trim(json$1);
-		if (json$1.length >= 2 && (json$1.charCodeAt(0) === 91) || (json$1.charCodeAt(0) === 123)) {
+		if (json$1.length >= 2 && ((json$1.charCodeAt(0) === 91) || (json$1.charCodeAt(0) === 123))) {
 			json$1 = $substring(json$1, 1, (json$1.length - 1 >> 0));
 		}
 		return json$1;
+	};
+	cleanWS = function(s) {
+		var _1, _2, i, i$1, s, s2;
+		i = 0;
+		while (true) {
+			if (!(i < s.length)) { break; }
+			_1 = s.charCodeAt(i);
+			if ((_1 === (32)) || (_1 === (9)) || (_1 === (10)) || (_1 === (13))) {
+				i = i + (1) >> 0;
+				continue;
+			} else {
+				s2 = sliceType$2.nil;
+				i$1 = 0;
+				while (true) {
+					if (!(i$1 < s.length)) { break; }
+					_2 = s.charCodeAt(i$1);
+					if ((_2 === (32)) || (_2 === (9)) || (_2 === (10)) || (_2 === (13))) {
+						s2 = $append(s2, s.charCodeAt(i$1));
+					}
+					i$1 = i$1 + (1) >> 0;
+				}
+				return ($bytesToString(s2));
+			}
+			i = i + (1) >> 0;
+		}
+		return s;
 	};
 	modPretty = function(json$1, arg) {
 		var _r, _r$1, _r$2, _r$3, arg, json$1, opts, $s, $r;
@@ -30302,19 +30648,31 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		/* */ $s = 2; continue;
 		/* if (arg.length > 0) { */ case 1:
 			opts[0] = $clone(pretty.DefaultOptions, pretty.Options);
-			$r = $clone(Parse(arg), Result).ForEach((function(opts) { return function(key, value) {
-				var _1, key, value, x;
-				_1 = $clone(key, Result).String();
-				if (_1 === ("sortKeys")) {
-					opts[0].SortKeys = $clone(value, Result).Bool();
-				} else if (_1 === ("indent")) {
-					opts[0].Indent = $clone(value, Result).String();
-				} else if (_1 === ("prefix")) {
-					opts[0].Prefix = $clone(value, Result).String();
-				} else if (_1 === ("width")) {
-					opts[0].Width = (((x = $clone(value, Result).Int(), x.$low + ((x.$high >> 31) * 4294967296)) >> 0));
-				}
-				return true;
+			$r = $clone(Parse(arg), Result).ForEach((function(opts) { return function $b(key, value) {
+				var _1, _r, key, value, x, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _1 = $f._1; _r = $f._r; key = $f.key; value = $f.value; x = $f.x; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+					_1 = $clone(key, Result).String();
+					/* */ if (_1 === ("sortKeys")) { $s = 2; continue; }
+					/* */ if (_1 === ("indent")) { $s = 3; continue; }
+					/* */ if (_1 === ("prefix")) { $s = 4; continue; }
+					/* */ if (_1 === ("width")) { $s = 5; continue; }
+					/* */ $s = 6; continue;
+					/* if (_1 === ("sortKeys")) { */ case 2:
+						_r = $clone(value, Result).Bool(); /* */ $s = 7; case 7: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+						opts[0].SortKeys = _r;
+						$s = 6; continue;
+					/* } else if (_1 === ("indent")) { */ case 3:
+						opts[0].Indent = cleanWS($clone(value, Result).String());
+						$s = 6; continue;
+					/* } else if (_1 === ("prefix")) { */ case 4:
+						opts[0].Prefix = cleanWS($clone(value, Result).String());
+						$s = 6; continue;
+					/* } else if (_1 === ("width")) { */ case 5:
+						opts[0].Width = (((x = $clone(value, Result).Int(), x.$low + ((x.$high >> 31) * 4294967296)) >> 0));
+					/* } */ case 6:
+				case 1:
+				$s = -1; return true;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._1 = _1; $f._r = _r; $f.key = key; $f.value = value; $f.x = x; $f.$s = $s; $f.$r = $r; return $f;
 			}; })(opts)); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 			_r = pretty.PrettyOptions(stringBytes(json$1), opts[0]); /* */ $s = 4; case 4: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
 			_r$1 = bytesString(_r); /* */ $s = 5; case 5: if($c) { $c = false; _r$1 = _r$1.$blk(); } if (_r$1 && _r$1.$blk !== undefined) { break s; }
@@ -30417,12 +30775,17 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		/* */ if (!(arg[0] === "")) { $s = 1; continue; }
 		/* */ $s = 2; continue;
 		/* if (!(arg[0] === "")) { */ case 1:
-			$r = $clone(Parse(arg[0]), Result).ForEach((function(arg, deep, idx, out) { return function(key, value) {
-				var key, value;
-				if ($clone(key, Result).String() === "deep") {
-					deep[0] = $clone(value, Result).Bool();
-				}
-				return true;
+			$r = $clone(Parse(arg[0]), Result).ForEach((function(arg, deep, idx, out) { return function $b(key, value) {
+				var _r, key, value, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; key = $f.key; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				/* */ if ($clone(key, Result).String() === "deep") { $s = 1; continue; }
+				/* */ $s = 2; continue;
+				/* if ($clone(key, Result).String() === "deep") { */ case 1:
+					_r = $clone(value, Result).Bool(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+					deep[0] = _r;
+				/* } */ case 2:
+				$s = -1; return true;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r = _r; $f.key = key; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
 			}; })(arg, deep, idx, out)); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 2:
 		out[0] = sliceType$2.nil;
@@ -30477,12 +30840,17 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		/* */ if (!(arg === "")) { $s = 1; continue; }
 		/* */ $s = 2; continue;
 		/* if (!(arg === "")) { */ case 1:
-			$r = $clone(Parse(arg), Result).ForEach((function(idx, keys, kvals, out, preserve) { return function(key, value) {
-				var key, value;
-				if ($clone(key, Result).String() === "preserve") {
-					preserve[0] = $clone(value, Result).Bool();
-				}
-				return true;
+			$r = $clone(Parse(arg), Result).ForEach((function(idx, keys, kvals, out, preserve) { return function $b(key, value) {
+				var _r, key, value, $s, $r;
+				/* */ $s = 0; var $f, $c = false; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; _r = $f._r; key = $f.key; value = $f.value; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
+				/* */ if ($clone(key, Result).String() === "preserve") { $s = 1; continue; }
+				/* */ $s = 2; continue;
+				/* if ($clone(key, Result).String() === "preserve") { */ case 1:
+					_r = $clone(value, Result).Bool(); /* */ $s = 3; case 3: if($c) { $c = false; _r = _r.$blk(); } if (_r && _r.$blk !== undefined) { break s; }
+					preserve[0] = _r;
+				/* } */ case 2:
+				$s = -1; return true;
+				/* */ } return; } if ($f === undefined) { $f = { $blk: $b }; } $f._r = _r; $f.key = key; $f.value = value; $f.$s = $s; $f.$r = $r; return $f;
 			}; })(idx, keys, kvals, out, preserve)); /* */ $s = 3; case 3: if($c) { $c = false; $r = $r.$blk(); } if ($r && $r.$blk !== undefined) { break s; }
 		/* } */ case 2:
 		out[0] = sliceType$2.nil;
@@ -30551,15 +30919,23 @@ $packages["github.com/tidwall/gjson"] = (function() {
 		return json$1;
 	};
 	fillIndex = function(json$1, c) {
-		var c, json$1;
+		var c, jhdr, json$1, rhdr;
+		if (c.value.Raw.length > 0 && !c.calcd) {
+			jhdr = $clone(json$1, stringHeader);
+			rhdr = $clone(c.value.Raw, stringHeader);
+			c.value.Index = ((((rhdr.data) - (jhdr.data) >>> 0) >> 0));
+			if (c.value.Index < 0 || c.value.Index >= json$1.length) {
+				c.value.Index = 0;
+			}
+		}
 	};
 	stringBytes = function(s) {
-		var s;
-		return (new sliceType$2($stringToBytes(s)));
+		var s, s$24ptr;
+		return new sliceHeader.ptr(($pointerOfStructConversion(((s$24ptr || (s$24ptr = new ptrType$1(function() { return s; }, function($v) { s = $v; })))), ptrType)).data, s.length, s.length);
 	};
 	bytesString = function(b) {
 		var b;
-		return ($bytesToString(b));
+		return b;
 	};
 	Type.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}];
 	Result.methods = [{prop: "String", name: "String", pkg: "", typ: $funcType([], [$String], false)}, {prop: "Bool", name: "Bool", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Int", name: "Int", pkg: "", typ: $funcType([], [$Int64], false)}, {prop: "Uint", name: "Uint", pkg: "", typ: $funcType([], [$Uint64], false)}, {prop: "Float", name: "Float", pkg: "", typ: $funcType([], [$Float64], false)}, {prop: "Time", name: "Time", pkg: "", typ: $funcType([], [time.Time], false)}, {prop: "Array", name: "Array", pkg: "", typ: $funcType([], [sliceType], false)}, {prop: "IsObject", name: "IsObject", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "IsArray", name: "IsArray", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "ForEach", name: "ForEach", pkg: "", typ: $funcType([funcType], [], false)}, {prop: "Map", name: "Map", pkg: "", typ: $funcType([], [mapType$1], false)}, {prop: "Get", name: "Get", pkg: "", typ: $funcType([$String], [Result], false)}, {prop: "arrayOrMap", name: "arrayOrMap", pkg: "github.com/tidwall/gjson", typ: $funcType([$Uint8, $Bool], [arrayOrMapResult], false)}, {prop: "Exists", name: "Exists", pkg: "", typ: $funcType([], [$Bool], false)}, {prop: "Value", name: "Value", pkg: "", typ: $funcType([], [$emptyInterface], false)}, {prop: "Less", name: "Less", pkg: "", typ: $funcType([Result, $Bool], [$Bool], false)}];
@@ -30569,6 +30945,8 @@ $packages["github.com/tidwall/gjson"] = (function() {
 	objectPathResult.init("github.com/tidwall/gjson", [{prop: "part", name: "part", embedded: false, exported: false, typ: $String, tag: ""}, {prop: "path", name: "path", embedded: false, exported: false, typ: $String, tag: ""}, {prop: "pipe", name: "pipe", embedded: false, exported: false, typ: $String, tag: ""}, {prop: "piped", name: "piped", embedded: false, exported: false, typ: $Bool, tag: ""}, {prop: "wild", name: "wild", embedded: false, exported: false, typ: $Bool, tag: ""}, {prop: "more", name: "more", embedded: false, exported: false, typ: $Bool, tag: ""}]);
 	subSelector.init("github.com/tidwall/gjson", [{prop: "name", name: "name", embedded: false, exported: false, typ: $String, tag: ""}, {prop: "path", name: "path", embedded: false, exported: false, typ: $String, tag: ""}]);
 	parseContext.init("github.com/tidwall/gjson", [{prop: "json", name: "json", embedded: false, exported: false, typ: $String, tag: ""}, {prop: "value", name: "value", embedded: false, exported: false, typ: Result, tag: ""}, {prop: "pipe", name: "pipe", embedded: false, exported: false, typ: $String, tag: ""}, {prop: "piped", name: "piped", embedded: false, exported: false, typ: $Bool, tag: ""}, {prop: "calcd", name: "calcd", embedded: false, exported: false, typ: $Bool, tag: ""}, {prop: "lines", name: "lines", embedded: false, exported: false, typ: $Bool, tag: ""}]);
+	stringHeader.init("github.com/tidwall/gjson", [{prop: "data", name: "data", embedded: false, exported: false, typ: $UnsafePointer, tag: ""}, {prop: "len", name: "len", embedded: false, exported: false, typ: $Int, tag: ""}]);
+	sliceHeader.init("github.com/tidwall/gjson", [{prop: "data", name: "data", embedded: false, exported: false, typ: $UnsafePointer, tag: ""}, {prop: "len", name: "len", embedded: false, exported: false, typ: $Int, tag: ""}, {prop: "cap", name: "cap", embedded: false, exported: false, typ: $Int, tag: ""}]);
 	$init = function() {
 		$pkg.$init = function() {};
 		/* */ var $f, $c = false, $s = 0, $r; if (this !== undefined && this.$blk !== undefined) { $f = this; $c = true; $s = $f.$s; $r = $f.$r; } s: while (true) { switch ($s) { case 0:
@@ -30677,7 +31055,7 @@ $packages["main"] = (function() {
 		path = null;
 		input = null;
 		output = null;
-		style = new pretty.Style.ptr($toNativeArray($kindString, ["<span class=\"json-style key\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style string\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style number\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style true\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style false\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style null\">", "</span>"]), $throwNilPointerError);
+		style = new pretty.Style.ptr($toNativeArray($kindString, ["<span class=\"json-style key\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style string\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style number\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style true\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style false\">", "</span>"]), $toNativeArray($kindString, ["<span class=\"json-style null\">", "</span>"]), arrayType.zero(), $throwNilPointerError);
 		/* */ if ($pkg === $mainPkg) { $s = 5; continue; }
 		/* */ $s = 6; continue;
 		/* if ($pkg === $mainPkg) { */ case 5:
