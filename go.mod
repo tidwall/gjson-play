@@ -2,4 +2,4 @@ module github.com/tidwall/gjson-play
 
 go 1.16
 
-require github.com/tidwall/gjson v1.7.5
+require github.com/tidwall/gjson v1.10.0
